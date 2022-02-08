@@ -29,10 +29,10 @@ trait NotificationLocalLib
     public static $USAGE_FIRST_COME = 6;
     public static $USAGE_IF_NO_ONE = 7;
 
-    public static $SERVERITY_INFO = 0;
-    public static $SERVERITY_NOTICE = 1;
-    public static $SERVERITY_WARN = 2;
-    public static $SERVERITY_ALERT = 3;
+    public static $SEVERITY_INFO = 0;
+    public static $SEVERITY_NOTICE = 1;
+    public static $SEVERITY_WARN = 2;
+    public static $SEVERITY_ALERT = 3;
 
     private function GetFormStatus()
     {
@@ -116,26 +116,39 @@ trait NotificationLocalLib
         ];
     }
 
-    private function ServerityMapping()
+    private function SeverityMapping()
     {
         return [
-            self::$SERVERITY_INFO    => [
+            self::$SEVERITY_INFO    => [
                 'tag'     => 'info',
                 'caption' => 'Information',
             ],
-            self::$SERVERITY_NOTICE   => [
+            self::$SEVERITY_NOTICE   => [
                 'tag'     => 'notice',
                 'caption' => 'Notice',
             ],
-            self::$SERVERITY_WARN    => [
+            self::$SEVERITY_WARN    => [
                 'tag'     => 'warn',
                 'caption' => 'Warning',
             ],
-            self::$SERVERITY_ALERT => [
+            self::$SEVERITY_ALERT => [
                 'tag'     => 'alert',
                 'caption' => 'Alert',
             ],
         ];
+    }
+
+    private function SeverityDecode($indent)
+    {
+        $severity = self::$SEVERITY_INFO;
+        $severityMap = $this->SeverityMapping();
+        foreach ($severityMap as $index => $map) {
+            if ($map['tag'] == strtolower($indent)) {
+                $severity = $index;
+                break;
+            }
+        }
+        return $severity;
     }
 
     private function UsageMapping()

@@ -176,6 +176,52 @@ trait NotificationCommonLib
         IPS_SetMediaContent($mediaID, base64_encode($data));
     }
 
+    private function RegisterHook($WebHook)
+    {
+        $this->SendDebug(__FUNCTION__, 'WebHook=' . $WebHook, 0);
+        $ids = IPS_GetInstanceListByModuleID('{015A6EB8-D6E5-4B93-B496-0D3F77AE9FE1}');
+        if (count($ids) > 0) {
+            $hooks = json_decode(IPS_GetProperty($ids[0], 'Hooks'), true);
+            $this->SendDebug(__FUNCTION__, 'Hooks=' . print_r($hooks, true), 0);
+            $found = false;
+            foreach ($hooks as $index => $hook) {
+                if ($hook['Hook'] == $WebHook) {
+                    if ($hook['TargetID'] != $this->InstanceID) {
+                        $this->SendDebug(__FUNCTION__, 'already exists with foreign TargetID ' . $hook['TargetID'] . ', overwrite with ' . $this->InstanceID, 0);
+                        $hooks[$index]['TargetID'] = $this->InstanceID;
+                    } else {
+                        $this->SendDebug(__FUNCTION__, 'already exists with correct TargetID ' . $this->InstanceID, 0);
+                    }
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $hooks[] = ['Hook' => $WebHook, 'TargetID' => $this->InstanceID];
+                $this->SendDebug(__FUNCTION__, 'not found, create with TargetID ' . $this->InstanceID, 0);
+            }
+            IPS_SetProperty($ids[0], 'Hooks', json_encode($hooks));
+            IPS_ApplyChanges($ids[0]);
+        }
+    }
+
+    private function GetMimeType($extension)
+    {
+        $lines = file(IPS_GetKernelDirEx() . 'mime.types');
+        foreach ($lines as $line) {
+            $type = explode("\t", $line, 2);
+            if (count($type) == 2) {
+                $types = explode(' ', trim($type[1]));
+                foreach ($types as $ext) {
+                    if ($ext == $extension) {
+                        return $type[0];
+                    }
+                }
+            }
+        }
+        return 'text/plain';
+    }
+
     private function bool2str($bval)
     {
         if (is_bool($bval)) {

@@ -10,6 +10,10 @@ class NotificationCenter extends IPSModule
     use NotificationCommonLib;
     use NotificationLocalLib;
 
+    private static $notification_max_age = 180;
+    private static $semaphoreID = __CLASS__ . 'Data';
+    private static $semaphoreTM = 5 * 1000;
+
     public function Create()
     {
         parent::Create();
@@ -153,6 +157,9 @@ class NotificationCenter extends IPSModule
         $this->MaintainVariable('AllAbsent', $this->Translate('all absent'), VARIABLETYPE_BOOLEAN, 'Notification.YesNo', $vpos++, true);
         $this->MaintainVariable('LastGone', $this->Translate('last gone'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('FirstCome', $this->Translate('first come'), VARIABLETYPE_STRING, '', $vpos++, true);
+
+        $vpos = 90;
+        $this->MaintainVariable('Notifications', $this->Translate('Notifications'), VARIABLETYPE_STRING, '~HTMLBox', $vpos++, true);
 
         $vpos = 100;
         $objList = [];
@@ -1018,5 +1025,158 @@ class NotificationCenter extends IPSModule
             'script_icons'  => json_decode($this->ReadPropertyString('script_icons'), true),
         ];
         return $stemdata;
+    }
+
+    private function cmp_notifications($a, $b)
+    {
+        $a_tstamp = $a['tstamp'];
+        $b_tstamp = $b['tstamp'];
+        if ($a_tstamp != $b_tstamp) {
+            return ($a_tstamp < $b_tstamp) ? -1 : 1;
+        }
+        $a_id = $a['id'];
+        $b_id = $b['id'];
+        return ($a_id < $b_id) ? -1 : 1;
+    }
+
+    public function Log(string $text, array $params)
+    {
+        $now = time();
+
+        $severity = $this->SeverityDecode($this->GetArrayElem($params, 'severity', 'info'));
+        $expires = $this->GetArrayElem($params, 'expires', '');
+
+        if (IPS_SemaphoreEnter(self::$semaphoreID, self::$semaphoreTM) == false) {
+            $this->SendDebug(__FUNCTION__, 'sempahore ' . self::$semaphoreID . ' is not accessable', 0);
+            return false;
+        }
+
+        $ref_ts = $now - (self::$notification_max_age * 24 * 60 * 60);
+
+        $new_notifications = [];
+        $s = $this->GetMediaData('Data');
+        $old_data = json_decode((string) $s, true);
+        $old_notifications = isset($old_data['notifications']) ? $old_data['notifications'] : [];
+        $counter = isset($old_data['counter']) ? $old_data['counter'] : 1;
+        if ($old_notifications != '') {
+            foreach ($old_notifications as $old_notification) {
+                if ($old_notification['tstamp'] < $ref_ts) {
+                    $this->SendDebug(__FUNCTION__, 'delete notification from ' . date('d.m.Y H:i:s', $old_notification['tstamp']), 0);
+                    continue;
+                }
+                $new_notifications[] = $old_notification;
+            }
+        }
+        $new_notification = [
+            'id'       => $counter++,
+            'tstamp'   => $now,
+            'text'     => $text,
+            'severity' => $severity,
+            'expires'  => $expires,
+        ];
+        if (isset($params['targets'])) {
+            $new_notification['targets'] = $params['targets'];
+        }
+        $new_notifications[] = $new_notification;
+        usort($new_notifications, ['NotificationCenter', 'cmp_notifications']);
+        $new_data = $old_data;
+        $new_data['counter'] = $counter;
+        $new_data['notifications'] = $new_notifications;
+        $s = json_encode($new_data);
+        $this->SetMediaData('Data', $s, MEDIATYPE_DOCUMENT, '.dat', false);
+
+        IPS_SemaphoreLeave(self::$semaphoreID);
+
+        $html = $this->BuildHtmlBox($new_notifications);
+        $this->SetValue('Notifications', $html);
+    }
+
+    private function BuildHtmlBox($notifications)
+    {
+        $now = time();
+        $b = false;
+
+        $html = '';
+        $html .= '<html>' . PHP_EOL;
+        $html .= '<body>' . PHP_EOL;
+        $html .= '<style>' . PHP_EOL;
+        $html .= 'body { margin: 1; padding: 0; font-family: "Open Sans", sans-serif; font-size: 20px; }' . PHP_EOL;
+        $html .= 'table { border-collapse: collapse; border: 0px solid; margin: 0.5em;}' . PHP_EOL;
+        $html .= 'th, td { padding: 1; }' . PHP_EOL;
+        $html .= 'thead, tdata { text-align: left; }' . PHP_EOL;
+        $html .= '#spalte_zeitpunkt { width: 125px; }' . PHP_EOL;
+        $html .= '#spalte_text { }' . PHP_EOL;
+        $html .= '</style>' . PHP_EOL;
+
+        foreach ($notifications as $notification) {
+            $tstamp = $notification['tstamp'];
+            $text = $notification['text'];
+            $severity = $notification['severity'];
+            $expires = $notification['expires'];
+            $color = '';
+            switch ($severity) {
+                case self::$SEVERITY_INFO:
+                    if ($expires == '') {
+                        $expires = 24 * 60 * 60;
+                    }
+                    break;
+                case self::$SEVERITY_NOTICE:
+                    $color = '#507dca';
+                    if ($expires == '') {
+                        $expires = 2 * 24 * 60 * 60;
+                    }
+                    break;
+                case self::$SEVERITY_WARN:
+                    if ($expires == '') {
+                        $expires = 7 * 24 * 60 * 60;
+                    }
+                    $color = '#f57d0c';
+                    break;
+                case self::$SEVERITY_ALERT:
+                    $color = '#fc1a29';
+                    break;
+                default:
+                    break;
+            }
+
+            if ($expires != '') {
+                $expires = $tstamp + $expires;
+                if ($expires < $now) {
+                    continue;
+                }
+            }
+
+            if (!$b) {
+                $html .= '<table>' . PHP_EOL;
+                $html .= '<colgroup><col id="spalte_zeitpunkt"></colgroup>' . PHP_EOL;
+                $html .= '<colgroup><col id="spalte_text"></colgroup>' . PHP_EOL;
+                $html .= '<colgroup></colgroup>' . PHP_EOL;
+                $html .= '<thead>' . PHP_EOL;
+                $html .= '<tr>' . PHP_EOL;
+                $html .= '<th>Zeitpunkt</th>' . PHP_EOL;
+                $html .= '<th>Nachricht</th>' . PHP_EOL;
+                $html .= '</tr>' . PHP_EOL;
+                $html .= '</thead>' . PHP_EOL;
+                $html .= '<tdata>' . PHP_EOL;
+                $b = true;
+            }
+
+            $dt = date('d.m. H:i', $tstamp);
+
+            $html .= '<tr>' . PHP_EOL;
+            $html .= '<td>' . $dt . '</td>' . PHP_EOL;
+            $html .= '<td' . ($color != '' ? ' style="color:' . $color . '"' : '') . '>' . $text . '</td>' . PHP_EOL;
+            $html .= '</tr>' . PHP_EOL;
+        }
+
+        if ($b) {
+            $html .= '</tdata>' . PHP_EOL;
+            $html .= '</table>' . PHP_EOL;
+        } else {
+            $html .= '<center>keine Benachrichtigungen</center><br>' . PHP_EOL;
+        }
+        $html .= '</body>' . PHP_EOL;
+        $html .= '</html>' . PHP_EOL;
+        return $html;
     }
 }
