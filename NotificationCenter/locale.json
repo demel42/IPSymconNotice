@@ -1,0 +1,88 @@
+{
+    "translations": {
+        "de": {
+			"Notification center": "Benachrichtigungs-Zentrale",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Persons": "Personen",
+			"Abbreviation": "Kürzel",
+			"Name": "Bezeichnung",
+			"Script params": "Skript-Parameter",
+			"Mail address": "Mail-Adresse",
+			"SMS telno": "SMS Telefonnummer",
+			"Ignore": "ignorieren",
+
+			"Person \"{$abbreviation}\": field \"{$field}\" must be json-coded": "Person \"{$abbreviation}\": Feld \"{$field}\" muss json-kodiert sein",
+			"Field \"{$field}\" must be json-coded": "Feld \"{$field}\" muss json-kodiert sein",
+			"at minimum one valid persons must be defined": "mindestens eine gültige Personen muss definiert sein",
+			"Abbreviation must be specified": "Kürzel muss angegeben sein",
+			"The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
+
+			"Person": "Person",
+
+			"Basic configuration": "Basiskonfiguration",
+			"Webfront": "Webfront",
+			"E-Mail": "E-Mail",
+			"SMTP instance": "SMTP-Instanz",
+			"SMS": "SMS",
+			"SMS instance": "SMS-Instanz",
+			"Script": "Skript",
+			"Defaults": "Voreinstellungen",
+			"Sounds": "Signaltöne",
+			"Icons": "Symbole",
+			"Description": "Beschreibung",
+			"Value": "Wert",
+
+			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
+			"Expert area": "Experten-Bereich",
+			"Test area": "Test-Bereich",
+
+			"all absent": "alle abwesend",
+			"last gone": "zuletzt gegangen",
+			"first come": "zuerst gekommen",
+
+			"unknown": "unbekannt",
+			"at home": "zuhause",
+			"be away": "unterwegs",
+			"on vacation": "im Urlaub",
+
+			"Yes": "Ja",
+			"No": "Nein",
+
+			"Presence state of": "Präsenz-Status von",
+
+			"Information": "Information",
+			"Notice": "Hinweis",
+			"Warning": "Warnung",
+			"Alert": "Alarm",
+
+			"- no selection -": "- keine Auswahl -",
+			"alarm": "Alarm",
+			"bell": "Glocke",
+			"boom": "Boom",
+			"buzzer": "Buzzer",
+			"connected": "angeschlossen",
+			"dark": "dunkel",
+			"digital": "digital",
+			"drums": "Schlagzeug",
+			"duck": "Ente",
+			"full": "voll",
+			"happy": "fröhlich",
+			"horn": "Horn",
+			"inception": "Beginn",
+			"kazoo": "kazoo",
+			"roll": "Rolle",
+			"siren": "Sirene",
+			"space": "Weltraum",
+			"trickling": "tröpfeln",
+			"turn": "drehen",
+
+			"Instance getting created": "Instanz wird erstellt",
+			"Instance is active": "Instanz ist aktiv",
+			"Instance is deleted": "Instanz wird gelöscht",
+			"Instance is inactive": "Instanz ist inaktiv",
+			"Instance is not created": "Instanz wurde nicht erzeugt",
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)"
+		}
+	}
+}

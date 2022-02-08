@@ -1,0 +1,12 @@
+{
+    "id": "{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}",
+    "name": "Notification Center",
+    "type": 3,
+    "vendor": "",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "Notification",
+    "url": ""
+}

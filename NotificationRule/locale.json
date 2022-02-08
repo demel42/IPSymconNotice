@@ -1,0 +1,81 @@
+{
+    "translations": {
+        "de": {
+			"Notification rule": "Benachrichtigungs-Regel",
+			"Notification center": "Benachrichtigungs-Zentrale",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",
+			"Target \"{$target}\": field \"{$field}\" must be json-coded": "Ziel \"{$target}\": Feld \"{$field}\" muss json.kodiert sein",
+			"at minimum one valid recipients must be defined": "mindestens ein gültiger Empfänger muss definiert sein",
+			"The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
+
+			"Default values": "Standardwerte",
+			"Default value for \"subject\"": "Standardwert für den \"Betreff\"",
+			"Default value for \"message text\"": "Standardwert für die \"Nachricht\"",
+			"Default webfront sound": "Standardwert Webfrond-Signalton",
+			"Default script sound": "Standardwert Skript-Signalton",
+			"Default script icon": "Standardwert Skript-Symbol",
+
+			"Recipients": "Empfänger",
+			"Usage": "Verwendung",
+			"Target": "Ziel",
+			"Params": "Parameter",
+
+			"Check rule": "Regel prüfen",
+			"Expert area": "Experten-Bereich",
+			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
+			"Test area": "Test-Bereich",
+			"Information": "Information",
+
+			"everyone of the list": "Jeder der Liste",
+			"everyone present of the list": "Jeder Anwesende der Liste",
+			"everyone absent of the list": "Jeder Abwesende der Liste",
+			"first present of the list": "Erster Anwesender der Liste",
+			"last gone": "Letzter der gegangen ist",
+			"first come": "Erster der gekommen ist",
+			"if no one else": "wenn sonst keiner",
+
+			"Result of the test": "Ergebnis der Überprüfung",
+			"At home": "zu Hause",
+			"Be away": "unterwegs",
+			"Last gone": "zuletzt gegangen",
+			"First come": "zuerst gekommen",
+			"Targets": "Ziele",
+
+			"Information": "Information",
+			"Notice": "Hinweis",
+			"Warning": "Warnung",
+			"Alert": "Alarm",
+
+			"- no selection -": "- keine Auswahl -",
+
+			"alarm": "Alarm",
+			"bell": "Glocke",
+			"boom": "Boom",
+			"buzzer": "Buzzer",
+			"connected": "angeschlossen",
+			"dark": "dunkel",
+			"digital": "digital",
+			"drums": "Schlagzeug",
+			"duck": "Ente",
+			"full": "voll",
+			"happy": "fröhlich",
+			"horn": "Horn",
+			"inception": "Beginn",
+			"kazoo": "kazoo",
+			"roll": "Rolle",
+			"siren": "Sirene",
+			"space": "Weltraum",
+			"trickling": "tröpfeln",
+			"turn": "drehen",
+
+			"Instance getting created": "Instanz wird erstellt",
+			"Instance is active": "Instanz ist aktiv",
+			"Instance is deleted": "Instanz wird gelöscht",
+			"Instance is inactive": "Instanz ist inaktiv",
+			"Instance is not created": "Instanz wurde nicht erzeugt",
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)"
+		}
+	}
+}
