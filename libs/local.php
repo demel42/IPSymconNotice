@@ -177,4 +177,30 @@ trait NotificationLocalLib
             ],
         ];
     }
+
+    private function WfcSounds()
+    {
+        return [
+            ['value' => '', 'caption' => $this->Translate('')],
+            ['value' => 'alarm', 'caption' => $this->Translate('alarm')],
+            ['value' => 'bell', 'caption' => $this->Translate('bell')],
+            ['value' => 'boom', 'caption' => $this->Translate('boom')],
+            ['value' => 'buzzer', 'caption' => $this->Translate('buzzer')],
+            ['value' => 'connected', 'caption' => $this->Translate('connected')],
+            ['value' => 'dark', 'caption' => $this->Translate('dark')],
+            ['value' => 'digital', 'caption' => $this->Translate('digital')],
+            ['value' => 'drums', 'caption' => $this->Translate('drums')],
+            ['value' => 'duck', 'caption' => $this->Translate('duck')],
+            ['value' => 'full', 'caption' => $this->Translate('full')],
+            ['value' => 'happy', 'caption' => $this->Translate('happy')],
+            ['value' => 'horn', 'caption' => $this->Translate('horn')],
+            ['value' => 'inception', 'caption' => $this->Translate('inception')],
+            ['value' => 'kazoo', 'caption' => $this->Translate('kazoo')],
+            ['value' => 'roll', 'caption' => $this->Translate('roll')],
+            ['value' => 'siren', 'caption' => $this->Translate('siren')],
+            ['value' => 'space', 'caption' => $this->Translate('space')],
+            ['value' => 'trickling', 'caption' => $this->Translate('trickling')],
+            ['value' => 'turn', 'caption' => $this->Translate('turn')],
+        ];
+    }
 }

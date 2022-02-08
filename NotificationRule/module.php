@@ -20,9 +20,16 @@ class NotificationRule extends IPSModule
 
         $this->RegisterPropertyString('default_subject', '');
         $this->RegisterPropertyString('default_text', '');
-        $this->RegisterPropertyString('default_wfc_sound', '');
-        $this->RegisterPropertyString('default_script_sound', '');
-        $this->RegisterPropertyString('default_script_icons', '');
+
+        $this->RegisterPropertyString('default_wfc_sound_info', '');
+        $this->RegisterPropertyString('default_wfc_sound_notice', '');
+        $this->RegisterPropertyString('default_wfc_sound_warn', '');
+        $this->RegisterPropertyString('default_wfc_sound_alert', '');
+
+        $this->RegisterPropertyString('default_script_sound_info', '');
+        $this->RegisterPropertyString('default_script_sound_notice', '');
+        $this->RegisterPropertyString('default_script_sound_warn', '');
+        $this->RegisterPropertyString('default_script_sound_alert', '');
 
         $this->RegisterPropertyString('recipients', json_encode([]));
 
@@ -61,17 +68,6 @@ class NotificationRule extends IPSModule
         }
         $this->SendDebug(__FUNCTION__, 'presence=' . print_r($presence, true), 0);
         return $presence;
-    }
-
-    private function GetStemdata()
-    {
-        $stemdata = false;
-        $notificationCenter = $this->GetNotificationCenter();
-        if ($notificationCenter > 0) {
-            $stemdata = Notification_GetStemdata($notificationCenter);
-        }
-        $this->SendDebug(__FUNCTION__, 'stemdata=' . print_r($stemdata, true), 0);
-        return $stemdata;
     }
 
     private function CheckConfiguration()
@@ -209,65 +205,108 @@ class NotificationRule extends IPSModule
 
         $items = [];
         $items[] = [
-            'type'    => 'ValidationTextBox',
-            'name'    => 'default_subject',
-            'caption' => 'Default value for "subject"',
+            'type'      => 'ValidationTextBox',
+            'name'      => 'default_subject',
+            'caption'   => 'Default value for "subject"',
+            'width'     => '80%',
         ];
         $items[] = [
             'type'      => 'ValidationTextBox',
             'name'      => 'default_text',
             'caption'   => 'Default value for "message text"',
             'multiline' => true,
-            'width'     => '1000px',
+            'width'     => '60%',
+        ];
+        $items[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Webfront',
+            'expanded ' => false,
+            'items'     => [
+                [
+                    'type'    => 'RowLayout',
+                    'items'   => [
+                        [
+                            'type'    => 'Label',
+                            'caption' => 'Default sounds',
+                        ],
+                        [
+                            'type'     => 'Select',
+                            'options'  => $this->WfcSounds(),
+                            'name'     => 'default_wfc_sound_info',
+                            'caption'  => 'Information',
+                            'width'    => '200px',
+                        ],
+                        [
+                            'type'     => 'Select',
+                            'options'  => $this->WfcSounds(),
+                            'name'     => 'default_wfc_sound_notice',
+                            'caption'  => 'Notice',
+                            'width'    => '200px',
+                        ],
+                        [
+                            'type'     => 'Select',
+                            'options'  => $this->WfcSounds(),
+                            'name'     => 'default_wfc_sound_warn',
+                            'caption'  => 'Warning',
+                            'width'    => '200px',
+                        ],
+                        [
+                            'type'     => 'Select',
+                            'options'  => $this->WfcSounds(),
+                            'name'     => 'default_wfc_sound_alert',
+                            'caption'  => 'Alert',
+                            'width'    => '200px',
+                        ],
+                    ],
+                ],
+            ],
         ];
 
-        $stemdata = $this->GetStemdata();
-
-        $wfc_sounds = $stemdata['wfc_sounds'];
-        $n_wfc_sounds = 0;
-        foreach ($wfc_sounds as $wfc_sound) {
-            if ($wfc_sound['value'] != '') {
-                $n_wfc_sounds++;
+        $notificationCenter = $this->GetNotificationCenter();
+        if ($notificationCenter > 0) {
+            $scriptID = (int) IPS_GetProperty($notificationCenter, 'scriptID');
+            if ($scriptID > 0) {
+                $items[] = [
+                    'type'      => 'ExpansionPanel',
+                    'caption'   => 'Script',
+                    'expanded ' => false,
+                    'items'     => [
+                        [
+                            'type'    => 'RowLayout',
+                            'items'   => [
+                                [
+                                    'type'    => 'Label',
+                                    'caption' => 'Default sounds',
+                                ],
+                                [
+                                    'type'     => 'ValidationTextBox',
+                                    'name'     => 'default_script_sound_info',
+                                    'caption'  => 'Information',
+                                    'width'    => '200px',
+                                ],
+                                [
+                                    'type'     => 'ValidationTextBox',
+                                    'name'     => 'default_script_sound_notice',
+                                    'caption'  => 'Notice',
+                                    'width'    => '200px',
+                                ],
+                                [
+                                    'type'     => 'ValidationTextBox',
+                                    'name'     => 'default_script_sound_warn',
+                                    'caption'  => 'Warning',
+                                    'width'    => '200px',
+                                ],
+                                [
+                                    'type'     => 'ValidationTextBox',
+                                    'name'     => 'default_script_sound_alert',
+                                    'caption'  => 'Alert',
+                                    'width'    => '200px',
+                                ],
+                            ],
+                        ],
+                    ],
+                ];
             }
-        }
-        if ($n_wfc_sounds > 0) {
-            $items[] = [
-                'type'     => 'Select',
-                'options'  => $wfc_sounds,
-                'name'     => 'default_wfc_sound',
-                'caption'  => 'Default webfront sound',
-            ];
-        }
-
-        $script_sounds = $stemdata['script_sounds'];
-        $n_script_sounds = 0;
-        foreach ($script_sounds as $script_sound) {
-            if ($script_sound['value'] != '') {
-                $n_script_sounds++;
-            }
-        }
-        if ($n_script_sounds > 0) {
-            $items[] = [
-                'type'     => 'Select',
-                'options'  => $script_sounds,
-                'name'     => 'default_script_sound',
-                'caption'  => 'Default script sound',
-            ];
-        }
-        $script_icons = $stemdata['script_icons'];
-        $n_script_icons = 0;
-        foreach ($script_icons as $script_icon) {
-            if ($script_icon['value'] != '') {
-                $n_script_icons++;
-            }
-        }
-        if ($n_script_icons > 0) {
-            $items[] = [
-                'type'     => 'Select',
-                'options'  => $script_icons,
-                'name'     => 'default_script_icon',
-                'caption'  => 'Default script icon',
-            ];
         }
 
         $formElements[] = [

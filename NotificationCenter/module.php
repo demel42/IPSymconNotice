@@ -23,29 +23,10 @@ class NotificationCenter extends IPSModule
         $this->RegisterPropertyString('persons', json_encode([]));
 
         // MODE_WFC
-        $wfc_sounds = [
-            ['value' => 'alarm', 'caption' => $this->Translate('alarm')],
-            ['value' => 'bell', 'caption' => $this->Translate('bell')],
-            ['value' => 'boom', 'caption' => $this->Translate('boom')],
-            ['value' => 'buzzer', 'caption' => $this->Translate('buzzer')],
-            ['value' => 'connected', 'caption' => $this->Translate('connected')],
-            ['value' => 'dark', 'caption' => $this->Translate('dark')],
-            ['value' => 'digital', 'caption' => $this->Translate('digital')],
-            ['value' => 'drums', 'caption' => $this->Translate('drums')],
-            ['value' => 'duck', 'caption' => $this->Translate('duck')],
-            ['value' => 'full', 'caption' => $this->Translate('full')],
-            ['value' => 'happy', 'caption' => $this->Translate('happy')],
-            ['value' => 'horn', 'caption' => $this->Translate('horn')],
-            ['value' => 'inception', 'caption' => $this->Translate('inception')],
-            ['value' => 'kazoo', 'caption' => $this->Translate('kazoo')],
-            ['value' => 'roll', 'caption' => $this->Translate('roll')],
-            ['value' => 'siren', 'caption' => $this->Translate('siren')],
-            ['value' => 'space', 'caption' => $this->Translate('space')],
-            ['value' => 'trickling', 'caption' => $this->Translate('trickling')],
-            ['value' => 'turn', 'caption' => $this->Translate('turn')],
-            ['value' => '', 'caption' => $this->Translate('- no selection -')],
-        ];
-        $this->RegisterPropertyString('wfc_sounds', json_encode($wfc_sounds));
+        $this->RegisterPropertyString('default_wfc_sound_info', '');
+        $this->RegisterPropertyString('default_wfc_sound_notice', '');
+        $this->RegisterPropertyString('default_wfc_sound_warn', '');
+        $this->RegisterPropertyString('default_wfc_sound_alert', '');
         $this->RegisterPropertyString('wfc_defaults', '');
 
         // MODE_MAIL
@@ -58,14 +39,10 @@ class NotificationCenter extends IPSModule
 
         // MODE_SCRIPT
         $this->RegisterPropertyInteger('scriptID', 0);
-        $script_sounds = [
-            ['value' => '', 'caption' => $this->Translate('- no selection -')],
-        ];
-        $this->RegisterPropertyString('script_sounds', json_encode($script_sounds));
-        $script_icons = [
-            ['value' => '', 'caption' => $this->Translate('- no selection -')],
-        ];
-        $this->RegisterPropertyString('script_icons', json_encode($script_icons));
+        $this->RegisterPropertyString('default_script_sound_info', '');
+        $this->RegisterPropertyString('default_script_sound_notice', '');
+        $this->RegisterPropertyString('default_script_sound_warn', '');
+        $this->RegisterPropertyString('default_script_sound_alert', '');
         $this->RegisterPropertyString('script_defaults', '');
 
         $this->InstallVarProfiles(false);
@@ -269,7 +246,6 @@ class NotificationCenter extends IPSModule
             'caption' => 'Disable instance'
         ];
 
-        $wfc_sounds = json_decode($this->ReadPropertyString('wfc_sounds'), true);
         $formElements[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Basic configuration',
@@ -281,37 +257,47 @@ class NotificationCenter extends IPSModule
                     'expanded ' => false,
                     'items'     => [
                         [
-                            'type'     => 'List',
-                            'name'     => 'wfc_sounds',
-                            'caption'  => 'Sounds',
-                            'rowCount' => 5,
-                            'add'      => true,
-                            'delete'   => true,
-                            'columns'  => [
+                            'type'    => 'RowLayout',
+                            'items'   => [
                                 [
-                                    'name'    => 'caption',
-                                    'width'   => 'auto',
-                                    'caption' => 'Description',
-                                    'add'     => '',
-                                    'edit'    => [
-                                        'type'    => 'ValidationTextBox',
-                                    ],
+                                    'type'    => 'Label',
+                                    'caption' => 'Default sounds',
                                 ],
                                 [
-                                    'name'    => 'value',
-                                    'width'   => '200px',
-                                    'caption' => 'Value',
-                                    'add'     => '',
-                                    'edit'    => [
-                                        'type'    => 'ValidationTextBox',
-                                    ],
+                                    'type'     => 'Select',
+                                    'options'  => $this->WfcSounds(),
+                                    'name'     => 'default_wfc_sound_info',
+                                    'caption'  => 'Information',
+                                    'width'    => '200px',
                                 ],
-                            ],
+                                [
+                                    'type'     => 'Select',
+                                    'options'  => $this->WfcSounds(),
+                                    'name'     => 'default_wfc_sound_notice',
+                                    'caption'  => 'Notice',
+                                    'width'    => '200px',
+                                ],
+                                [
+                                    'type'     => 'Select',
+                                    'options'  => $this->WfcSounds(),
+                                    'name'     => 'default_wfc_sound_warn',
+                                    'caption'  => 'Warning',
+                                    'width'    => '200px',
+                                ],
+                                [
+                                    'type'     => 'Select',
+                                    'options'  => $this->WfcSounds(),
+                                    'name'     => 'default_wfc_sound_alert',
+                                    'caption'  => 'Alert',
+                                    'width'    => '200px',
+                                ],
+                            ]
                         ],
                         [
                             'type'    => 'ValidationTextBox',
                             'name'    => 'wfc_defaults',
-                            'caption' => 'Defaults'
+                            'caption' => 'Other defaults',
+                            'width'   => '800px',
                         ],
                     ],
                 ],
@@ -329,7 +315,8 @@ class NotificationCenter extends IPSModule
                         [
                             'type'    => 'ValidationTextBox',
                             'name'    => 'mail_defaults',
-                            'caption' => 'Defaults'
+                            'caption' => 'Other defaults',
+                            'width'   => '800px',
                         ],
                     ],
                 ],
@@ -347,7 +334,8 @@ class NotificationCenter extends IPSModule
                         [
                             'type'    => 'ValidationTextBox',
                             'name'    => 'sms_defaults',
-                            'caption' => 'Defaults'
+                            'caption' => 'Other defaults',
+                            'width'   => '800px',
                         ],
                     ],
                 ],
@@ -362,65 +350,43 @@ class NotificationCenter extends IPSModule
                             'caption' => 'Script'
                         ],
                         [
-                            'type'     => 'List',
-                            'name'     => 'script_sounds',
-                            'caption'  => 'Sounds',
-                            'rowCount' => 5,
-                            'add'      => true,
-                            'delete'   => true,
-                            'columns'  => [
+                            'type'    => 'RowLayout',
+                            'items'   => [
                                 [
-                                    'name'    => 'caption',
-                                    'width'   => 'auto',
-                                    'caption' => 'Description',
-                                    'add'     => '',
-                                    'edit'    => [
-                                        'type'    => 'ValidationTextBox',
-                                    ],
+                                    'type'    => 'Label',
+                                    'caption' => 'Default sounds',
                                 ],
                                 [
-                                    'name'    => 'value',
-                                    'width'   => '200px',
-                                    'caption' => 'Value',
-                                    'add'     => '',
-                                    'edit'    => [
-                                        'type'    => 'ValidationTextBox',
-                                    ],
-                                ],
-                            ],
-                        ],
-                        [
-                            'type'     => 'List',
-                            'name'     => 'script_icons',
-                            'caption'  => 'Icons',
-                            'rowCount' => 5,
-                            'add'      => true,
-                            'delete'   => true,
-                            'columns'  => [
-                                [
-                                    'name'    => 'caption',
-                                    'width'   => 'auto',
-                                    'caption' => 'Description',
-                                    'add'     => '',
-                                    'edit'    => [
-                                        'type'    => 'ValidationTextBox',
-                                    ],
+                                    'type'     => 'ValidationTextBox',
+                                    'name'     => 'default_script_sound_info',
+                                    'caption'  => 'Information',
+                                    'width'    => '200px',
                                 ],
                                 [
-                                    'name'    => 'value',
-                                    'width'   => '200px',
-                                    'caption' => 'Value',
-                                    'add'     => '',
-                                    'edit'    => [
-                                        'type'    => 'ValidationTextBox',
-                                    ],
+                                    'type'     => 'ValidationTextBox',
+                                    'name'     => 'default_script_sound_notice',
+                                    'caption'  => 'Notice',
+                                    'width'    => '200px',
                                 ],
-                            ],
+                                [
+                                    'type'     => 'ValidationTextBox',
+                                    'name'     => 'default_script_sound_warn',
+                                    'caption'  => 'Warning',
+                                    'width'    => '200px',
+                                ],
+                                [
+                                    'type'     => 'ValidationTextBox',
+                                    'name'     => 'default_script_sound_alert',
+                                    'caption'  => 'Alert',
+                                    'width'    => '200px',
+                                ],
+                            ]
                         ],
                         [
                             'type'    => 'ValidationTextBox',
                             'name'    => 'script_defaults',
-                            'caption' => 'Script defaults'
+                            'caption' => 'Other defaults',
+                            'width'   => '800px',
                         ],
                     ],
                 ],
@@ -1015,16 +981,6 @@ class NotificationCenter extends IPSModule
             }
         }
         return $presence;
-    }
-
-    public function GetStemdata()
-    {
-        $stemdata = [
-            'wfc_sounds'    => json_decode($this->ReadPropertyString('wfc_sounds'), true),
-            'script_sounds' => json_decode($this->ReadPropertyString('script_sounds'), true),
-            'script_icons'  => json_decode($this->ReadPropertyString('script_icons'), true),
-        ];
-        return $stemdata;
     }
 
     private function cmp_notifications($a, $b)
