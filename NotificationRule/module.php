@@ -208,14 +208,14 @@ class NotificationRule extends IPSModule
             'type'      => 'ValidationTextBox',
             'name'      => 'default_subject',
             'caption'   => 'Default value for "subject"',
-            'width'     => '80%',
+            'width'     => '60%',
         ];
         $items[] = [
             'type'      => 'ValidationTextBox',
             'name'      => 'default_text',
             'caption'   => 'Default value for "message text"',
             'multiline' => true,
-            'width'     => '60%',
+            'width'     => '80%',
         ];
         $items[] = [
             'type'      => 'ExpansionPanel',
