@@ -736,7 +736,15 @@ class NotificationCenter extends IPSModule
         $targetID = $this->GetArrayElem($params, 'TargetID', 0);
 
         @$r = WFC_PushNotification($wfc_instID, $subject, $text, $sound, $targetID);
-        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $wfc_instID . ', "' . $subject . '", "' . $text . '", ' . $sound . ', ' . $targetID . ')=' . $r, 0);
+        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $wfc_instID . ', "' . $subject . '", "' . $text . '", ' . $sound . ', ' . $targetID . ')=' . $this->bool2str($r), 0);
+        $target = $this->TargetEncode($abbreviation, 'wfc');
+        if ($r == false) {
+            $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $target]);
+            $this->Log($s, ['severity' => 'warn']);
+        } else {
+            $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $target]);
+            $this->Log($s, ['severity' => self::$SEVERITY_LOGGING]);
+        }
         return $r;
     }
 
@@ -793,7 +801,7 @@ class NotificationCenter extends IPSModule
         $subject = $this->GetArrayElem($params, 'subject', $text);
 
         @$r = SMTP_SendMailEx($mail_instID, $mail_addr, $subject, $text);
-        $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', ' . $mail_addr . ', "' . $subject . '", "' . $text . '")=' . $r, 0);
+        $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', ' . $mail_addr . ', "' . $subject . '", "' . $text . '")=' . $this->bool2str($r), 0);
         return $r;
     }
 
@@ -854,11 +862,11 @@ class NotificationCenter extends IPSModule
         switch ($moduleID) {
             case '{96102E00-FD8C-4DD3-A3C2-376A44895AC2}': // SMS REST
                 @$r = SMS_Send($sms_instID, $sms_telno, $text);
-                $this->SendDebug(__FUNCTION__, 'SMS_Send(' . $sms_instID . ', ' . $sms_telno . ', "' . $text . '")=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, 'SMS_Send(' . $sms_instID . ', ' . $sms_telno . ', "' . $text . '")=' . $this->bool2str($r), 0);
                 break;
             case '{D8C71279-8E04-4466-8996-04B6B6CF2B1D}': // Sipgate
                 @$r = Sipgate_SendSMS($sms_instID, $sms_telno, $text);
-                $this->SendDebug(__FUNCTION__, 'Sipgate_SendSMS(' . $sms_instID . ', ' . $sms_telno . ', "' . $text . '")=' . $r, 0);
+                $this->SendDebug(__FUNCTION__, 'Sipgate_SendSMS(' . $sms_instID . ', ' . $sms_telno . ', "' . $text . '")=' . $this->bool2str($r), 0);
                 break;
             default:
                 break;
@@ -939,7 +947,7 @@ class NotificationCenter extends IPSModule
         }
 
         @$r = IPS_RunScriptWaitEx($scriptID, $params);
-        $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ')=' . $r, 0);
+        $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ')=' . $this->bool2str($r), 0);
         return $r;
     }
 
@@ -1054,7 +1062,17 @@ class NotificationCenter extends IPSModule
     {
         $now = time();
 
-        $severity = $this->SeverityDecode($this->GetArrayElem($params, 'severity', 'info'));
+        if (isset($params['severity'])) {
+            $s = $params['severity'];
+            if (is_int($s)) {
+                $severity = $s;
+            } else {
+                $severity = $this->SeverityDecode($s);
+            }
+        } else {
+            $severity = self::$SEVERITY_INFO;
+        }
+
         $expires = $this->GetArrayElem($params, 'expires', '');
 
         if (IPS_SemaphoreEnter(self::$semaphoreID, self::$semaphoreTM) == false) {
@@ -1119,11 +1137,13 @@ class NotificationCenter extends IPSModule
         $html .= '#spalte_text { }' . PHP_EOL;
         $html .= '</style>' . PHP_EOL;
 
-        foreach ($notifications as $notification) {
+        for ($i = count($notifications) - 1; $i; $i--) {
+            $notification = $notifications[$i];
             $tstamp = $notification['tstamp'];
             $text = $notification['text'];
             $severity = $notification['severity'];
             $expires = $notification['expires'];
+            $skip = false;
             $color = '';
             switch ($severity) {
                 case self::$SEVERITY_INFO:
@@ -1147,7 +1167,12 @@ class NotificationCenter extends IPSModule
                     $color = '#fc1a29';
                     break;
                 default:
+                    $skip = true;
                     break;
+            }
+
+            if ($skip) {
+                continue;
             }
 
             if ($expires != '') {

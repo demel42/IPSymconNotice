@@ -21,13 +21,17 @@
 			"Default sounds": "Standardwert für Signaltöne",
             "Other defaults": "sonstige Standardeinstellungen",
 
+			"Log notification additionally": "Benachrichtigung zusätzlich protokollieren",
+
 			"Recipients": "Empfänger",
 			"Usage": "Verwendung",
 			"Target": "Ziel",
 			"Params": "Parameter",
 
-			"Check rule": "Regel prüfen",
+			"Check rule validity": "Regelgültigkeit prüfen",
 			"Trigger rule": "Regel auslösen",
+			"Trigger": "Auslösen",
+			"Cancel": "Abbrechen",
 			"Message text": "Nachricht",
 			"Subject": "Betreff",
 			"Severity": "Schweregrad",
@@ -56,6 +60,7 @@
 			"Notice": "Hinweis",
 			"Warning": "Warnung",
 			"Alert": "Alarm",
+			"Logging": "Protokollierung",
 
 			"alarm": "Alarm",
 			"bell": "Glocke",

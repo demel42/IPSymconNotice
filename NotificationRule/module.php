@@ -32,6 +32,8 @@ class NotificationRule extends IPSModule
         $this->RegisterPropertyString('default_script_sound_warn', '');
         $this->RegisterPropertyString('default_script_sound_alert', '');
 
+        $this->RegisterPropertyBoolean('log_additionally', false);
+
         $this->RegisterPropertyString('recipients', json_encode([]));
 
         $this->InstallVarProfiles(false);
@@ -311,6 +313,12 @@ class NotificationRule extends IPSModule
         ];
 
         $formElements[] = [
+            'type'      => 'CheckBox',
+            'caption'   => 'Log notification additionally',
+            'name'      => 'log_additionally',
+        ];
+
+        $formElements[] = [
             'type'        => 'List',
             'name'        => 'recipients',
             'caption'     => 'Recipients',
@@ -354,7 +362,7 @@ class NotificationRule extends IPSModule
         return $formElements;
     }
 
-    public function CheckRule()
+    public function CheckRuleValidity()
     {
         $presence = $this->GetPresence();
         $presence_last_gone = $this->GetArrayElem($presence, 'last_gone', '');
@@ -489,6 +497,12 @@ class NotificationRule extends IPSModule
 
                     $r = Notification_Deliver($notificationCenter, $target, $text, $params);
                 }
+
+                $log_additionally = $this->ReadPropertyBoolean('log_additionally');
+                if ($log_additionally) {
+                    $params['targets'] = $targetV;
+                    Notification_Log($notificationCenter, $text, $params);
+                }
             }
         }
         return $result;
@@ -583,36 +597,47 @@ class NotificationRule extends IPSModule
         $formActions = [];
 
         $formActions[] = [
-            'type'    => 'Button',
-            'caption' => 'Check rule',
-            'onClick' => 'Notification_CheckRule($id);'
-        ];
-
-        $formActions[] = [
-            'type'      => 'RowLayout',
-            'items'     => [
-                [
-                    'type'    => 'ValidationTextBox',
-                    'name'    => 'text',
-                    'caption' => 'Message text',
-                    'width'   => '600px',
-                ],
-                [
-                    'type'    => 'ValidationTextBox',
-                    'name'    => 'subject',
-                    'caption' => 'Subject',
-                    'width'   => '300px',
-                ],
-                [
-                    'type'    => 'Select',
-                    'name'    => 'severity',
-                    'options' => $this->SeverityAsOptions(true),
-                    'caption' => 'Severity',
-                ],
+            'type'  => 'RowLayout',
+            'items' => [
                 [
                     'type'    => 'Button',
+                    'caption' => 'Check rule validity',
+                    'onClick' => 'Notification_CheckRuleValidity($id);',
+                ],
+                [
+                    'type'    => 'PopupButton',
                     'caption' => 'Trigger rule',
-                    'onClick' => 'Notification_TriggerRule($id, $text, $subject, $severity);'
+                    'popup'   => [
+                        'caption'   => 'Trigger rule',
+                        'items'     => [
+                            [
+                                'type'    => 'ValidationTextBox',
+                                'name'    => 'text',
+                                'caption' => 'Message text',
+                                'width'   => '600px',
+                            ],
+                            [
+                                'type'    => 'ValidationTextBox',
+                                'name'    => 'subject',
+                                'caption' => 'Subject',
+                                'width'   => '300px',
+                            ],
+                            [
+                                'type'    => 'Select',
+                                'name'    => 'severity',
+                                'options' => $this->SeverityAsOptions(true),
+                                'caption' => 'Severity',
+                            ],
+                        ],
+                        'buttons' => [
+                            [
+                                'type'    => 'Button',
+                                'caption' => 'Trigger',
+                                'onClick' => 'Notification_TriggerRule($id, $text, $subject, $severity);'
+                            ],
+                        ],
+                        'closeCaption' => 'Cancel',
+                    ],
                 ],
             ],
         ];

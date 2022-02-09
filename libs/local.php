@@ -34,6 +34,7 @@ trait NotificationLocalLib
     public static $SEVERITY_NOTICE = 2;
     public static $SEVERITY_WARN = 3;
     public static $SEVERITY_ALERT = 4;
+    public static $SEVERITY_LOGGING = 9;
 
     private function GetFormStatus()
     {
@@ -148,6 +149,10 @@ trait NotificationLocalLib
             self::$SEVERITY_ALERT => [
                 'tag'     => 'alert',
                 'caption' => 'Alert',
+            ],
+            self::$SEVERITY_LOGGING => [
+                'tag'     => 'logging',
+                'caption' => 'Logging',
             ],
         ];
     }

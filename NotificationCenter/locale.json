@@ -55,11 +55,15 @@
 
 			"Presence state of": "Präsenz-Status von",
 
+			"Notify {$target} failed": "Benachrichtigung von {$target} fehlgeschlagen",
+			"Notify {$target} succeed": "Benachrichtigung von {$target} erfolgreich",
+
 			"undef": "- nicht angegeben -",
 			"Information": "Information",
 			"Notice": "Hinweis",
 			"Warning": "Warnung",
 			"Alert": "Alarm",
+			"Logging": "Protokollierung",
 
 			"alarm": "Alarm",
 			"bell": "Glocke",
