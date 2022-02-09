@@ -20,6 +20,7 @@ class NotificationRule extends IPSModule
 
         $this->RegisterPropertyString('default_subject', '');
         $this->RegisterPropertyString('default_text', '');
+        $this->RegisterPropertyInteger('default_severity', self::$SEVERITY_UNKNOWN);
 
         $this->RegisterPropertyString('default_wfc_sound_info', '');
         $this->RegisterPropertyString('default_wfc_sound_notice', '');
@@ -99,10 +100,6 @@ class NotificationRule extends IPSModule
             }
         }
 
-        if ($n_recipients == 0) {
-            $this->SendDebug(__FUNCTION__, '"recipients" is empty', 0);
-            $r[] = $this->Translate('at minimum one valid recipients must be defined');
-        }
         if ($r != []) {
             $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
             foreach ($r as $p) {
@@ -179,15 +176,6 @@ class NotificationRule extends IPSModule
             'caption'      => 'Notification center'
         ];
 
-        $usageMapping = $this->UsageMapping();
-        $usage_opts = [];
-        foreach ($usageMapping as $u => $e) {
-            $usage_opts[] = [
-                'caption' => $e['caption'],
-                'value'   => $u,
-            ];
-        }
-
         $targets = $this->GetTargetList();
         $modeMapping = $this->ModeMapping();
         $target_opts = [];
@@ -216,6 +204,12 @@ class NotificationRule extends IPSModule
             'caption'   => 'Default value for "message text"',
             'multiline' => true,
             'width'     => '80%',
+        ];
+        $items[] = [
+            'type'      => 'Select',
+            'options'   => $this->SeverityAsOptions(true),
+            'name'      => 'default_severity',
+            'caption'   => 'Default value for "severity"',
         ];
         $items[] = [
             'type'      => 'ExpansionPanel',
@@ -328,11 +322,11 @@ class NotificationRule extends IPSModule
                 [
                     'caption' => 'Usage',
                     'name'    => 'usage',
-                    'add'     => self::$USAGE_EVERYONE,
+                    'add'     => self::$USAGE_ALWAYS,
                     'width'   => '250px',
                     'edit'    => [
                         'type'     => 'Select',
-                        'options'  => $usage_opts,
+                        'options'  => $this->UsageAsOptions(),
                     ],
                 ],
                 [
@@ -382,8 +376,131 @@ class NotificationRule extends IPSModule
         echo $s;
     }
 
+    public function TriggerRule(string $text, string $subject, int $severity)
+    {
+        $this->SendDebug(__FUNCTION__, 'text=' . $text . ', severity=' . $severity, 0);
+
+        $default_subject = $this->ReadPropertyString('default_subject');
+        $default_text = $this->ReadPropertyString('default_text');
+        $default_severity = $this->ReadPropertyInteger('default_severity');
+
+        $default_wfc_sound_info = $this->ReadPropertyString('default_wfc_sound_info');
+        $default_wfc_sound_notice = $this->ReadPropertyString('default_wfc_sound_notice');
+        $default_wfc_sound_warn = $this->ReadPropertyString('default_wfc_sound_warn');
+        $default_wfc_sound_alert = $this->ReadPropertyString('default_wfc_sound_alert');
+
+        $default_script_sound_info = $this->ReadPropertyString('default_script_sound_info');
+        $default_script_sound_notice = $this->ReadPropertyString('default_script_sound_notice');
+        $default_script_sound_warn = $this->ReadPropertyString('default_script_sound_warn');
+        $default_script_sound_alert = $this->ReadPropertyString('default_script_sound_alert');
+
+        $recipients = json_decode($this->ReadPropertyString('recipients'), true);
+
+        if ($text == '') {
+            $text = $default_text;
+            $this->SendDebug(__FUNCTION__, 'text(default)=' . $text, 0);
+        }
+        if ($subject == '') {
+            $subject = $default_subject;
+            $this->SendDebug(__FUNCTION__, 'subject(default)=' . $subject, 0);
+        }
+        if ($severity == self::$SEVERITY_UNKNOWN) {
+            $severity = $default_severity;
+            $this->SendDebug(__FUNCTION__, 'severity(default)=' . $severity, 0);
+        }
+
+        $result = false;
+
+        $targetV = $this->EvaluateRule();
+        if ($targetV != false) {
+            $notificationCenter = $this->GetNotificationCenter();
+            if ($notificationCenter > 0) {
+                foreach ($targetV as $target) {
+                    $r = $this->TargetDecode($target);
+                    $mode = $this->ModeDecode($r['mode']);
+
+                    $e_params = false;
+                    if ($recipients != false) {
+                        foreach ($recipients as $recipient) {
+                            @$e_params = json_decode($recipient['params'], true);
+                            break;
+                        }
+                    }
+                    if ($e_params == false) {
+                        $e_params = [];
+                    }
+
+                    $params = $e_params;
+
+                    if ($severity != self::$SEVERITY_UNKNOWN) {
+                        $params['severity'] = $severity;
+                    }
+
+                    if ($subject != '') {
+                        $params['subject'] = $subject;
+                    }
+
+                    $sound = '';
+                    switch ($mode) {
+                        case self::$MODE_WFC:
+                            switch ($severity) {
+                                case self::$SEVERITY_INFO:
+                                    $sound = $default_wfc_sound_info;
+                                    break;
+                                case self::$SEVERITY_NOTICE:
+                                    $sound = $default_wfc_sound_notice;
+                                    break;
+                                case self::$SEVERITY_WARN:
+                                    $sound = $default_wfc_sound_warn;
+                                    break;
+                                case self::$SEVERITY_ALERT:
+                                    $sound = $default_wfc_sound_alert;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                        case self::$MODE_MAIL:
+                            break;
+                        case self::$MODE_SMS:
+                            break;
+                        case self::$MODE_SCRIPT:
+                            switch ($severity) {
+                                case self::$SEVERITY_INFO:
+                                    $sound = $default_script_sound_info;
+                                    break;
+                                case self::$SEVERITY_NOTICE:
+                                    $sound = $default_script_sound_notice;
+                                    break;
+                                case self::$SEVERITY_WARN:
+                                    $sound = $default_script_sound_warn;
+                                    break;
+                                case self::$SEVERITY_ALERT:
+                                    $sound = $default_script_sound_alert;
+                                    break;
+                                default:
+                                    break;
+                            }
+                            break;
+                    }
+                    if ($sound != '') {
+                        $params['sound'] = $sound;
+                    }
+
+                    $r = Notification_Deliver($notificationCenter, $target, $text, $params);
+                }
+            }
+        }
+        return $result;
+    }
+
     public function EvaluateRule()
     {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return false;
+        }
+
         $recipients = json_decode($this->ReadPropertyString('recipients'), true);
         $this->SendDebug(__FUNCTION__, 'recipients=' . print_r($recipients, true), 0);
 
@@ -402,9 +519,9 @@ class NotificationRule extends IPSModule
 
         $this->SendDebug(__FUNCTION__, 'at_home=' . $presence_at_homeS . ', be_away=' . $presence_be_awayS . ', last_gone=' . $presence_last_gone . ', first_come=' . $presence_first_come, 0);
 
-        $everyoneV = [];
-        $all_presentV = [];
-        $all_absentV = [];
+        $alwaysV = [];
+        $if_presentV = [];
+        $if_absentV = [];
         $first_presentV = [];
         $last_goneV = [];
         $first_comeV = [];
@@ -416,17 +533,17 @@ class NotificationRule extends IPSModule
             $r = $this->TargetDecode($target);
             $abbreviation = strtoupper($r['abbreviation']);
             switch ($usage) {
-                case self::$USAGE_EVERYONE:
-                    $everyoneV[] = $target;
+                case self::$USAGE_ALWAYS:
+                    $alwaysV[] = $target;
                     break;
-                case self::$USAGE_ALL_PRESENT:
+                case self::$USAGE_IF_PRESENT:
                     if (in_array($abbreviation, $presence_at_home)) {
-                        $all_presentV[] = $target;
+                        $if_presentV[] = $target;
                     }
                     break;
-                case self::$USAGE_ALL_ABSENT:
+                case self::$USAGE_IF_ABSENT:
                     if (in_array($abbreviation, $presence_be_away)) {
-                        $all_absentV[] = $target;
+                        $if_absentV[] = $target;
                     }
                     break;
                 case self::$USAGE_FIRST_OF_PERSENT:
@@ -452,7 +569,7 @@ class NotificationRule extends IPSModule
             }
         }
 
-        $targetV = array_merge($everyoneV, $all_presentV, $all_absentV, $first_presentV, $last_goneV, $first_comeV);
+        $targetV = array_merge($alwaysV, $if_presentV, $if_absentV, $first_presentV, $last_goneV, $first_comeV);
         if ($targetV == []) {
             $targetV = $if_no_oneV;
         }
@@ -468,7 +585,36 @@ class NotificationRule extends IPSModule
         $formActions[] = [
             'type'    => 'Button',
             'caption' => 'Check rule',
-            'onClick' => 'Notification_CheckRule($id, true);'
+            'onClick' => 'Notification_CheckRule($id);'
+        ];
+
+        $formActions[] = [
+            'type'      => 'RowLayout',
+            'items'     => [
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'text',
+                    'caption' => 'Message text',
+                    'width'   => '600px',
+                ],
+                [
+                    'type'    => 'ValidationTextBox',
+                    'name'    => 'subject',
+                    'caption' => 'Subject',
+                    'width'   => '300px',
+                ],
+                [
+                    'type'    => 'Select',
+                    'name'    => 'severity',
+                    'options' => $this->SeverityAsOptions(true),
+                    'caption' => 'Severity',
+                ],
+                [
+                    'type'    => 'Button',
+                    'caption' => 'Trigger rule',
+                    'onClick' => 'Notification_TriggerRule($id, $text, $subject, $severity);'
+                ],
+            ],
         ];
 
         $formActions[] = [

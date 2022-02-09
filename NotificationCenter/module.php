@@ -666,6 +666,11 @@ class NotificationCenter extends IPSModule
     {
         $this->SendDebug(__FUNCTION__, 'abbreviation=' . $abbreviation . ', text=' . $text . ', params=' . print_r($params, true), 0);
 
+        $default_wfc_sound_info = $this->ReadPropertyString('default_wfc_sound_info');
+        $default_wfc_sound_notice = $this->ReadPropertyString('default_wfc_sound_notice');
+        $default_wfc_sound_warn = $this->ReadPropertyString('default_wfc_sound_warn');
+        $default_wfc_sound_alert = $this->ReadPropertyString('default_wfc_sound_alert');
+
         $person = $this->GetPerson($abbreviation);
         if ($person == false) {
             $this->SendDebug(__FUNCTION__, 'unknown person "' . $abbreviation . '"', 0);
@@ -708,9 +713,30 @@ class NotificationCenter extends IPSModule
         $text = $this->GetArrayElem($params, 'text', $text);
         $subject = $this->GetArrayElem($params, 'subject', $text);
         $sound = $this->GetArrayElem($params, 'sound', '');
+        if ($sound == '') {
+            $severity = $this->GetArrayElem($params, 'severity', self::$SEVERITY_UNKNOWN);
+            switch ($severity) {
+                case self::$SEVERITY_INFO:
+                    $sound = $default_wfc_sound_info;
+                    break;
+                case self::$SEVERITY_NOTICE:
+                    $sound = $default_wfc_sound_notice;
+                    break;
+                case self::$SEVERITY_WARN:
+                    $sound = $default_wfc_sound_warn;
+                    break;
+                case self::$SEVERITY_ALERT:
+                    $sound = $default_wfc_sound_alert;
+                    break;
+                default:
+                    break;
+            }
+            $this->SendDebug(__FUNCTION__, 'severity=' . $severity . ', sound=' . $sound, 0);
+        }
+        $targetID = $this->GetArrayElem($params, 'TargetID', 0);
 
-        @$r = WFC_PushNotification($wfc_instID, $subject, $text, $sound, 0);
-        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $wfc_instID . ', "' . $subject . '", "' . $text . '", ' . $sound . ', 0)=' . $r, 0);
+        @$r = WFC_PushNotification($wfc_instID, $subject, $text, $sound, $targetID);
+        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $wfc_instID . ', "' . $subject . '", "' . $text . '", ' . $sound . ', ' . $targetID . ')=' . $r, 0);
         return $r;
     }
 
@@ -844,6 +870,11 @@ class NotificationCenter extends IPSModule
     {
         $this->SendDebug(__FUNCTION__, 'abbreviation=' . $abbreviation . ', text=' . $text . ', params=' . print_r($params, true), 0);
 
+        $default_script_sound_info = $this->ReadPropertyString('default_script_sound_info');
+        $default_script_sound_notice = $this->ReadPropertyString('default_script_sound_notice');
+        $default_script_sound_warn = $this->ReadPropertyString('default_script_sound_warn');
+        $default_script_sound_alert = $this->ReadPropertyString('default_script_sound_alert');
+
         $person = $this->GetPerson($abbreviation);
         if ($person == false) {
             $this->SendDebug(__FUNCTION__, 'unknown person "' . $abbreviation . '"', 0);
@@ -885,6 +916,27 @@ class NotificationCenter extends IPSModule
         $params['abbreviation'] = $abbreviation;
         $params['name'] = $person['name'];
         $params['text'] = $this->GetArrayElem($params, 'text', $text);
+        $sound = $this->GetArrayElem($params, 'sound', '');
+        if ($sound == '') {
+            $severity = $this->GetArrayElem($params, 'severity', self::$SEVERITY_UNKNOWN);
+            switch ($severity) {
+                case self::$SEVERITY_INFO:
+                    $sound = $default_script_sound_info;
+                    break;
+                case self::$SEVERITY_NOTICE:
+                    $sound = $default_script_sound_notice;
+                    break;
+                case self::$SEVERITY_WARN:
+                    $sound = $default_script_sound_warn;
+                    break;
+                case self::$SEVERITY_ALERT:
+                    $sound = $default_script_sound_alert;
+                    break;
+                default:
+                    break;
+            }
+            $this->SendDebug(__FUNCTION__, 'severity=' . $severity . ', sound=' . $sound, 0);
+        }
 
         @$r = IPS_RunScriptWaitEx($scriptID, $params);
         $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ')=' . $r, 0);
@@ -894,18 +946,21 @@ class NotificationCenter extends IPSModule
     public function Deliver(string $target, string $text, array $params)
     {
         $r = $this->TargetDecode($target);
+        $this->SendDebug(__FUNCTION__, 'target=' . $target . '(' . print_r($r, true) . '), text=' . $text . ', params=' . print_r($params, true), 0);
         $abbreviation = $r['abbreviation'];
-        switch (strtoupper($r['mode'])) {
-            case 'WFC':
+        $mode = $this->ModeDecode($r['mode']);
+
+        switch ($mode) {
+            case self::$MODE_WFC:
                 $res = $this->DeliverWFC($abbreviation, $text, $params);
                 break;
-            case 'MAIL':
+            case self::$MODE_MAIL:
                 $res = $this->DeliverMail($abbreviation, $text, $params);
                 break;
-            case 'SMS':
+            case self::$MODE_SMS:
                 $res = $this->DeliverSMS($abbreviation, $text, $params);
                 break;
-            case 'Script':
+            case self::$MODE_SCRIPT:
                 $res = $this->DeliverScript($abbreviation, $text, $params);
                 break;
             default:

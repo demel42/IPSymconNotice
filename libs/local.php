@@ -21,18 +21,19 @@ trait NotificationLocalLib
     public static $MODE_SCRIPT = 3;
 
     public static $USAGE_UNKNOWN = 0;
-    public static $USAGE_EVERYONE = 1;
-    public static $USAGE_ALL_PRESENT = 2;
-    public static $USAGE_ALL_ABSENT = 3;
+    public static $USAGE_ALWAYS = 1;
+    public static $USAGE_IF_PRESENT = 2;
+    public static $USAGE_IF_ABSENT = 3;
     public static $USAGE_FIRST_OF_PERSENT = 4;
     public static $USAGE_LAST_GONE = 5;
     public static $USAGE_FIRST_COME = 6;
     public static $USAGE_IF_NO_ONE = 7;
 
-    public static $SEVERITY_INFO = 0;
-    public static $SEVERITY_NOTICE = 1;
-    public static $SEVERITY_WARN = 2;
-    public static $SEVERITY_ALERT = 3;
+    public static $SEVERITY_UNKNOWN = 0;
+    public static $SEVERITY_INFO = 1;
+    public static $SEVERITY_NOTICE = 2;
+    public static $SEVERITY_WARN = 3;
+    public static $SEVERITY_ALERT = 4;
 
     private function GetFormStatus()
     {
@@ -102,6 +103,19 @@ trait NotificationLocalLib
         ];
     }
 
+    private function ModeDecode($ident)
+    {
+        $mode = self::$MODE_WFC;
+        $modeMap = $this->ModeMapping();
+        foreach ($modeMap as $index => $map) {
+            if ($map['tag'] == strtolower($ident)) {
+                $mode = $index;
+                break;
+            }
+        }
+        return $mode;
+    }
+
     private function TargetEncode(string $abbreviation, string $mode)
     {
         return $abbreviation . '/' . $mode;
@@ -138,12 +152,12 @@ trait NotificationLocalLib
         ];
     }
 
-    private function SeverityDecode($indent)
+    private function SeverityDecode($ident)
     {
         $severity = self::$SEVERITY_INFO;
         $severityMap = $this->SeverityMapping();
         foreach ($severityMap as $index => $map) {
-            if ($map['tag'] == strtolower($indent)) {
+            if ($map['tag'] == strtolower($ident)) {
                 $severity = $index;
                 break;
             }
@@ -151,17 +165,36 @@ trait NotificationLocalLib
         return $severity;
     }
 
+    private function SeverityAsOptions(bool $withUndef)
+    {
+        $severityMap = $this->SeverityMapping();
+        $severity_opts = [];
+        if ($withUndef) {
+            $severity_opts[] = [
+                'caption' => 'undef',
+                'value'   => self::$SEVERITY_UNKNOWN,
+            ];
+        }
+        foreach ($severityMap as $i => $e) {
+            $severity_opts[] = [
+                'caption' => $e['caption'],
+                'value'   => $i,
+            ];
+        }
+        return $severity_opts;
+    }
+
     private function UsageMapping()
     {
         return [
-            self::$USAGE_EVERYONE => [
-                'caption' => 'everyone of the list',
+            self::$USAGE_ALWAYS => [
+                'caption' => 'always',
             ],
-            self::$USAGE_ALL_PRESENT => [
-                'caption' => 'everyone present of the list',
+            self::$USAGE_IF_PRESENT => [
+                'caption' => 'if present',
             ],
-            self::$USAGE_ALL_ABSENT => [
-                'caption' => 'everyone absent of the list',
+            self::$USAGE_IF_ABSENT => [
+                'caption' => 'if absent',
             ],
             self::$USAGE_FIRST_OF_PERSENT => [
                 'caption' => 'first present of the list',
@@ -176,6 +209,19 @@ trait NotificationLocalLib
                 'caption' => 'if no one else',
             ],
         ];
+    }
+
+    private function UsageAsOptions()
+    {
+        $usageMapping = $this->UsageMapping();
+        $usage_opts = [];
+        foreach ($usageMapping as $u => $e) {
+            $usage_opts[] = [
+                'caption' => $e['caption'],
+                'value'   => $u,
+            ];
+        }
+        return $usage_opts;
     }
 
     private function WfcSounds()
