@@ -1,0 +1,66 @@
+{
+    "id": "{3E71737C-AA35-A7F0-3456-7E3023AE49AF}",
+    "caption": "Trigger notification rule",
+    "form": [
+        {
+            "type": "ValidationTextBox",
+            "name": "SUBJECT",
+            "caption": "Subject"
+        },
+        {
+            "type": "ValidationTextBox",
+            "name": "MESSAGETEXT",
+            "caption": "Message text"
+        },
+        {
+            "type": "Select",
+            "name": "SEVERITY",
+            "caption": "Severity",
+            "options": [
+                {
+                    "value": 1,
+                    "caption": "Information"
+                },
+                {
+                    "value": 2,
+                    "caption": "Notice"
+                },
+                {
+                    "value": 3,
+                    "caption": "Warning"
+                },
+                {
+                    "value": 4,
+                    "caption": "Alert"
+                },
+                {
+                    "value": 9,
+                    "caption": "Debug"
+                }
+            ]
+        }
+    ],
+    "action": "Notification_TriggerRule($_IPS['TARGET'], $_IPS['MESSAGETEXT'], $_IPS['SUBJECT'], $_IPS['SEVERITY']);",
+    "restrictions": {
+        "objectType": [ 1 ],
+        "moduleID": [ "{2335FF1E-9628-E363-AAEC-11DE75788A13}" ],
+        "includeEnvironments": [ "TestCommands", "Default" ]
+    },
+    "priority": 10,
+    "category": "target",
+    "description": "Trigger a notification rule to the configured targets",
+    "locale": {
+        "de": {
+            "Trigger notification rule": "Löse Benachrichtigungsregel aus",
+            "Subject": "Betreff",
+            "Message text": "Nachricht",
+            "Severity": "Schweregrad",
+			"Information": "Information",
+			"Notice": "Hinweis",
+            "Warning": "Warnung",
+            "Alert": "Alarm",
+            "Debug": "Fehlersuche",
+            "Trigger a notification rule to the configured targets": "Auslösen einer Benachrichtigungsregel für die konfigurierten Ziele"
+        }
+    }
+}
