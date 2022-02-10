@@ -34,6 +34,18 @@
 			"Description": "Beschreibung",
 			"Value": "Wert",
 
+			"Logging": "Protokollierung",
+			"Script for alternate logging": "Skript für alternative Protokollierung",
+			"days": "Tage",
+			"maximun age of log entries": "Maximales Alter der Protokoll-Einträge",
+			"Visualization of \"Notifications\"": "Darstellung der \"Benachrichtigungen\"",
+			"Show": "Anzeigen",
+			"hours": "Stunden",
+			"Expiration": "Gültigkeit",
+			"Textcolor": "Zeichenfarbe",
+
+			"Rebuild \"Notifications\"": "\"Benachrichtigungen\" neu erzeugen",
+
 			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
 			"Expert area": "Experten-Bereich",
 			"Test area": "Test-Bereich",
@@ -63,11 +75,11 @@
 			"Notice": "Hinweis",
 			"Warning": "Warnung",
 			"Alert": "Alarm",
-			"Logging": "Protokollierung",
+			"Debug": "Fehlersuche",
 
 			"alarm": "Alarm",
 			"bell": "Glocke",
-			"boom": "Wumm",
+			"boom": "Bumm",
 			"buzzer": "Summer",
 			"connected": "verbunden",
 			"dark": "dunkel",

@@ -561,7 +561,7 @@ class NotificationRule extends IPSModule
                     }
                     break;
                 case self::$USAGE_FIRST_OF_PERSENT:
-                    if ($first_presentV == []) {
+                    if ($first_presentV == [] && $if_presentV == [] && in_array($abbreviation, $presence_at_home)) {
                         $first_presentV[] = $target;
                     }
                     break;

@@ -10,7 +10,6 @@ class NotificationCenter extends IPSModule
     use NotificationCommonLib;
     use NotificationLocalLib;
 
-    private static $notification_max_age = 180;
     private static $semaphoreID = __CLASS__ . 'Data';
     private static $semaphoreTM = 5 * 1000;
 
@@ -44,6 +43,31 @@ class NotificationCenter extends IPSModule
         $this->RegisterPropertyString('default_script_sound_warn', '');
         $this->RegisterPropertyString('default_script_sound_alert', '');
         $this->RegisterPropertyString('script_defaults', '');
+
+        // Logging
+        $this->RegisterPropertyInteger('logger_scriptID', 0);
+        $this->RegisterPropertyInteger('max_age', 90);
+
+        // Darstellung
+        $this->RegisterPropertyBoolean('severity_info_show', true);
+        $this->RegisterPropertyInteger('severity_info_expire', 24);
+        $this->RegisterPropertyInteger('severity_info_color', 0);
+
+        $this->RegisterPropertyBoolean('severity_notice_show', true);
+        $this->RegisterPropertyInteger('severity_notice_expire', 48);
+        $this->RegisterPropertyInteger('severity_notice_color', hexdec('507dca'));
+
+        $this->RegisterPropertyBoolean('severity_warn_show', true);
+        $this->RegisterPropertyInteger('severity_warn_expire', 7 * 24);
+        $this->RegisterPropertyInteger('severity_warn_color', hexdec('f57d0c'));
+
+        $this->RegisterPropertyBoolean('severity_alert_show', true);
+        $this->RegisterPropertyInteger('severity_alert_expire', 0);
+        $this->RegisterPropertyInteger('severity_alert_color', hexdec('fc1a29'));
+
+        $this->RegisterPropertyBoolean('severity_debug_show', false);
+        $this->RegisterPropertyInteger('severity_debug_expire', 0);
+        $this->RegisterPropertyInteger('severity_debug_color', hexdec('696969'));
 
         $this->InstallVarProfiles(false);
     }
@@ -482,12 +506,193 @@ class NotificationCenter extends IPSModule
             ],
         ];
 
+        $formElements[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Logging',
+            'expanded ' => false,
+            'items'     => [
+                [
+                    'type'    => 'SelectScript',
+                    'name'    => 'logger_scriptID',
+                    'caption' => 'Script for alternate logging'
+                ],
+                [
+                    'type'    => 'NumberSpinner',
+                    'minimum' => 0,
+                    'suffix'  => 'days',
+                    'name'    => 'max_age',
+                    'caption' => 'maximun age of log entries'
+                ],
+                [
+                    'type'    => 'Label',
+                    'bold'    => true,
+                    'caption' => 'Visualization of "Notifications"',
+                ],
+                [
+                    'type'    => 'RowLayout',
+                    'items'   => [
+                        [
+                            'type'    => 'ColumnLayout',
+                            'items'   => [
+                                [
+                                    'type'    => 'Label',
+                                    'caption' => 'Information',
+                                ],
+                                [
+                                    'type'     => 'CheckBox',
+                                    'name'     => 'severity_info_show',
+                                    'caption'  => 'Show',
+                                ],
+                                [
+                                    'type'     => 'NumberSpinner',
+                                    'minimum'  => 0,
+                                    'suffix'   => 'hours',
+                                    'name'     => 'severity_info_expire',
+                                    'width'    => '150px',
+                                    'caption'  => 'Expiration',
+                                ],
+                                [
+                                    'type'             => 'SelectColor',
+                                    'allowTransparent' => false,
+                                    'name'             => 'severity_info_color',
+                                    'width'            => '200px',
+                                    'caption'          => 'Textcolor',
+                                ],
+                            ],
+                        ],
+                        [
+                            'type'    => 'ColumnLayout',
+                            'items'   => [
+                                [
+                                    'type'    => 'Label',
+                                    'caption' => 'Notice',
+                                ],
+                                [
+                                    'type'     => 'CheckBox',
+                                    'name'     => 'severity_notice_show',
+                                    'caption'  => 'Show',
+                                ],
+                                [
+                                    'type'     => 'NumberSpinner',
+                                    'minimum'  => 0,
+                                    'suffix'   => 'hours',
+                                    'name'     => 'severity_notice_expire',
+                                    'width'    => '150px',
+                                    'caption'  => 'Expiration',
+                                ],
+                                [
+                                    'type'             => 'SelectColor',
+                                    'allowTransparent' => false,
+                                    'name'             => 'severity_notice_color',
+                                    'width'            => '200px',
+                                    'caption'          => 'Textcolor',
+                                ],
+                            ],
+                        ],
+                        [
+                            'type'    => 'ColumnLayout',
+                            'items'   => [
+                                [
+                                    'type'    => 'Label',
+                                    'caption' => 'Warning',
+                                ],
+                                [
+                                    'type'     => 'CheckBox',
+                                    'name'     => 'severity_warn_show',
+                                    'caption'  => 'Show',
+                                ],
+                                [
+                                    'type'     => 'NumberSpinner',
+                                    'minimum'  => 0,
+                                    'suffix'   => 'hours',
+                                    'name'     => 'severity_warn_expire',
+                                    'width'    => '150px',
+                                    'caption'  => 'Expiration',
+                                ],
+                                [
+                                    'type'             => 'SelectColor',
+                                    'allowTransparent' => false,
+                                    'name'             => 'severity_warn_color',
+                                    'width'            => '200px',
+                                    'caption'          => 'Textcolor',
+                                ],
+                            ],
+                        ],
+                        [
+                            'type'    => 'ColumnLayout',
+                            'items'   => [
+                                [
+                                    'type'    => 'Label',
+                                    'caption' => 'Alert',
+                                ],
+                                [
+                                    'type'     => 'CheckBox',
+                                    'name'     => 'severity_alert_show',
+                                    'caption'  => 'Show',
+                                ],
+                                [
+                                    'type'     => 'NumberSpinner',
+                                    'minimum'  => 0,
+                                    'suffix'   => 'hours',
+                                    'name'     => 'severity_alert_expire',
+                                    'width'    => '150px',
+                                    'caption'  => 'Expiration',
+                                ],
+                                [
+                                    'type'             => 'SelectColor',
+                                    'allowTransparent' => false,
+                                    'name'             => 'severity_alert_color',
+                                    'width'            => '200px',
+                                    'caption'          => 'Textcolor',
+                                ],
+                            ],
+                        ],
+                        [
+                            'type'    => 'ColumnLayout',
+                            'items'   => [
+                                [
+                                    'type'    => 'Label',
+                                    'caption' => 'Debug',
+                                ],
+                                [
+                                    'type'     => 'CheckBox',
+                                    'name'     => 'severity_debug_show',
+                                    'caption'  => 'Show',
+                                ],
+                                [
+                                    'type'     => 'NumberSpinner',
+                                    'minimum'  => 0,
+                                    'suffix'   => 'hours',
+                                    'name'     => 'severity_debug_expire',
+                                    'width'    => '150px',
+                                    'caption'  => 'Expiration',
+                                ],
+                                [
+                                    'type'             => 'SelectColor',
+                                    'allowTransparent' => false,
+                                    'name'             => 'severity_debug_color',
+                                    'width'            => '200px',
+                                    'caption'          => 'Textcolor',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
         return $formElements;
     }
 
     protected function GetFormActions()
     {
         $formActions = [];
+
+        $formActions[] = [
+            'type'    => 'Button',
+            'caption' => 'Rebuild "Notifications"',
+            'onClick' => 'Notification_RebuildHtml($id);'
+        ];
 
         $formActions[] = [
             'type'      => 'ExpansionPanel',
@@ -498,7 +703,7 @@ class NotificationCenter extends IPSModule
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
                     'onClick' => 'Notification_InstallVarProfiles($id, true);'
-                ]
+                ],
             ]
         ];
 
@@ -736,14 +941,14 @@ class NotificationCenter extends IPSModule
         $targetID = $this->GetArrayElem($params, 'TargetID', 0);
 
         @$r = WFC_PushNotification($wfc_instID, $subject, $text, $sound, $targetID);
-        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $wfc_instID . ', "' . $subject . '", "' . $text . '", ' . $sound . ', ' . $targetID . ')=' . $this->bool2str($r), 0);
+        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $wfc_instID . ', "' . $subject . '", "' . $text . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'done' : 'failed'), 0);
         $target = $this->TargetEncode($abbreviation, 'wfc');
         if ($r == false) {
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $target]);
             $this->Log($s, ['severity' => 'warn']);
         } else {
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $target]);
-            $this->Log($s, ['severity' => self::$SEVERITY_LOGGING]);
+            $this->Log($s, ['severity' => self::$SEVERITY_DEBUG]);
         }
         return $r;
     }
@@ -801,7 +1006,7 @@ class NotificationCenter extends IPSModule
         $subject = $this->GetArrayElem($params, 'subject', $text);
 
         @$r = SMTP_SendMailEx($mail_instID, $mail_addr, $subject, $text);
-        $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', ' . $mail_addr . ', "' . $subject . '", "' . $text . '")=' . $this->bool2str($r), 0);
+        $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', "' . $mail_addr . '", "' . $subject . '", "' . $text . '") ' . ($r ? 'done' : 'failed'), 0);
         return $r;
     }
 
@@ -862,11 +1067,11 @@ class NotificationCenter extends IPSModule
         switch ($moduleID) {
             case '{96102E00-FD8C-4DD3-A3C2-376A44895AC2}': // SMS REST
                 @$r = SMS_Send($sms_instID, $sms_telno, $text);
-                $this->SendDebug(__FUNCTION__, 'SMS_Send(' . $sms_instID . ', ' . $sms_telno . ', "' . $text . '")=' . $this->bool2str($r), 0);
+                $this->SendDebug(__FUNCTION__, 'SMS_Send(' . $sms_instID . ', "' . $sms_telno . '", "' . $text . '") ' . ($r ? 'done' : 'failed'), 0);
                 break;
             case '{D8C71279-8E04-4466-8996-04B6B6CF2B1D}': // Sipgate
                 @$r = Sipgate_SendSMS($sms_instID, $sms_telno, $text);
-                $this->SendDebug(__FUNCTION__, 'Sipgate_SendSMS(' . $sms_instID . ', ' . $sms_telno . ', "' . $text . '")=' . $this->bool2str($r), 0);
+                $this->SendDebug(__FUNCTION__, 'Sipgate_SendSMS(' . $sms_instID . ', "' . $sms_telno . '", "' . $text . '") ' . ($r ? 'done' : 'failed'), 0);
                 break;
             default:
                 break;
@@ -947,7 +1152,7 @@ class NotificationCenter extends IPSModule
         }
 
         @$r = IPS_RunScriptWaitEx($scriptID, $params);
-        $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ')=' . $this->bool2str($r), 0);
+        $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'done' : 'failed'), 0);
         return $r;
     }
 
@@ -1058,8 +1263,16 @@ class NotificationCenter extends IPSModule
         return ($a_id < $b_id) ? -1 : 1;
     }
 
+    public function RebuildHtml()
+    {
+        $html = $this->BuildHtmlBox(false);
+        $this->SetValue('Notifications', $html);
+    }
+
     public function Log(string $text, array $params)
     {
+        $max_age = $this->ReadPropertyInteger('max_age');
+
         $now = time();
 
         if (isset($params['severity'])) {
@@ -1080,7 +1293,7 @@ class NotificationCenter extends IPSModule
             return false;
         }
 
-        $ref_ts = $now - (self::$notification_max_age * 24 * 60 * 60);
+        $ref_ts = $now - ($max_age * 24 * 60 * 60);
 
         $new_notifications = [];
         $s = $this->GetMediaData('Data');
@@ -1122,6 +1335,32 @@ class NotificationCenter extends IPSModule
 
     private function BuildHtmlBox($notifications)
     {
+        $severity_info_show = $this->ReadPropertyBoolean('severity_info_show');
+        $severity_info_expire = $this->ReadPropertyInteger('severity_info_expire');
+        $severity_info_color = $this->ReadPropertyInteger('severity_info_color');
+
+        $severity_notice_show = $this->ReadPropertyBoolean('severity_notice_show');
+        $severity_notice_expire = $this->ReadPropertyInteger('severity_notice_expire');
+        $severity_notice_color = $this->ReadPropertyInteger('severity_notice_color');
+
+        $severity_warn_show = $this->ReadPropertyBoolean('severity_warn_show');
+        $severity_warn_expire = $this->ReadPropertyInteger('severity_warn_expire');
+        $severity_warn_color = $this->ReadPropertyInteger('severity_warn_color');
+
+        $severity_alert_show = $this->ReadPropertyBoolean('severity_alert_show');
+        $severity_alert_expire = $this->ReadPropertyInteger('severity_alert_expire');
+        $severity_alert_color = $this->ReadPropertyInteger('severity_alert_color');
+
+        $severity_debug_show = $this->ReadPropertyBoolean('severity_debug_show');
+        $severity_debug_expire = $this->ReadPropertyInteger('severity_debug_expire');
+        $severity_debug_color = $this->ReadPropertyInteger('severity_debug_color');
+
+        if ($notifications == false) {
+            $s = $this->GetMediaData('Data');
+            $data = json_decode((string) $s, true);
+            $notifications = isset($data['notifications']) ? $data['notifications'] : [];
+        }
+
         $now = time();
         $b = false;
 
@@ -1147,24 +1386,49 @@ class NotificationCenter extends IPSModule
             $color = '';
             switch ($severity) {
                 case self::$SEVERITY_INFO:
-                    if ($expires == '') {
-                        $expires = 24 * 60 * 60;
+                    $skip = $severity_info_show == false;
+                    if ($severity_info_color > 0) {
+                        $color = '#' . dechex($severity_info_color);
+                    }
+                    if ($expires == '' && $severity_info_expire > 0) {
+                        $expires = $severity_info_expire * 60 * 60;
                     }
                     break;
                 case self::$SEVERITY_NOTICE:
-                    $color = '#507dca';
-                    if ($expires == '') {
-                        $expires = 2 * 24 * 60 * 60;
+                    $skip = $severity_notice_show == false;
+                    if ($severity_notice_color > 0) {
+                        $color = '#' . dechex($severity_notice_color);
+                    }
+                    if ($expires == '' && $severity_notice_expire > 0) {
+                        $expires = $severity_notice_expire * 60 * 60;
                     }
                     break;
                 case self::$SEVERITY_WARN:
-                    if ($expires == '') {
-                        $expires = 7 * 24 * 60 * 60;
+                    $skip = $severity_warn_show == false;
+                    if ($severity_warn_color > 0) {
+                        $color = '#' . dechex($severity_warn_color);
                     }
-                    $color = '#f57d0c';
+                    if ($expires == '' && $severity_warn_expire > 0) {
+                        $expires = $severity_warn_expire * 60 * 60;
+                    }
                     break;
                 case self::$SEVERITY_ALERT:
-                    $color = '#fc1a29';
+                    $skip = $severity_alert_show == false;
+                    if ($severity_alert_color > 0) {
+                        $color = '#' . dechex($severity_alert_color);
+                    }
+                    if ($expires == '' && $severity_alert_expire > 0) {
+                        $expires = $severity_alert_expire * 60 * 60;
+                    }
+                    break;
+                case self::$SEVERITY_DEBUG:
+                    $skip = $severity_debug_show == false;
+                    if ($severity_debug_color > 0) {
+                        $color = '#' . dechex($severity_debug_color);
+                    }
+                    if ($expires == '' && $severity_debug_expire > 0) {
+                        $expires = $severity_debug_expire * 60 * 60;
+                    }
                     break;
                 default:
                     $skip = true;
