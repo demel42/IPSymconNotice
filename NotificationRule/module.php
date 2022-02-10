@@ -94,7 +94,7 @@ class NotificationRule extends IPSModule
                 if ($s != false) {
                     @$j = json_decode($s, true);
                     if ($j == false) {
-                        $this->SendDebug(__FUNCTION__, '"recipients.params" has no json-coded content "' . $s . '"', 0);
+                        $this->SendDebug(__FUNCTION__, '"recipients.params" of target ' . $target . ' has no json-coded content "' . $s . '"', 0);
                         $field = $this->Translate('Params');
                         $r[] = $this->TranslateFormat('Target "{$target}": field "{$field}" must be json-coded', ['{$target}' => $target, '{$field}' => $field]);
                     }
@@ -347,13 +347,22 @@ class NotificationRule extends IPSModule
                         'options'  => $target_opts,
                     ],
                 ],
-                $columns[] = [
+                [
                     'name'    => 'params',
                     'caption' => 'Params',
                     'width'   => 'auto',
                     'add'     => '',
                     'edit'    => [
                         'type'    => 'ValidationTextBox',
+                    ],
+                ],
+                [
+                    'caption' => 'inactive',
+                    'name'    => 'inactive',
+                    'add'     => false,
+                    'width'   => '100px',
+                    'edit'    => [
+                        'type' => 'CheckBox',
                     ],
                 ],
             ],
@@ -543,6 +552,9 @@ class NotificationRule extends IPSModule
 
         foreach ($recipients as $recipient) {
             $usage = $recipient['usage'];
+            if ($recipient['inactive']) {
+                continue;
+            }
             $target = $recipient['target'];
             $r = $this->TargetDecode($target);
             $user_id = strtoupper($r['user_id']);

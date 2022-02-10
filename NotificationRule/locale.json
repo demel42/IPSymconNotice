@@ -27,6 +27,7 @@
 			"Usage": "Verwendung",
 			"Target": "Ziel",
 			"Params": "Parameter",
+			"inactive": "inaktiv",
 
 			"Check rule validity": "Regelgültigkeit prüfen",
 			"Trigger rule": "Regel auslösen",
