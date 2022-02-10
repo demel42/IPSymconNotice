@@ -19,7 +19,7 @@ class NotificationCenter extends IPSModule
 
         $this->RegisterPropertyBoolean('module_disable', false);
 
-        $this->RegisterPropertyString('persons', json_encode([]));
+        $this->RegisterPropertyString('users', json_encode([]));
 
         // MODE_WFC
         $this->RegisterPropertyString('default_wfc_sound_info', '');
@@ -114,30 +114,29 @@ class NotificationCenter extends IPSModule
             }
         }
 
-        $persons = json_decode($this->ReadPropertyString('persons'), true);
-        $n_persons = 0;
-        if ($persons != false) {
-            foreach ($persons as $person) {
-                $ignore = $person['ignore'];
-                if ($ignore == true) {
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        $n_users = 0;
+        if ($users != false) {
+            foreach ($users as $user) {
+                if ($user['inactive'] == true) {
                     continue;
                 }
-                $n_persons++;
-                $abbreviation = $person['abbreviation'];
-                $s = $person['script_params'];
+                $n_users++;
+                $user_id = $user['id'];
+                $s = $user['script_params'];
                 if ($s != false) {
                     @$j = json_decode($s, true);
                     if ($j == false) {
-                        $this->SendDebug(__FUNCTION__, '"persons.script_params" has no json-coded content "' . $s . '"', 0);
+                        $this->SendDebug(__FUNCTION__, '"users.script_params" of user ' . $user_id . ' has no json-coded content "' . $s . '"', 0);
                         $field = $this->Translate('Script params');
-                        $r[] = $this->TranslateFormat('Person "{$abbreviation}": field "{$field}" must be json-coded', ['{$abbreviation}' => $abbreviation, '{$field}' => $field]);
+                        $r[] = $this->TranslateFormat('User "{$user_id}": field "{$field}" must be json-coded', ['{$user_id}' => $user_id, '{$field}' => $field]);
                     }
                 }
             }
         }
-        if ($n_persons == 0) {
-            $this->SendDebug(__FUNCTION__, '"persons" is empty', 0);
-            $r[] = $this->Translate('at minimum one valid persons must be defined');
+        if ($n_users == 0) {
+            $this->SendDebug(__FUNCTION__, '"users" is empty', 0);
+            $r[] = $this->Translate('at minimum one valid users must be defined');
         }
 
         if ($r != []) {
@@ -178,20 +177,23 @@ class NotificationCenter extends IPSModule
             }
         }
 
-        $persons = json_decode($this->ReadPropertyString('persons'), true);
-        if ($persons == false) {
-            $persons = [];
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        if ($users == false) {
+            $users = [];
         }
 
         $identList = [];
-        foreach ($persons as $person) {
-            $abbreviation = $person['abbreviation'];
-            if ($abbreviation == false) {
+        foreach ($users as $user) {
+            $user_id = $user['id'];
+            if ($user_id == false) {
                 continue;
             }
-            $name = $person['name'];
+            if ($user['inactive'] == true || $user['immobile']) {
+                continue;
+            }
+            $name = $user['name'];
 
-            $ident = 'PresenceState_' . strtoupper($abbreviation);
+            $ident = 'PresenceState_' . strtoupper($user_id);
             $desc = $this->Translate('Presence state of') . ' ' . $name;
 
             $this->MaintainVariable($ident, $desc, VARIABLETYPE_INTEGER, 'Notification.Presence', $vpos++, true);
@@ -220,10 +222,10 @@ class NotificationCenter extends IPSModule
                 $this->RegisterReference($oid);
             }
         }
-        $persons = json_decode($this->ReadPropertyString('persons'), true);
-        if ($persons != false) {
-            foreach ($persons as $person) {
-                $oid = $this->GetArrayElem($person, 'wfc_instID', 0);
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        if ($users != false) {
+            foreach ($users as $user) {
+                $oid = $this->GetArrayElem($user, 'wfc_instID', 0);
                 if ($oid > 0) {
                     $this->RegisterReference($oid);
                 }
@@ -253,7 +255,7 @@ class NotificationCenter extends IPSModule
             'caption' => 'Notification center'
         ];
 
-        $s = $this->CheckConfiguration();
+        @$s = $this->CheckConfiguration();
         if ($s != '') {
             $formElements[] = [
                 'type'    => 'Label',
@@ -419,8 +421,8 @@ class NotificationCenter extends IPSModule
 
         $columns = [];
         $columns[] = [
-            'caption' => 'Abbreviation',
-            'name'    => 'abbreviation',
+            'caption' => 'Initial',
+            'name'    => 'id',
             'add'     => '',
             'width'   => '150px',
             'edit'    => [
@@ -483,8 +485,17 @@ class NotificationCenter extends IPSModule
             ];
         }
         $columns[] = [
-            'caption' => 'Ignore',
-            'name'    => 'ignore',
+            'caption' => 'inactive',
+            'name'    => 'inactive',
+            'add'     => false,
+            'width'   => '100px',
+            'edit'    => [
+                'type' => 'CheckBox',
+            ],
+        ];
+        $columns[] = [
+            'caption' => 'immobile',
+            'name'    => 'immobile',
             'add'     => false,
             'width'   => '100px',
             'edit'    => [
@@ -494,8 +505,8 @@ class NotificationCenter extends IPSModule
 
         $formElements[] = [
             'type'     => 'List',
-            'name'     => 'persons',
-            'caption'  => 'Persons',
+            'name'     => 'users',
+            'caption'  => 'Users',
             'rowCount' => 5,
             'add'      => true,
             'delete'   => true,
@@ -742,11 +753,11 @@ class NotificationCenter extends IPSModule
         $r = false;
 
         if (preg_match('#^PresenceState_#', $Ident)) {
-            $persons = json_decode($this->ReadPropertyString('persons'), true);
-            if ($persons != false) {
-                foreach ($persons as $person) {
-                    $abbreviation = $person['abbreviation'];
-                    $ident = 'PresenceState_' . strtoupper($abbreviation);
+            $users = json_decode($this->ReadPropertyString('users'), true);
+            if ($users != false) {
+                foreach ($users as $user) {
+                    $user_id = $user['id'];
+                    $ident = 'PresenceState_' . strtoupper($user_id);
                     if ($ident == $Ident) {
                         @$varID = $this->GetIDForIdent($Ident);
                         $r = $this->SetPresenceState($Ident, (int) $Value);
@@ -786,9 +797,9 @@ class NotificationCenter extends IPSModule
             return false;
         }
 
-        $pers = false;
+        $user_id = false;
         if (preg_match('#^PresenceState_(.*)$#', $ident, $r)) {
-            $pers = $r[1];
+            $user_id = $r[1];
         }
 
         $old_state = $this->GetValue($ident);
@@ -796,19 +807,19 @@ class NotificationCenter extends IPSModule
             $this->SetValue($ident, $state);
         }
 
-        $n_person = 0;
+        $n_user = 0;
         $n_present = 0;
         $n_absent = 0;
 
-        $persons = json_decode($this->ReadPropertyString('persons'), true);
-        if ($persons != false) {
-            foreach ($persons as $person) {
-                if ($person['ignore']) {
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        if ($users != false) {
+            foreach ($users as $user) {
+                if ($user['inactive']) {
                     continue;
                 }
-                $n_person++;
-                $abbreviation = $person['abbreviation'];
-                $ident = 'PresenceState_' . strtoupper($abbreviation);
+                $n_user++;
+                $user_id = $user['id'];
+                $ident = 'PresenceState_' . strtoupper($user_id);
                 $st = $this->GetValue($ident);
                 if ($st == self::$STATE_AT_HOME) {
                     $n_present++;
@@ -822,12 +833,12 @@ class NotificationCenter extends IPSModule
         $last_gone = '';
         $first_come = '';
         if ($n_present == 0 && $old_state == self::$STATE_AT_HOME && $state != self::$STATE_AT_HOME) {
-            $last_gone = $pers;
+            $last_gone = $user_id;
         }
         if ($n_present == 1 && $old_state != self::$STATE_AT_HOME && $state == self::$STATE_AT_HOME) {
-            $first_come = $pers;
+            $first_come = $user_id;
         }
-        $this->SendDebug(__FUNCTION__, 'pers=' . $pers . ' (' . $dir . '), #total=' . $n_person . ', #present=' . $n_present . ', #absent=' . $n_absent, 0);
+        $this->SendDebug(__FUNCTION__, 'user=' . $user_id . ' (' . $dir . '), #total=' . $n_user . ', #present=' . $n_present . ', #absent=' . $n_absent, 0);
 
         if ($old_state != $state) {
             $this->SetValue('LastGone', $last_gone);
@@ -839,50 +850,54 @@ class NotificationCenter extends IPSModule
         return true;
     }
 
-    public function GetPersonName(string $abbreviation)
+    public function GetUserName(string $user_id)
     {
-        $abbreviation = strtoupper($abbreviation);
-        $persons = json_decode($this->ReadPropertyString('persons'), true);
-        if ($persons != false) {
-            foreach ($persons as $person) {
-                if (strtoupper($person['abbreviation']) == $abbreviation) {
-                    return $person['name'];
+        $user_id = strtoupper($user_id);
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        if ($users != false) {
+            foreach ($users as $user) {
+                if (strtoupper($user['id']) == $user_id) {
+                    return $user['name'];
                 }
             }
         }
         return false;
     }
 
-    public function GetPerson(string $abbreviation)
+    public function GetUser(string $user_id)
     {
-        $abbreviation = strtoupper($abbreviation);
-        $persons = json_decode($this->ReadPropertyString('persons'), true);
-        if ($persons != false) {
-            foreach ($persons as $person) {
-                if (strtoupper($person['abbreviation']) == $abbreviation) {
-                    return $person;
+        $user_id = strtoupper($user_id);
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        if ($users != false) {
+            foreach ($users as $user) {
+                if (strtoupper($user['id']) == $user_id) {
+                    return $user;
                 }
             }
         }
         return false;
     }
 
-    public function DeliverWFC(string $abbreviation, string $text, array $params)
+    public function DeliverWFC(string $user_id, string $text, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'abbreviation=' . $abbreviation . ', text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
 
         $default_wfc_sound_info = $this->ReadPropertyString('default_wfc_sound_info');
         $default_wfc_sound_notice = $this->ReadPropertyString('default_wfc_sound_notice');
         $default_wfc_sound_warn = $this->ReadPropertyString('default_wfc_sound_warn');
         $default_wfc_sound_alert = $this->ReadPropertyString('default_wfc_sound_alert');
 
-        $person = $this->GetPerson($abbreviation);
-        if ($person == false) {
-            $this->SendDebug(__FUNCTION__, 'unknown person "' . $abbreviation . '"', 0);
+        $user = $this->GetUser($user_id);
+        if ($user == false) {
+            $this->SendDebug(__FUNCTION__, 'unknown user "' . $user_id . '"', 0);
+            return false;
+        }
+        if ($user['inactive']) {
+            $this->SendDebug(__FUNCTION__, 'user "' . $user_id . '" is inactive', 0);
             return false;
         }
 
-        $wfc_instID = $person['wfc_instID'];
+        $wfc_instID = $user['wfc_instID'];
         if ($wfc_instID == 0) {
             $this->SendDebug(__FUNCTION__, 'no WFC-instance given', 0);
             return false;
@@ -942,7 +957,7 @@ class NotificationCenter extends IPSModule
 
         @$r = WFC_PushNotification($wfc_instID, $subject, $text, $sound, $targetID);
         $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $wfc_instID . ', "' . $subject . '", "' . $text . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'done' : 'failed'), 0);
-        $target = $this->TargetEncode($abbreviation, 'wfc');
+        $target = $this->TargetEncode($user_id, 'wfc');
         if ($r == false) {
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $target]);
             $this->Log($s, ['severity' => 'warn']);
@@ -953,13 +968,17 @@ class NotificationCenter extends IPSModule
         return $r;
     }
 
-    public function DeliverMail(string $abbreviation, string $text, array $params)
+    public function DeliverMail(string $user_id, string $text, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'abbreviation=' . $abbreviation . ', text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
 
-        $person = $this->GetPerson($abbreviation);
-        if ($person == false) {
-            $this->SendDebug(__FUNCTION__, 'unknown person "' . $abbreviation . '"', 0);
+        $user = $this->GetUser($user_id);
+        if ($user == false) {
+            $this->SendDebug(__FUNCTION__, 'unknown user "' . $user_id . '"', 0);
+            return false;
+        }
+        if ($user['inactive']) {
+            $this->SendDebug(__FUNCTION__, 'user "' . $user_id . '" is inactive', 0);
             return false;
         }
 
@@ -984,9 +1003,9 @@ class NotificationCenter extends IPSModule
             return false;
         }
 
-        $mail_addr = $person['mail_addr'];
+        $mail_addr = $user['mail_addr'];
         if ($mail_addr == false) {
-            $this->SendDebug(__FUNCTION__, 'person "' . $abbreviation . '" has no given mail-address', 0);
+            $this->SendDebug(__FUNCTION__, 'user "' . $user_id . '" has no given mail-address', 0);
             return false;
         }
 
@@ -1010,13 +1029,17 @@ class NotificationCenter extends IPSModule
         return $r;
     }
 
-    public function DeliverSMS(string $abbreviation, string $text, array $params)
+    public function DeliverSMS(string $user_id, string $text, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'abbreviation=' . $abbreviation . ', text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
 
-        $person = $this->GetPerson($abbreviation);
-        if ($person == false) {
-            $this->SendDebug(__FUNCTION__, 'unknown person "' . $abbreviation . '"', 0);
+        $user = $this->GetUser($user_id);
+        if ($user == false) {
+            $this->SendDebug(__FUNCTION__, 'unknown user "' . $user_id . '"', 0);
+            return false;
+        }
+        if ($user['inactive']) {
+            $this->SendDebug(__FUNCTION__, 'user "' . $user_id . '" is inactive', 0);
             return false;
         }
 
@@ -1042,9 +1065,9 @@ class NotificationCenter extends IPSModule
             return false;
         }
 
-        $sms_telno = $person['sms_telno'];
+        $sms_telno = $user['sms_telno'];
         if ($sms_telno == false) {
-            $this->SendDebug(__FUNCTION__, 'person "' . $abbreviation . '" has no given sms-telno', 0);
+            $this->SendDebug(__FUNCTION__, 'user "' . $user_id . '" has no given sms-telno', 0);
             return false;
         }
         $sms_telno = preg_replace('<^\\+>', '00', $sms_telno);
@@ -1079,18 +1102,22 @@ class NotificationCenter extends IPSModule
         return $r;
     }
 
-    public function DeliverScript(string $abbreviation, string $text, array $params)
+    public function DeliverScript(string $user_id, string $text, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'abbreviation=' . $abbreviation . ', text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
 
         $default_script_sound_info = $this->ReadPropertyString('default_script_sound_info');
         $default_script_sound_notice = $this->ReadPropertyString('default_script_sound_notice');
         $default_script_sound_warn = $this->ReadPropertyString('default_script_sound_warn');
         $default_script_sound_alert = $this->ReadPropertyString('default_script_sound_alert');
 
-        $person = $this->GetPerson($abbreviation);
-        if ($person == false) {
-            $this->SendDebug(__FUNCTION__, 'unknown person "' . $abbreviation . '"', 0);
+        $user = $this->GetUser($user_id);
+        if ($user == false) {
+            $this->SendDebug(__FUNCTION__, 'unknown user "' . $user_id . '"', 0);
+            return false;
+        }
+        if ($user['inactive']) {
+            $this->SendDebug(__FUNCTION__, 'user "' . $user_id . '" is inactive', 0);
             return false;
         }
 
@@ -1114,7 +1141,7 @@ class NotificationCenter extends IPSModule
             $script_defaults = [];
         }
 
-        $script_params = json_decode($person['script_params'], true);
+        $script_params = json_decode($user['script_params'], true);
         if ($script_params == false) {
             $script_params = [];
         }
@@ -1126,8 +1153,8 @@ class NotificationCenter extends IPSModule
             $params = [];
         }
         $params = array_merge($script_defaults, $script_params, $params);
-        $params['abbreviation'] = $abbreviation;
-        $params['name'] = $person['name'];
+        $params['user_id'] = $user_id;
+        $params['name'] = $user['name'];
         $params['text'] = $this->GetArrayElem($params, 'text', $text);
         $sound = $this->GetArrayElem($params, 'sound', '');
         if ($sound == '') {
@@ -1160,21 +1187,21 @@ class NotificationCenter extends IPSModule
     {
         $r = $this->TargetDecode($target);
         $this->SendDebug(__FUNCTION__, 'target=' . $target . '(' . print_r($r, true) . '), text=' . $text . ', params=' . print_r($params, true), 0);
-        $abbreviation = $r['abbreviation'];
+        $user_id = $r['user_id'];
         $mode = $this->ModeDecode($r['mode']);
 
         switch ($mode) {
             case self::$MODE_WFC:
-                $res = $this->DeliverWFC($abbreviation, $text, $params);
+                $res = $this->DeliverWFC($user_id, $text, $params);
                 break;
             case self::$MODE_MAIL:
-                $res = $this->DeliverMail($abbreviation, $text, $params);
+                $res = $this->DeliverMail($user_id, $text, $params);
                 break;
             case self::$MODE_SMS:
-                $res = $this->DeliverSMS($abbreviation, $text, $params);
+                $res = $this->DeliverSMS($user_id, $text, $params);
                 break;
             case self::$MODE_SCRIPT:
-                $res = $this->DeliverScript($abbreviation, $text, $params);
+                $res = $this->DeliverScript($user_id, $text, $params);
                 break;
             default:
                 $res = false;
@@ -1192,36 +1219,36 @@ class NotificationCenter extends IPSModule
 
         $targets = [];
 
-        $persons = json_decode($this->ReadPropertyString('persons'), true);
-        if ($persons != false) {
-            foreach ($persons as $person) {
-                if ($person['ignore']) {
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        if ($users != false) {
+            foreach ($users as $user) {
+                if ($user['inactive']) {
                     continue;
                 }
-                $wfc_instID = $this->GetArrayElem($person, 'wfc_instID', 0);
+                $wfc_instID = $this->GetArrayElem($user, 'wfc_instID', 0);
                 if ($wfc_instID > 0) {
                     $targets[] = [
-                        'person'     => $person,
+                        'user'       => $user,
                         'mode'       => self::$MODE_WFC,
                     ];
                 }
-                $mail_addr = $this->GetArrayElem($person, 'mail_addr', '');
+                $mail_addr = $this->GetArrayElem($user, 'mail_addr', '');
                 if ($mail_instID > 0 && $mail_addr != '') {
                     $targets[] = [
-                        'person'     => $person,
+                        'user'       => $user,
                         'mode'       => self::$MODE_MAIL,
                     ];
                 }
-                $sms_telno = $this->GetArrayElem($person, 'sms_telno', '');
+                $sms_telno = $this->GetArrayElem($user, 'sms_telno', '');
                 if ($sms_instID > 0 && $sms_telno != '') {
                     $targets[] = [
-                        'person'     => $person,
+                        'user'       => $user,
                         'mode'       => self::$MODE_SMS,
                     ];
                 }
                 if ($scriptID > 0) {
                     $targets[] = [
-                        'person'     => $person,
+                        'user'       => $user,
                         'mode'       => self::$MODE_SCRIPT,
                     ];
                 }
@@ -1233,19 +1260,19 @@ class NotificationCenter extends IPSModule
     public function GetPresence()
     {
         $presence = [];
-        $persons = json_decode($this->ReadPropertyString('persons'), true);
-        if ($persons != false) {
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        if ($users != false) {
             $presence['last_gone'] = $this->GetValue('LastGone');
             $presence['first_come'] = $this->GetValue('FirstCome');
             $states = [];
-            foreach ($persons as $person) {
-                if ($person['ignore']) {
+            foreach ($users as $user) {
+                if ($user['inactive'] || $user['immobile']) {
                     continue;
                 }
-                $abbreviation = $person['abbreviation'];
-                $ident = 'PresenceState_' . strtoupper($abbreviation);
+                $user_id = $user['id'];
+                $ident = 'PresenceState_' . strtoupper($user_id);
                 $state = $this->GetValue($ident);
-                $presence['states'][$state][] = $abbreviation;
+                $presence['states'][$state][] = $user_id;
             }
         }
         return $presence;

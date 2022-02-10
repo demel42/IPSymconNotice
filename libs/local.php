@@ -117,16 +117,16 @@ trait NotificationLocalLib
         return $mode;
     }
 
-    private function TargetEncode(string $abbreviation, string $mode)
+    private function TargetEncode(string $user_id, string $mode)
     {
-        return $abbreviation . '/' . $mode;
+        return $user_id . '/' . $mode;
     }
 
     private function TargetDecode(string $target)
     {
         $r = explode('/', $target);
         return [
-            'abbreviation' => $r[0],
+            'user_id'      => $r[0],
             'mode'         => isset($r[1]) ? $r[1] : '',
         ];
     }

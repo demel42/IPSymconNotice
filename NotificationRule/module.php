@@ -188,8 +188,8 @@ class NotificationRule extends IPSModule
             $c = $modeMapping[$target['mode']]['caption'];
             $v = $modeMapping[$target['mode']]['tag'];
             $target_opts[] = [
-                'caption' => $target['person']['name'] . '/' . $this->Translate($c),
-                'value'   => $this->TargetEncode($target['person']['abbreviation'], $v),
+                'caption' => $target['user']['name'] . '/' . $this->Translate($c),
+                'value'   => $this->TargetEncode($target['user']['id'], $v),
             ];
         }
 
@@ -545,33 +545,33 @@ class NotificationRule extends IPSModule
             $usage = $recipient['usage'];
             $target = $recipient['target'];
             $r = $this->TargetDecode($target);
-            $abbreviation = strtoupper($r['abbreviation']);
+            $user_id = strtoupper($r['user_id']);
             switch ($usage) {
                 case self::$USAGE_ALWAYS:
                     $alwaysV[] = $target;
                     break;
                 case self::$USAGE_IF_PRESENT:
-                    if (in_array($abbreviation, $presence_at_home)) {
+                    if (in_array($user_id, $presence_at_home)) {
                         $if_presentV[] = $target;
                     }
                     break;
                 case self::$USAGE_IF_ABSENT:
-                    if (in_array($abbreviation, $presence_be_away)) {
+                    if (in_array($user_id, $presence_be_away)) {
                         $if_absentV[] = $target;
                     }
                     break;
                 case self::$USAGE_FIRST_OF_PERSENT:
-                    if ($first_presentV == [] && $if_presentV == [] && in_array($abbreviation, $presence_at_home)) {
+                    if ($first_presentV == [] && $if_presentV == [] && in_array($user_id, $presence_at_home)) {
                         $first_presentV[] = $target;
                     }
                     break;
                 case self::$USAGE_LAST_GONE:
-                    if ($last_goneV == [] && $presence_last_gone == $abbreviation) {
+                    if ($last_goneV == [] && $presence_last_gone == $user_id) {
                         $last_goneV[] = $target;
                     }
                     break;
                 case self::$USAGE_FIRST_COME:
-                    if ($first_comeV == [] && $presence_first_come == $abbreviation) {
+                    if ($first_comeV == [] && $presence_first_come == $user_id) {
                         $first_comeV[] = $target;
                     }
                     break;
