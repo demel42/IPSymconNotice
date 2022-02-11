@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/common.php'; // globale Funktionen
+require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
 require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
 
 class NotificationCenter extends IPSModule
 {
-    use NotificationCommonLib;
+    use StubsCommonLib;
     use NotificationLocalLib;
 
     private static $semaphoreID = __CLASS__ . 'Data';
@@ -729,16 +729,7 @@ class NotificationCenter extends IPSModule
             ]
         ];
 
-        $formActions[] = [
-            'type'    => 'ExpansionPanel',
-            'caption' => 'Information',
-            'items'   => [
-                [
-                    'type'    => 'Label',
-                    'caption' => $this->InstanceInfo($this->InstanceID),
-                ],
-            ],
-        ];
+        $formActions[] = $this->GetInformationForm();
 
         return $formActions;
     }
