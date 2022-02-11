@@ -18,6 +18,79 @@
 
 ## 1. Funktionsumfang
 
+In dem Modul geht es darum, Benachrichtigungen von Benutzern in Abhängigkeit von den Anwesenheit der Benutzer zu steuern.
+
+Es werden 4 Wege der Benachrichtigung unterstützt
+- Push-Nachricht via WebFront<br>
+setzt ein oder mehrere Webfront-Instanzen voraus, die mit Endgeräten gekoppelt sind
+- E-Mail<br>
+setzt ein eingerichtetes Symcon-Modul **SMTP** voraus
+- SMS<br>
+setzt entweder das Symcon-Modul **SMS REST** (Clickatell) voraus oder das Modul **Sipgate Basic**
+- ein beliebiges Script um die Anbindung sonstiger Benachrichtigungswege / Dienste zu ermögliche. (_Pushover_, _Pushsafer_ etc).
+
+Es werden 5 Schweregrade unterstützt
+- Information (_info_) - Wert 1
+- Hinweis (_notice_) - Wert 2
+- Warnung (_warn_) - Wert 3
+- Alarm (_alert_) - Wert 4
+- Fehlersuche (_Debug_) - Wert 9
+
+Die Idee ist dabei, das Benachrichtigungen in Gruppen zusammengefasst werden, die den gleichen Empfängerkreis haben.
+
+Hierzu gibt es zwei Module:
+
+### Benachrichtigungs-Zentrale (_NotificationCenter_)
+Hier werden grundsätzlich Einstellungen gemacht, unter anderem die _Benutzer_ mit deren Kommunikationswegen angelegt.
+Zu jedem Benutzer wird eine Variable angelegt, die den Anwesenheitsstatus repräsentiert. Da es ja ganz unterschiedliche Wege gibt, wie Anwesenheiten ermittelt werden,
+wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen übertragen werden;
+hierfür gibt es eine passende _RequestAction_.
+
+Es gibt die Präsezstatus:
+- zu Hause - Wert 1
+- unterwegs - Wert 2
+- im Urlaub - Wert 3
+
+Zu den Personenbezogenen Präsenz-Status-Variablen (_PresenceState_\<Benutzerkürzel\>_) gibt es noch drei Variablen
+- _alle abwesend_ (_AllAbsent_)<br>
+keine der Personen ist mehr zu Hause, ann als Trigger benutz werden um z.B. zu überprüfen, ob alle Fenster zu sind etc
+- _zuletzt gegangen_ (_LastGone_)<br>
+Person, die als letzt das Haus verlassen hat, danach ist das Haus "leer"
+- _zuerst gekommen_
+die Person, die als erste das leere Haus betreten hat
+
+Neben der Benachrichtigung wird auch eine "normale" Protokollierung unterstützt.
+
+### Benachrichtigungs-Regeln (_NotifcationRule_)
+Hier werden die enwünschen Empfänger (Kombination von Benutzer und Kommunikationsweg) sowie die dazugehörige Bedingung definiert.
+
+Bedingungen gibt es folgende
+
+- immer<br>
+der eingetragenen Empfänger wird bedingungslos angesprochen
+
+- wenn zu Haus<br>
+der Empfänger wird genutzt, wenn er im Status "zu Hause" ist
+
+- wenn unterwegs<br>
+der Empfänger wird genutzt, wenn er im Status "unterwegs" ist
+
+- erster Anwesender der Liste<br>
+erste Person auf der Liste, die zu Hause ist
+
+- letzter gegangen<br>
+wenn der definierte Benutzer die Person ist, die zuletzt das Haus verlassen hat
+
+- erster gekommen<br>
+wenn der definierte Benutzer die Person ist, die zuerst in das leere Haus gekommen ist
+
+- wenn sonst keiner<br>
+Ersatzwert, wenn keine der sonstigen Bedingungen zutrifft
+
+Die Liste der Bedingungen wird der Reihefolge nach abgearbeitet, was insbesondere für _erster Anwesender der Liste_ und _wenn sonst keiner_ relevant ist.
+
+Eine Benachrichtigungsregel ist immer mit einer Benachrichtigungezentrale verknüpft; gibt es nur eine Zentrale kann die Angabe entfallen, da er sich die ersten Zentrale sucht.
+
 
 ## 2. Voraussetzungen
 
@@ -48,9 +121,23 @@ Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Mod
 
 ### b. Einrichtung in IPS
 
-Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als Gerät _Symcon Integrity-Check_ auswählen.
+Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als Gerät _Notification Center_ auswählen.
+
+Für jede Regeln eine Instanz vom Typ _Notification Rule_ anlegen
 
 ### zentrale Funktion
+
+`boolean Notification_TriggerRule(integer $InstanzID, string $Message, string $Subject, int $Severity, array $Params)`<br>
+Löst die Benachrichtigungsregel aus und gemäß der Definition die Benachrichtigungen.
+Der Aufruf erfolgt in dem entsprechenden Script, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
+_InstanzID_ muss vom Typ _NotificationRule_ sein.
+
+`boolean Notification_Log(integer $InstanzID, string $Text, int $Severity, array $Params)`<br>
+Der Aufruf erfolgt in dem entsprechenden Script, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
+_InstanzID_ muss vom Typ _NotificationCenter_ sein.
+
+`int Notification_SeverityDecode(integer $InstanzID, string $ident)`
+wandelt die o.g. Kennungen des _Schweregrads_ in den numerischen Wert um.
 
 ## 5. Konfiguration:
 
