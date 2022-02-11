@@ -23,7 +23,7 @@ trait NotificationLocalLib
     public static $USAGE_UNKNOWN = 0;
     public static $USAGE_ALWAYS = 1;
     public static $USAGE_IF_PRESENT = 2;
-    public static $USAGE_IF_ABSENT = 3;
+    public static $USAGE_IF_AWAY = 3;
     public static $USAGE_FIRST_OF_PERSENT = 4;
     public static $USAGE_LAST_GONE = 5;
     public static $USAGE_FIRST_COME = 6;
@@ -196,10 +196,10 @@ trait NotificationLocalLib
                 'caption' => 'always',
             ],
             self::$USAGE_IF_PRESENT => [
-                'caption' => 'if present',
+                'caption' => 'if at home',
             ],
-            self::$USAGE_IF_ABSENT => [
-                'caption' => 'if absent',
+            self::$USAGE_IF_AWAY => [
+                'caption' => 'if away',
             ],
             self::$USAGE_FIRST_OF_PERSENT => [
                 'caption' => 'first present of the list',

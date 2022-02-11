@@ -42,8 +42,8 @@
 			"Information": "Information",
 
 			"always": "immer",
-			"if present": "wenn anwesend",
-			"if absent": "wenn abwesend",
+			"if at home": "wenn zu Hause",
+			"if away": "wenn unterwegs",
 			"first present of the list": "erster Anwesender der Liste",
 			"last gone": "letzter gegangen",
 			"first come": "erster gekommen",

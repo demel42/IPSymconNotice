@@ -951,10 +951,10 @@ class NotificationCenter extends IPSModule
         $target = $this->TargetEncode($user_id, 'wfc');
         if ($r == false) {
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $target]);
-            $this->Log($s, ['severity' => 'warn']);
+            $this->Log($s, self::$SEVERITY_WARN, []);
         } else {
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $target]);
-            $this->Log($s, ['severity' => self::$SEVERITY_DEBUG]);
+            $this->Log($s, self::$SEVERITY_DEBUG, []);
         }
         return $r;
     }
@@ -1287,20 +1287,22 @@ class NotificationCenter extends IPSModule
         $this->SetValue('Notifications', $html);
     }
 
-    public function Log(string $text, array $params)
+    public function Log(string $text, int $severity, array $params)
     {
+        $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
+        if ($logger_scriptID > 0) {
+            $params['text'] = $text;
+            $params['severity'] = $severity;
+            @$r = IPS_RunScriptWaitEx($logger_scriptID, $params);
+            $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $logger_scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'done' : 'failed'), 0);
+            return $r;
+        }
+
         $max_age = $this->ReadPropertyInteger('max_age');
 
         $now = time();
 
-        if (isset($params['severity'])) {
-            $s = $params['severity'];
-            if (is_int($s)) {
-                $severity = $s;
-            } else {
-                $severity = $this->SeverityDecode($s);
-            }
-        } else {
+        if ($severity == self::$SEVERITY_UNKNOWN) {
             $severity = self::$SEVERITY_INFO;
         }
 
@@ -1349,6 +1351,8 @@ class NotificationCenter extends IPSModule
 
         $html = $this->BuildHtmlBox($new_notifications);
         $this->SetValue('Notifications', $html);
+
+        return true;
     }
 
     private function BuildHtmlBox($notifications)

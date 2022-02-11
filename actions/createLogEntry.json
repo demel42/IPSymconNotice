@@ -35,7 +35,7 @@
             ]
         }
     ],
-    "action": "Notification_Log($_IPS['TARGET'], $_IPS['TEXT'], ['severity' => $_IPS['SEVERITY']]);",
+    "action": "Notification_Log($_IPS['TARGET'], $_IPS['TEXT'], $_IPS['SEVERITY'], []);",
     "restrictions": {
         "objectType": [ 1 ],
         "moduleID": [ "{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}" ],
@@ -48,8 +48,8 @@
             "Create log entry": "Protokolleintrag erzeugen",
             "Text": "Text",
             "Severity": "Schweregrad",
-			"Information": "Information",
-			"Notice": "Hinweis",
+            "Information": "Information",
+            "Notice": "Hinweis",
             "Warning": "Warnung",
             "Alert": "Alarm",
             "Debug": "Fehlersuche"

@@ -36,7 +36,7 @@
             ]
         }
     ],
-    "action": "Notification_TriggerRule($_IPS['TARGET'], $_IPS['MESSAGETEXT'], $_IPS['SUBJECT'], $_IPS['SEVERITY']);",
+    "action": "Notification_TriggerRule($_IPS['TARGET'], $_IPS['MESSAGETEXT'], $_IPS['SUBJECT'], $_IPS['SEVERITY'], []);",
     "restrictions": {
         "objectType": [ 1 ],
         "moduleID": [ "{2335FF1E-9628-E363-AAEC-11DE75788A13}" ],
@@ -51,8 +51,8 @@
             "Subject": "Betreff",
             "Message text": "Nachricht",
             "Severity": "Schweregrad",
-			"Information": "Information",
-			"Notice": "Hinweis",
+            "Information": "Information",
+            "Notice": "Hinweis",
             "Warning": "Warnung",
             "Alert": "Alarm",
             "Trigger a notification rule to the configured targets": "Auslösen einer Benachrichtigungsregel für die konfigurierten Ziele"

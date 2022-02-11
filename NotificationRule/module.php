@@ -393,7 +393,7 @@ class NotificationRule extends IPSModule
         echo $s;
     }
 
-    public function TriggerRule(string $text, string $subject, int $severity)
+    public function TriggerRule(string $text, string $subject, int $severity, array $params)
     {
         $this->SendDebug(__FUNCTION__, 'text=' . $text . ', severity=' . $severity, 0);
 
@@ -447,14 +447,12 @@ class NotificationRule extends IPSModule
                         $e_params = [];
                     }
 
-                    $params = $e_params;
+                    $l_params = array_merge($params, $e_params);
 
-                    if ($severity != self::$SEVERITY_UNKNOWN) {
-                        $params['severity'] = $severity;
-                    }
+                    $l_params['severity'] = $severity;
 
                     if ($subject != '') {
-                        $params['subject'] = $subject;
+                        $l_params['subject'] = $subject;
                     }
 
                     $sound = '';
@@ -501,16 +499,16 @@ class NotificationRule extends IPSModule
                             break;
                     }
                     if ($sound != '') {
-                        $params['sound'] = $sound;
+                        $l_params['sound'] = $sound;
                     }
 
-                    $r = Notification_Deliver($notificationCenter, $target, $text, $params);
+                    $r = Notification_Deliver($notificationCenter, $target, $text, $l_params);
                 }
 
                 $log_additionally = $this->ReadPropertyBoolean('log_additionally');
                 if ($log_additionally) {
-                    $params['targets'] = $targetV;
-                    Notification_Log($notificationCenter, $text, $params);
+                    $l_params['targets'] = $targetV;
+                    Notification_Log($notificationCenter, $text, $severity, $l_params);
                 }
             }
         }
@@ -544,8 +542,8 @@ class NotificationRule extends IPSModule
 
         $alwaysV = [];
         $if_presentV = [];
-        $if_absentV = [];
-        $first_presentV = [];
+        $if_awayV = [];
+        $first_of_presentV = [];
         $last_goneV = [];
         $first_comeV = [];
         $if_no_oneV = [];
@@ -567,14 +565,14 @@ class NotificationRule extends IPSModule
                         $if_presentV[] = $target;
                     }
                     break;
-                case self::$USAGE_IF_ABSENT:
+                case self::$USAGE_IF_AWAY:
                     if (in_array($user_id, $presence_be_away)) {
-                        $if_absentV[] = $target;
+                        $if_awayV[] = $target;
                     }
                     break;
                 case self::$USAGE_FIRST_OF_PERSENT:
-                    if ($first_presentV == [] && $if_presentV == [] && in_array($user_id, $presence_at_home)) {
-                        $first_presentV[] = $target;
+                    if ($first_of_presentV == [] && $if_presentV == [] && in_array($user_id, $presence_at_home)) {
+                        $first_of_presentV[] = $target;
                     }
                     break;
                 case self::$USAGE_LAST_GONE:
@@ -595,7 +593,7 @@ class NotificationRule extends IPSModule
             }
         }
 
-        $targetV = array_merge($alwaysV, $if_presentV, $if_absentV, $first_presentV, $last_goneV, $first_comeV);
+        $targetV = array_merge($alwaysV, $if_presentV, $if_awayV, $first_of_presentV, $last_goneV, $first_comeV);
         if ($targetV == []) {
             $targetV = $if_no_oneV;
         }
@@ -645,7 +643,7 @@ class NotificationRule extends IPSModule
                             [
                                 'type'    => 'Button',
                                 'caption' => 'Trigger',
-                                'onClick' => 'Notification_TriggerRule($id, $text, $subject, $severity);'
+                                'onClick' => 'Notification_TriggerRule($id, $text, $subject, $severity, []);'
                             ],
                         ],
                         'closeCaption' => 'Cancel',
