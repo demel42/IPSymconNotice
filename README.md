@@ -59,7 +59,7 @@ Wert 2
 - im Urlaub<br>
 Wert 3
 
-Zu den personenbezogenen Präsenz-Status-Variablen (Variable _PresenceState_\<Benutzerkürzel\>_) gibt es noch drei Variablen
+Zu den personenbezogenen Präsenz-Status-Variablen (Variable *PresenceState_\<Benutzerkürzel\>*) gibt es noch drei Variablen
 - _alle abwesend_ (Variable _AllAbsent_)<br>
 keine der Personen ist mehr zu Hause, ann als Trigger benutz werden um z.B. zu überprüfen, ob alle Fenster zu sind etc
 - _zuletzt gegangen_ (Variable _LastGone_)<br>
