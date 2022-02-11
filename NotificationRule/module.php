@@ -393,9 +393,9 @@ class NotificationRule extends IPSModule
         echo $s;
     }
 
-    public function TriggerRule(string $text, string $subject, int $severity, array $params)
+    public function TriggerRule(string $text, string $subject, string $severity, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'text=' . $text . ', severity=' . $severity, 0);
+        $this->SendDebug(__FUNCTION__, 'text=' . $text . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
 
         $default_subject = $this->ReadPropertyString('default_subject');
         $default_text = $this->ReadPropertyString('default_text');
@@ -420,6 +420,10 @@ class NotificationRule extends IPSModule
         if ($subject == '') {
             $subject = $default_subject;
             $this->SendDebug(__FUNCTION__, 'subject(default)=' . $subject, 0);
+        }
+        if (preg_match('/^[0-9]+$/', $severity) == false) {
+            $severity = $this->SeverityDecode($severity);
+            $this->SendDebug(__FUNCTION__, 'severity=' . $severity, 0);
         }
         if ($severity == self::$SEVERITY_UNKNOWN) {
             $severity = $default_severity;

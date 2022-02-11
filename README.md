@@ -127,17 +127,17 @@ Für jede Regeln eine Instanz vom Typ _Notification Rule_ anlegen
 
 ### zentrale Funktion
 
-`boolean Notification_TriggerRule(integer $InstanzID, string $Message, string $Subject, int $Severity, array $Params)`<br>
+`boolean Notification_TriggerRule(integer $InstanzID, string $Message, string $Subject, mixed $Severity, array $Params)`<br>
 Löst die Benachrichtigungsregel aus und gemäß der Definition die Benachrichtigungen.
 Der Aufruf erfolgt in dem entsprechenden Script, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 _InstanzID_ muss vom Typ _NotificationRule_ sein.
 
-`boolean Notification_Log(integer $InstanzID, string $Text, int $Severity, array $Params)`<br>
+`boolean Notification_Log(integer $InstanzID, string $Text, mixed $Severity, array $Params)`<br>
 Der Aufruf erfolgt in dem entsprechenden Script, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 _InstanzID_ muss vom Typ _NotificationCenter_ sein.
 
 `int Notification_SeverityDecode(integer $InstanzID, string $ident)`
-wandelt die o.g. Kennungen des _Schweregrads_ in den numerischen Wert um.
+wandelt die o.g. Kennungen des _Schweregrades_ in den numerischen Wert um.
 
 ## 5. Konfiguration:
 
@@ -159,5 +159,5 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 0.9 @ 11.02.2022 12:58 (test)
+- 0.9 @ 11.02.2022 14:42 (test)
   - initial

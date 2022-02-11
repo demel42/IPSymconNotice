@@ -1287,8 +1287,9 @@ class NotificationCenter extends IPSModule
         $this->SetValue('Notifications', $html);
     }
 
-    public function Log(string $text, int $severity, array $params)
+    public function Log(string $text, string $severity, array $params)
     {
+        $this->SendDebug(__FUNCTION__, 'text=' . $text . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
         $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
         if ($logger_scriptID > 0) {
             $params['text'] = $text;
@@ -1302,6 +1303,10 @@ class NotificationCenter extends IPSModule
 
         $now = time();
 
+        if (preg_match('/^[0-9]+$/', $severity) == false) {
+            $severity = $this->SeverityDecode($severity);
+            $this->SendDebug(__FUNCTION__, 'severity=' . $severity, 0);
+        }
         if ($severity == self::$SEVERITY_UNKNOWN) {
             $severity = self::$SEVERITY_INFO;
         }
