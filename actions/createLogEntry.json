@@ -13,23 +13,23 @@
             "caption": "Severity",
             "options": [
                 {
-                    "value": 1,
+                    "value": "info",
                     "caption": "Information"
                 },
                 {
-                    "value": 2,
+                    "value": "notice",
                     "caption": "Notice"
                 },
                 {
-                    "value": 3,
+                    "value": "warn",
                     "caption": "Warning"
                 },
                 {
-                    "value": 4,
+                    "value": "alert",
                     "caption": "Alert"
                 },
                 {
-                    "value": 9,
+                    "value": "debug",
                     "caption": "Debug"
                 }
             ]
@@ -43,6 +43,7 @@
     },
     "priority": 10,
     "category": "target",
+    "format": "Add log entry with severity \"{SEVERITY}\" and \"{TEXT}\"",
     "locale": {
         "de": {
             "Create log entry": "Protokolleintrag erzeugen",
@@ -52,7 +53,8 @@
             "Notice": "Hinweis",
             "Warning": "Warnung",
             "Alert": "Alarm",
-            "Debug": "Fehlersuche"
+            "Debug": "Fehlersuche",
+            "Add log entry with severity \"{SEVERITY}\" and \"{TEXT}\"": "Protokolleintrag mit Schweregrad \"{SEVERITY}\" und \"{TEXT}\" hinzufügen"
         }
     }
 }

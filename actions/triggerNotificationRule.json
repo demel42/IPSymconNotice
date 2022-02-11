@@ -18,19 +18,19 @@
             "caption": "Severity",
             "options": [
                 {
-                    "value": 1,
+                    "value": "info",
                     "caption": "Information"
                 },
                 {
-                    "value": 2,
+                    "value": "notice",
                     "caption": "Notice"
                 },
                 {
-                    "value": 3,
+                    "value": "warn",
                     "caption": "Warning"
                 },
                 {
-                    "value": 4,
+                    "value": "alert",
                     "caption": "Alert"
                 }
             ]
@@ -45,6 +45,7 @@
     "priority": 10,
     "category": "target",
     "description": "Trigger a notification rule to the configured targets",
+    "format": "Trigger notification with severity \"{SEVERITY}\"",
     "locale": {
         "de": {
             "Trigger notification rule": "Löse Benachrichtigungsregel aus",
@@ -55,7 +56,8 @@
             "Notice": "Hinweis",
             "Warning": "Warnung",
             "Alert": "Alarm",
-            "Trigger a notification rule to the configured targets": "Auslösen einer Benachrichtigungsregel für die konfigurierten Ziele"
+            "Trigger a notification rule to the configured targets": "Auslösen einer Benachrichtigungsregel für die konfigurierten Ziele",
+            "Trigger notification with severity \"{SEVERITY}\"": "Löse Benachrichtigung mit Schweregrad \"{SEVERITY}\" aus"
         }
     }
 }

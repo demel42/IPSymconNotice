@@ -333,8 +333,8 @@ class NotificationCenter extends IPSModule
                     'expanded ' => false,
                     'items'     => [
                         [
-                            'type'         => 'SelectInstance',
-                            'validModules' => ['{375EAF21-35EF-4BC4-83B3-C780FD8BD88A}'],
+                            'type'         => 'SelectModule',
+                            'moduleID'     => '{375EAF21-35EF-4BC4-83B3-C780FD8BD88A}',
                             'name'         => 'mail_instID',
                             'caption'      => 'SMTP instance'
                         ],
@@ -445,8 +445,8 @@ class NotificationCenter extends IPSModule
             'width'   => '200px',
             'add'     => 0,
             'edit'    => [
-                'type'         => 'SelectInstance',
-                'validModules' => ['{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}'],
+                'type'     => 'SelectModule',
+                'moduleID' => '{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}',
             ],
         ];
         if ($this->ReadPropertyInteger('mail_instID') > 0) {
