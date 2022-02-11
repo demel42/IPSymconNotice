@@ -59,12 +59,12 @@ Wert 2
 - im Urlaub<br>
 Wert 3
 
-Zu den Personenbezogenen Präsenz-Status-Variablen (_PresenceState_\<Benutzerkürzel\>_) gibt es noch drei Variablen
-- _alle abwesend_ (_AllAbsent_)<br>
+Zu den personenbezogenen Präsenz-Status-Variablen (Variable _PresenceState_\<Benutzerkürzel\>_) gibt es noch drei Variablen
+- _alle abwesend_ (Variable _AllAbsent_)<br>
 keine der Personen ist mehr zu Hause, ann als Trigger benutz werden um z.B. zu überprüfen, ob alle Fenster zu sind etc
-- _zuletzt gegangen_ (_LastGone_)<br>
+- _zuletzt gegangen_ (Variable _LastGone_)<br>
 Person, die als letzt das Haus verlassen hat, danach ist das Haus "leer"
-- _zuerst gekommen_ (_FirstCome_)<br>
+- _zuerst gekommen_ (Variable _FirstCome_)<br>
 die Person, die als erste das leere Haus betreten hat
 
 Neben der Benachrichtigung wird auch eine "normale" Protokollierung unterstützt.
