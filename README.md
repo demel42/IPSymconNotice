@@ -30,11 +30,16 @@ setzt entweder das Symcon-Modul **SMS REST** (Clickatell) voraus oder das Modul 
 - ein beliebiges Script um die Anbindung sonstiger Benachrichtigungswege / Dienste zu ermögliche. (_Pushover_, _Pushsafer_ etc).
 
 Es werden 5 Schweregrade unterstützt
-- Information: Kürzel _info_, Wert 1
-- Hinweis: Kürzel _notice_, Wert 2
-- Warnung: Kürzel _warn_, Wert 3
-- Alarm: Kürzel _alert_, Wert 4
-- Fehlersuche: Kürzel _Debug_, Wert 9
+- Information<br>
+Kürzel _info_, Wert 1
+- Hinweis<br>
+Kürzel _notice_, Wert 2
+- Warnung<br>
+Kürzel _warn_, Wert 3
+- Alarm<br>
+Kürzel _alert_, Wert 4
+- Fehlersuche<br>
+Kürzel _Debug_, Wert 9
 
 Die Idee ist dabei, das Benachrichtigungen in Gruppen zusammengefasst werden, die den gleichen Empfängerkreis haben.
 
@@ -47,16 +52,19 @@ wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mitte
 hierfür gibt es eine passende _RequestAction_.
 
 Es gibt die Präsezstatus:
-- zu Hause - Wert 1
-- unterwegs - Wert 2
-- im Urlaub - Wert 3
+- zu Hause<br>
+Wert 1
+- unterwegs<br>
+Wert 2
+- im Urlaub<br>
+Wert 3
 
 Zu den Personenbezogenen Präsenz-Status-Variablen (_PresenceState_\<Benutzerkürzel\>_) gibt es noch drei Variablen
 - _alle abwesend_ (_AllAbsent_)<br>
 keine der Personen ist mehr zu Hause, ann als Trigger benutz werden um z.B. zu überprüfen, ob alle Fenster zu sind etc
 - _zuletzt gegangen_ (_LastGone_)<br>
 Person, die als letzt das Haus verlassen hat, danach ist das Haus "leer"
-- _zuerst gekommen_
+- _zuerst gekommen_ (_FirstCome_)<br>
 die Person, die als erste das leere Haus betreten hat
 
 Neben der Benachrichtigung wird auch eine "normale" Protokollierung unterstützt.
