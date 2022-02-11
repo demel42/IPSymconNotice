@@ -133,7 +133,7 @@ Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als G
 
 Für jede Regeln eine Instanz vom Typ _Notification Rule_ anlegen
 
-### zentrale Funktion
+## 4. Funktionsreferenz
 
 `boolean Notification_TriggerRule(integer $InstanzID, string $Message, string $Subject, mixed $Severity, array $Params)`<br>
 Löst die Benachrichtigungsregel aus und gemäß der Definition die Benachrichtigungen.
@@ -147,7 +147,7 @@ _InstanzID_ muss vom Typ _NotificationCenter_ sein.
 `int Notification_SeverityDecode(integer $InstanzID, string $ident)`
 wandelt die o.g. Kennungen des _Schweregrades_ in den numerischen Wert um.
 
-## 5. Konfiguration:
+## 5. Konfiguration
 
 ### Variablen
 
