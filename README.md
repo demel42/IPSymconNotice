@@ -30,11 +30,11 @@ setzt entweder das Symcon-Modul **SMS REST** (Clickatell) voraus oder das Modul 
 - ein beliebiges Script um die Anbindung sonstiger Benachrichtigungswege / Dienste zu ermögliche. (_Pushover_, _Pushsafer_ etc).
 
 Es werden 5 Schweregrade unterstützt
-- Information (_info_) - Wert 1
-- Hinweis (_notice_) - Wert 2
-- Warnung (_warn_) - Wert 3
-- Alarm (_alert_) - Wert 4
-- Fehlersuche (_Debug_) - Wert 9
+- Information: Kürzel _info_, Wert 1
+- Hinweis: Kürzel _notice_, Wert 2
+- Warnung: Kürzel _warn_, Wert 3
+- Alarm: Kürzel _alert_, Wert 4
+- Fehlersuche: Kürzel _Debug_, Wert 9
 
 Die Idee ist dabei, das Benachrichtigungen in Gruppen zusammengefasst werden, die den gleichen Empfängerkreis haben.
 
@@ -159,5 +159,5 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 0.9 @ 11.02.2022 14:42 (test)
+- 0.9 @ 11.02.2022 15:15 (test)
   - initial
