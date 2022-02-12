@@ -15,7 +15,7 @@ trait NotificationLocalLib
     public static $STATE_BE_AWAY = 2;
     public static $STATE_ON_VACATION = 3;
 
-    public static $MODE_WFC = 0;
+    public static $MODE_WEBFRONT = 0;
     public static $MODE_MAIL = 1;
     public static $MODE_SMS = 2;
     public static $MODE_SCRIPT = 3;
@@ -85,8 +85,8 @@ trait NotificationLocalLib
     private function ModeMapping()
     {
         return [
-            self::$MODE_WFC    => [
-                'tag'     => 'wfc',
+            self::$MODE_WEBFRONT    => [
+                'tag'     => 'wf',
                 'caption' => 'Webfront',
             ],
             self::$MODE_MAIL   => [
@@ -98,7 +98,7 @@ trait NotificationLocalLib
                 'caption' => 'SMS',
             ],
             self::$MODE_SCRIPT => [
-                'tag'     => 'caption',
+                'tag'     => 'script',
                 'caption' => 'Script',
             ],
         ];
@@ -106,7 +106,7 @@ trait NotificationLocalLib
 
     private function ModeDecode($ident)
     {
-        $mode = self::$MODE_WFC;
+        $mode = self::$MODE_WEBFRONT;
         $modeMap = $this->ModeMapping();
         foreach ($modeMap as $index => $map) {
             if ($map['tag'] == strtolower($ident)) {
@@ -229,7 +229,7 @@ trait NotificationLocalLib
         return $usage_opts;
     }
 
-    private function WfcSounds()
+    private function WebfrontSounds()
     {
         return [
             ['value' => '', 'caption' => $this->Translate('')],

@@ -22,10 +22,10 @@ class NotificationRule extends IPSModule
         $this->RegisterPropertyString('default_text', '');
         $this->RegisterPropertyInteger('default_severity', self::$SEVERITY_UNKNOWN);
 
-        $this->RegisterPropertyString('default_wfc_sound_info', '');
-        $this->RegisterPropertyString('default_wfc_sound_notice', '');
-        $this->RegisterPropertyString('default_wfc_sound_warn', '');
-        $this->RegisterPropertyString('default_wfc_sound_alert', '');
+        $this->RegisterPropertyString('default_webfront_sound_info', '');
+        $this->RegisterPropertyString('default_webfront_sound_notice', '');
+        $this->RegisterPropertyString('default_webfront_sound_warn', '');
+        $this->RegisterPropertyString('default_webfront_sound_alert', '');
 
         $this->RegisterPropertyString('default_script_sound_info', '');
         $this->RegisterPropertyString('default_script_sound_notice', '');
@@ -227,29 +227,29 @@ class NotificationRule extends IPSModule
                         ],
                         [
                             'type'     => 'Select',
-                            'options'  => $this->WfcSounds(),
-                            'name'     => 'default_wfc_sound_info',
+                            'options'  => $this->WebfrontSounds(),
+                            'name'     => 'default_webfront_sound_info',
                             'caption'  => 'Information',
                             'width'    => '200px',
                         ],
                         [
                             'type'     => 'Select',
-                            'options'  => $this->WfcSounds(),
-                            'name'     => 'default_wfc_sound_notice',
+                            'options'  => $this->WebfrontSounds(),
+                            'name'     => 'default_webfront_sound_notice',
                             'caption'  => 'Notice',
                             'width'    => '200px',
                         ],
                         [
                             'type'     => 'Select',
-                            'options'  => $this->WfcSounds(),
-                            'name'     => 'default_wfc_sound_warn',
+                            'options'  => $this->WebfrontSounds(),
+                            'name'     => 'default_webfront_sound_warn',
                             'caption'  => 'Warning',
                             'width'    => '200px',
                         ],
                         [
                             'type'     => 'Select',
-                            'options'  => $this->WfcSounds(),
-                            'name'     => 'default_wfc_sound_alert',
+                            'options'  => $this->WebfrontSounds(),
+                            'name'     => 'default_webfront_sound_alert',
                             'caption'  => 'Alert',
                             'width'    => '200px',
                         ],
@@ -401,10 +401,10 @@ class NotificationRule extends IPSModule
         $default_text = $this->ReadPropertyString('default_text');
         $default_severity = $this->ReadPropertyInteger('default_severity');
 
-        $default_wfc_sound_info = $this->ReadPropertyString('default_wfc_sound_info');
-        $default_wfc_sound_notice = $this->ReadPropertyString('default_wfc_sound_notice');
-        $default_wfc_sound_warn = $this->ReadPropertyString('default_wfc_sound_warn');
-        $default_wfc_sound_alert = $this->ReadPropertyString('default_wfc_sound_alert');
+        $default_webfront_sound_info = $this->ReadPropertyString('default_webfront_sound_info');
+        $default_webfront_sound_notice = $this->ReadPropertyString('default_webfront_sound_notice');
+        $default_webfront_sound_warn = $this->ReadPropertyString('default_webfront_sound_warn');
+        $default_webfront_sound_alert = $this->ReadPropertyString('default_webfront_sound_alert');
 
         $default_script_sound_info = $this->ReadPropertyString('default_script_sound_info');
         $default_script_sound_notice = $this->ReadPropertyString('default_script_sound_notice');
@@ -461,19 +461,19 @@ class NotificationRule extends IPSModule
 
                     $sound = '';
                     switch ($mode) {
-                        case self::$MODE_WFC:
+                        case self::$MODE_WEBFRONT:
                             switch ($severity) {
                                 case self::$SEVERITY_INFO:
-                                    $sound = $default_wfc_sound_info;
+                                    $sound = $default_webfront_sound_info;
                                     break;
                                 case self::$SEVERITY_NOTICE:
-                                    $sound = $default_wfc_sound_notice;
+                                    $sound = $default_webfront_sound_notice;
                                     break;
                                 case self::$SEVERITY_WARN:
-                                    $sound = $default_wfc_sound_warn;
+                                    $sound = $default_webfront_sound_warn;
                                     break;
                                 case self::$SEVERITY_ALERT:
-                                    $sound = $default_wfc_sound_alert;
+                                    $sound = $default_webfront_sound_alert;
                                     break;
                                 default:
                                     break;
@@ -665,7 +665,7 @@ class NotificationRule extends IPSModule
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
                     'onClick' => 'Notification_InstallVarProfiles($id, true);'
-                ]
+                ],
             ]
         ];
 
@@ -676,6 +676,31 @@ class NotificationRule extends IPSModule
             'items'     => [
                 [
                     'type'    => 'TestCenter',
+                ],
+                [
+                    'type'    => 'Label',
+                ],
+                [
+                    'type'    => 'RowLayout',
+                    'items'   => [
+                        [
+                            'type'     => 'SelectModule',
+                            'moduleID' => '{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}',
+                            'caption'  => 'Webfront',
+                            'name'     => 'instID',
+                        ],
+                        [
+                            'type'     => 'Select',
+                            'options'  => $this->WebfrontSounds(),
+                            'name'     => 'sound',
+                            'caption'  => 'Sound',
+                        ],
+                        [
+                            'type'    => 'Button',
+                            'caption' => 'Test sound',
+                            'onClick' => 'WFC_PushNotification($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
+                        ],
+                    ],
                 ],
             ]
         ];

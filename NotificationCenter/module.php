@@ -21,12 +21,12 @@ class NotificationCenter extends IPSModule
 
         $this->RegisterPropertyString('users', json_encode([]));
 
-        // MODE_WFC
-        $this->RegisterPropertyString('default_wfc_sound_info', '');
-        $this->RegisterPropertyString('default_wfc_sound_notice', '');
-        $this->RegisterPropertyString('default_wfc_sound_warn', '');
-        $this->RegisterPropertyString('default_wfc_sound_alert', '');
-        $this->RegisterPropertyString('wfc_defaults', '');
+        // MODE_WEBFRONT
+        $this->RegisterPropertyString('default_webfront_sound_info', '');
+        $this->RegisterPropertyString('default_webfront_sound_notice', '');
+        $this->RegisterPropertyString('default_webfront_sound_warn', '');
+        $this->RegisterPropertyString('default_webfront_sound_alert', '');
+        $this->RegisterPropertyString('webfront_defaults', '');
 
         // MODE_MAIL
         $this->RegisterPropertyInteger('mail_instID', 0);
@@ -77,11 +77,11 @@ class NotificationCenter extends IPSModule
         $s = '';
         $r = [];
 
-        $s = $this->ReadPropertyString('wfc_defaults');
+        $s = $this->ReadPropertyString('webfront_defaults');
         if ($s != false) {
             @$j = json_decode($s, true);
             if ($j == false) {
-                $this->SendDebug(__FUNCTION__, '"wfc_defaults" has no json-coded content "' . $s . '"', 0);
+                $this->SendDebug(__FUNCTION__, '"webfront_defaults" has no json-coded content "' . $s . '"', 0);
                 $field = $this->Translate('Webfront defaults');
                 $r[] = $this->TranslateFormat('Field "{$field}" must be json-coded', ['{$field}' => $field]);
             }
@@ -225,7 +225,7 @@ class NotificationCenter extends IPSModule
         $users = json_decode($this->ReadPropertyString('users'), true);
         if ($users != false) {
             foreach ($users as $user) {
-                $oid = $this->GetArrayElem($user, 'wfc_instID', 0);
+                $oid = $this->GetArrayElem($user, 'webfront_instID', 0);
                 if ($oid > 0) {
                     $this->RegisterReference($oid);
                 }
@@ -291,29 +291,29 @@ class NotificationCenter extends IPSModule
                                 ],
                                 [
                                     'type'     => 'Select',
-                                    'options'  => $this->WfcSounds(),
-                                    'name'     => 'default_wfc_sound_info',
+                                    'options'  => $this->WebfrontSounds(),
+                                    'name'     => 'default_webfront_sound_info',
                                     'caption'  => 'Information',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'Select',
-                                    'options'  => $this->WfcSounds(),
-                                    'name'     => 'default_wfc_sound_notice',
+                                    'options'  => $this->WebfrontSounds(),
+                                    'name'     => 'default_webfront_sound_notice',
                                     'caption'  => 'Notice',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'Select',
-                                    'options'  => $this->WfcSounds(),
-                                    'name'     => 'default_wfc_sound_warn',
+                                    'options'  => $this->WebfrontSounds(),
+                                    'name'     => 'default_webfront_sound_warn',
                                     'caption'  => 'Warning',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'Select',
-                                    'options'  => $this->WfcSounds(),
-                                    'name'     => 'default_wfc_sound_alert',
+                                    'options'  => $this->WebfrontSounds(),
+                                    'name'     => 'default_webfront_sound_alert',
                                     'caption'  => 'Alert',
                                     'width'    => '200px',
                                 ],
@@ -321,7 +321,7 @@ class NotificationCenter extends IPSModule
                         ],
                         [
                             'type'    => 'ValidationTextBox',
-                            'name'    => 'wfc_defaults',
+                            'name'    => 'webfront_defaults',
                             'caption' => 'Other defaults',
                             'width'   => '800px',
                         ],
@@ -441,7 +441,7 @@ class NotificationCenter extends IPSModule
         ];
         $columns[] = [
             'caption' => 'Webfront',
-            'name'    => 'wfc_instID',
+            'name'    => 'webfront_instID',
             'width'   => '200px',
             'add'     => 0,
             'edit'    => [
@@ -726,6 +726,31 @@ class NotificationCenter extends IPSModule
                 [
                     'type'    => 'TestCenter',
                 ],
+                [
+                    'type'    => 'Label',
+                ],
+                [
+                    'type'    => 'RowLayout',
+                    'items'   => [
+                        [
+                            'type'     => 'SelectModule',
+                            'moduleID' => '{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}',
+                            'caption'  => 'Webfront',
+                            'name'     => 'instID',
+                        ],
+                        [
+                            'type'     => 'Select',
+                            'options'  => $this->WebfrontSounds(),
+                            'name'     => 'sound',
+                            'caption'  => 'Sound',
+                        ],
+                        [
+                            'type'    => 'Button',
+                            'caption' => 'Test sound',
+                            'onClick' => 'WFC_PushNotification($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
+                        ],
+                    ],
+                ],
             ]
         ];
 
@@ -805,12 +830,11 @@ class NotificationCenter extends IPSModule
         $users = json_decode($this->ReadPropertyString('users'), true);
         if ($users != false) {
             foreach ($users as $user) {
-                if ($user['inactive']) {
+                if ($user['inactive'] || $user['immobile']) {
                     continue;
                 }
                 $n_user++;
-                $user_id = $user['id'];
-                $ident = 'PresenceState_' . strtoupper($user_id);
+                $ident = 'PresenceState_' . strtoupper($user['id']);
                 $st = $this->GetValue($ident);
                 if ($st == self::$STATE_AT_HOME) {
                     $n_present++;
@@ -869,14 +893,14 @@ class NotificationCenter extends IPSModule
         return false;
     }
 
-    public function DeliverWFC(string $user_id, string $text, array $params)
+    public function DeliverWebfront(string $user_id, string $text, array $params)
     {
         $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
 
-        $default_wfc_sound_info = $this->ReadPropertyString('default_wfc_sound_info');
-        $default_wfc_sound_notice = $this->ReadPropertyString('default_wfc_sound_notice');
-        $default_wfc_sound_warn = $this->ReadPropertyString('default_wfc_sound_warn');
-        $default_wfc_sound_alert = $this->ReadPropertyString('default_wfc_sound_alert');
+        $default_webfront_sound_info = $this->ReadPropertyString('default_webfront_sound_info');
+        $default_webfront_sound_notice = $this->ReadPropertyString('default_webfront_sound_notice');
+        $default_webfront_sound_warn = $this->ReadPropertyString('default_webfront_sound_warn');
+        $default_webfront_sound_alert = $this->ReadPropertyString('default_webfront_sound_alert');
 
         $user = $this->GetUser($user_id);
         if ($user == false) {
@@ -888,30 +912,30 @@ class NotificationCenter extends IPSModule
             return false;
         }
 
-        $wfc_instID = $user['wfc_instID'];
-        if ($wfc_instID == 0) {
-            $this->SendDebug(__FUNCTION__, 'no WFC-instance given', 0);
+        $webfront_instID = $user['webfront_instID'];
+        if ($webfront_instID == 0) {
+            $this->SendDebug(__FUNCTION__, 'no WF-instance given', 0);
             return false;
         }
-        @$inst = IPS_GetInstance($wfc_instID);
+        @$inst = IPS_GetInstance($webfront_instID);
         if ($inst == false) {
-            $this->SendDebug(__FUNCTION__, 'WFC-instance ' . $wfc_instID . ' is invalid', 0);
+            $this->SendDebug(__FUNCTION__, 'WF-instance ' . $webfront_instID . ' is invalid', 0);
             return false;
         }
         $status = $inst['InstanceStatus'];
         if ($status != IS_ACTIVE) {
-            $this->SendDebug(__FUNCTION__, 'WFC-instance ' . $wfc_instID . ' is not active (status=' . $status . ')', 0);
+            $this->SendDebug(__FUNCTION__, 'WF-instance ' . $webfront_instID . ' is not active (status=' . $status . ')', 0);
             return false;
         }
         $moduleID = $inst['ModuleInfo']['ModuleID'];
         if ($moduleID != '{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}') {
-            $this->SendDebug(__FUNCTION__, 'WFC-instance ' . $wfc_instID . ' has wrong GUID ' . $moduleID, 0);
+            $this->SendDebug(__FUNCTION__, 'WF-instance ' . $webfront_instID . ' has wrong GUID ' . $moduleID, 0);
             return false;
         }
 
-        $wfc_defaults = json_decode($this->ReadPropertyString('wfc_defaults'), true);
-        if ($wfc_defaults == false) {
-            $wfc_defaults = [];
+        $webfront_defaults = json_decode($this->ReadPropertyString('webfront_defaults'), true);
+        if ($webfront_defaults == false) {
+            $webfront_defaults = [];
         }
         if (is_array($params) == false) {
             $params = json_decode($params, true);
@@ -919,7 +943,7 @@ class NotificationCenter extends IPSModule
         if ($params == false) {
             $params = [];
         }
-        $params = array_merge($wfc_defaults, $params);
+        $params = array_merge($webfront_defaults, $params);
 
         $text = $this->GetArrayElem($params, 'text', $text);
         $subject = $this->GetArrayElem($params, 'subject', $text);
@@ -928,16 +952,16 @@ class NotificationCenter extends IPSModule
             $severity = $this->GetArrayElem($params, 'severity', self::$SEVERITY_UNKNOWN);
             switch ($severity) {
                 case self::$SEVERITY_INFO:
-                    $sound = $default_wfc_sound_info;
+                    $sound = $default_webfront_sound_info;
                     break;
                 case self::$SEVERITY_NOTICE:
-                    $sound = $default_wfc_sound_notice;
+                    $sound = $default_webfront_sound_notice;
                     break;
                 case self::$SEVERITY_WARN:
-                    $sound = $default_wfc_sound_warn;
+                    $sound = $default_webfront_sound_warn;
                     break;
                 case self::$SEVERITY_ALERT:
-                    $sound = $default_wfc_sound_alert;
+                    $sound = $default_webfront_sound_alert;
                     break;
                 default:
                     break;
@@ -946,9 +970,9 @@ class NotificationCenter extends IPSModule
         }
         $targetID = $this->GetArrayElem($params, 'TargetID', 0);
 
-        @$r = WFC_PushNotification($wfc_instID, $subject, $text, $sound, $targetID);
-        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $wfc_instID . ', "' . $subject . '", "' . $text . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'done' : 'failed'), 0);
-        $target = $this->TargetEncode($user_id, 'wfc');
+        @$r = WFC_PushNotification($webfront_instID, $subject, $text, $sound, $targetID);
+        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $text . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'done' : 'failed'), 0);
+        $target = $this->TargetEncode($user_id, 'wf');
         if ($r == false) {
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $target]);
             $this->Log($s, self::$SEVERITY_WARN, []);
@@ -1182,8 +1206,8 @@ class NotificationCenter extends IPSModule
         $mode = $this->ModeDecode($r['mode']);
 
         switch ($mode) {
-            case self::$MODE_WFC:
-                $res = $this->DeliverWFC($user_id, $text, $params);
+            case self::$MODE_WEBFRONT:
+                $res = $this->DeliverWebfront($user_id, $text, $params);
                 break;
             case self::$MODE_MAIL:
                 $res = $this->DeliverMail($user_id, $text, $params);
@@ -1216,31 +1240,31 @@ class NotificationCenter extends IPSModule
                 if ($user['inactive']) {
                     continue;
                 }
-                $wfc_instID = $this->GetArrayElem($user, 'wfc_instID', 0);
-                if ($wfc_instID > 0) {
+                $webfront_instID = $this->GetArrayElem($user, 'webfront_instID', 0);
+                if ($webfront_instID > 0) {
                     $targets[] = [
-                        'user'       => $user,
-                        'mode'       => self::$MODE_WFC,
+                        'user' => $user,
+                        'mode' => self::$MODE_WEBFRONT,
                     ];
                 }
                 $mail_addr = $this->GetArrayElem($user, 'mail_addr', '');
                 if ($mail_instID > 0 && $mail_addr != '') {
                     $targets[] = [
-                        'user'       => $user,
-                        'mode'       => self::$MODE_MAIL,
+                        'user' => $user,
+                        'mode' => self::$MODE_MAIL,
                     ];
                 }
                 $sms_telno = $this->GetArrayElem($user, 'sms_telno', '');
                 if ($sms_instID > 0 && $sms_telno != '') {
                     $targets[] = [
-                        'user'       => $user,
-                        'mode'       => self::$MODE_SMS,
+                        'user' => $user,
+                        'mode' => self::$MODE_SMS,
                     ];
                 }
                 if ($scriptID > 0) {
                     $targets[] = [
-                        'user'       => $user,
-                        'mode'       => self::$MODE_SCRIPT,
+                        'user' => $user,
+                        'mode' => self::$MODE_SCRIPT,
                     ];
                 }
             }
