@@ -216,7 +216,7 @@ class NotificationRule extends IPSModule
         $items[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Webfront',
-            'expanded ' => false,
+            'expanded'  => false,
             'items'     => [
                 [
                     'type'    => 'RowLayout',
@@ -265,7 +265,7 @@ class NotificationRule extends IPSModule
                 $items[] = [
                     'type'      => 'ExpansionPanel',
                     'caption'   => 'Script',
-                    'expanded ' => false,
+                    'expanded'  => false,
                     'items'     => [
                         [
                             'type'    => 'RowLayout',
@@ -308,7 +308,7 @@ class NotificationRule extends IPSModule
         $formElements[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Default values',
-            'expanded ' => false,
+            'expanded'  => false,
             'items'     => $items,
         ];
 
@@ -659,7 +659,7 @@ class NotificationRule extends IPSModule
         $formActions[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Expert area',
-            'expanded ' => false,
+            'expanded'  => false,
             'items'     => [
                 [
                     'type'    => 'Button',
@@ -672,7 +672,7 @@ class NotificationRule extends IPSModule
         $formActions[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Test area',
-            'expanded ' => false,
+            'expanded'  => false,
             'items'     => [
                 [
                     'type'    => 'TestCenter',

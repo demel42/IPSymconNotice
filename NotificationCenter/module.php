@@ -275,12 +275,12 @@ class NotificationCenter extends IPSModule
         $formElements[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Basic configuration',
-            'expanded ' => false,
+            'expanded'  => false,
             'items'     => [
                 [
                     'type'      => 'ExpansionPanel',
                     'caption'   => 'Webfront',
-                    'expanded ' => false,
+                    'expanded'  => false,
                     'items'     => [
                         [
                             'type'    => 'RowLayout',
@@ -330,7 +330,7 @@ class NotificationCenter extends IPSModule
                 [
                     'type'      => 'ExpansionPanel',
                     'caption'   => 'E-Mail',
-                    'expanded ' => false,
+                    'expanded'  => false,
                     'items'     => [
                         [
                             'type'         => 'SelectModule',
@@ -349,7 +349,7 @@ class NotificationCenter extends IPSModule
                 [
                     'type'      => 'ExpansionPanel',
                     'caption'   => 'SMS',
-                    'expanded ' => false,
+                    'expanded'  => false,
                     'items'     => [
                         [
                             'type'         => 'SelectInstance',
@@ -368,7 +368,7 @@ class NotificationCenter extends IPSModule
                 [
                     'type'      => 'ExpansionPanel',
                     'caption'   => 'Script',
-                    'expanded ' => false,
+                    'expanded'  => false,
                     'items'     => [
                         [
                             'type'    => 'SelectScript',
@@ -520,7 +520,7 @@ class NotificationCenter extends IPSModule
         $formElements[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Logging',
-            'expanded ' => false,
+            'expanded'  => false,
             'items'     => [
                 [
                     'type'    => 'SelectScript',
@@ -708,7 +708,7 @@ class NotificationCenter extends IPSModule
         $formActions[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Expert area',
-            'expanded ' => false,
+            'expanded'  => false,
             'items'     => [
                 [
                     'type'    => 'Button',
@@ -721,7 +721,7 @@ class NotificationCenter extends IPSModule
         $formActions[] = [
             'type'      => 'ExpansionPanel',
             'caption'   => 'Test area',
-            'expanded ' => false,
+            'expanded'  => false,
             'items'     => [
                 [
                     'type'    => 'TestCenter',
@@ -946,7 +946,7 @@ class NotificationCenter extends IPSModule
         $params = array_merge($webfront_defaults, $params);
 
         $text = $this->GetArrayElem($params, 'text', $text);
-        $subject = $this->GetArrayElem($params, 'subject', $text);
+        $subject = isset($params['subject']) ? substr($params['subject'], 0, 32) : '';
         $sound = $this->GetArrayElem($params, 'sound', '');
         if ($sound == '') {
             $severity = $this->GetArrayElem($params, 'severity', self::$SEVERITY_UNKNOWN);
@@ -975,10 +975,10 @@ class NotificationCenter extends IPSModule
         $target = $this->TargetEncode($user_id, 'wf');
         if ($r == false) {
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $target]);
-            $this->Log($s, self::$SEVERITY_WARN, []);
+            $this->Log($s, 'warn', []);
         } else {
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $target]);
-            $this->Log($s, self::$SEVERITY_DEBUG, []);
+            $this->Log($s, 'debug', []);
         }
         return $r;
     }

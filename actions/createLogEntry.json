@@ -5,7 +5,7 @@
         {
             "type": "ValidationTextBox",
             "name": "TEXT",
-            "caption": "TEXT"
+            "caption": "Text"
         },
         {
             "type": "Select",

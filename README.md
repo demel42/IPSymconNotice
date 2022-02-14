@@ -164,8 +164,9 @@ GUIDs
 - Instanzen:
   - NotificationCenter: `{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}`
   - NotificationRule: `{2335FF1E-9628-E363-AAEC-11DE75788A13}`
+  - NotificationTimer: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
 
-- 0.9 @ 12.02.2022 16:58 (test)
+- 0.9 @ 14.02.2022 18:37 (test)
   - initial
