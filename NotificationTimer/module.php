@@ -320,8 +320,8 @@ class NotificationTimer extends IPSModule
             'items'   => [
                 [
                     'type'      => 'Button',
-                    'caption'   => 'Start timer',
-                    'onClick'   => 'Notification_StartTimer($id, true);'
+                    'caption'   => 'Trigger timer',
+                    'onClick'   => 'Notification_TriggerTimer($id, true);'
                 ],
                 [
                     'type'      => 'Button',
@@ -380,8 +380,13 @@ class NotificationTimer extends IPSModule
         return $formActions;
     }
 
-    public function StartTimer(bool $force = false)
+    public function TriggerTimer(bool $force = false)
     {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return;
+        }
+
         $conditions = $this->ReadPropertyString('conditions');
         if ($conditions != '' && $conditions != []) {
             $passed = IPS_IsConditionPassing($conditions);
@@ -441,8 +446,8 @@ class NotificationTimer extends IPSModule
     {
         $started = $this->GetValue('TimerStarted');
         $startedS = $started ? date('d.m.Y H:i:s', $started) : '';
-
         $this->SendDebug(__FUNCTION__, 'started=' . $startedS, 0);
+
         if ($started) {
             $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
             $this->SetValue('TimerStarted', 0);

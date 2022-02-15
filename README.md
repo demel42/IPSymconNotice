@@ -107,7 +107,7 @@ Wiederholung neu geprüft).
 
 Gemäß den angegebenen Einstellungen wird eine entsprechende Benachrichtigungs-Regel aufgerufen, dabei können durch vielfältige EInstellungen Naxchrichtentext, Betreff und Schwergrad angepasst werden.
 
-Ein laufender Timer wird standardmässig durch erneuten Aufruf nicht wieder ausgelöst (siehe _StartTimer_).
+Ein laufender Timer wird standardmässig durch erneuten Aufruf nicht wieder ausgelöst (siehe _TriggerTimer_).
 
 
 ## 2. Voraussetzungen
@@ -158,7 +158,7 @@ _Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (sieh
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
 ### _NotificationTimer_
-`int Notification_StartTimer(integer $InstanzID, boolean $Force)`
+`int Notification_TriggerTimer(integer $InstanzID, boolean $Force)`
 Es wird der Timer ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Timer neu gestartet.
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
