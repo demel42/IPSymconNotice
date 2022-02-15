@@ -27,6 +27,10 @@
 			"or": "oder",
 			"Variable": "Variable",
 			"Maximum repetitions": "maximale Wiederholungen",
+			"Recovery": "Wiederherstellung",
+			"Recovery notification": "Benachrichtigung bei Wiederherstellung",
+			"\"Subject\" for recovery": "\"Betreff\" bei Wiederherstellung",
+			"\"Message text\" for recovery": "\"Nachricht\" für die Wiederherstellung",
 
 			"Seconds": "Sekunden",
 			"Minutes": "Minuten",
@@ -45,6 +49,13 @@
 			"Severity": "Schweregrad",
 			"Message text": "Nachricht",
 			"Subject": "Betreff",
+
+			"undef": "- nicht angegeben -",
+			"Information": "Information",
+			"Notice": "Hinweis",
+			"Warning": "Warnung",
+			"Alert": "Alarm",
+			"Debug": "Fehlersuche",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",

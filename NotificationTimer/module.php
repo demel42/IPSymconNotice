@@ -40,6 +40,10 @@ class NotificationTimer extends IPSModule
 
         $this->RegisterPropertyInteger('max_repetitions', 0);
 
+        $this->RegisterPropertyBoolean('recovery_notify', 0);
+        $this->RegisterPropertyString('recovery_message', '');
+        $this->RegisterPropertyString('recovery_subject', '');
+
         $this->InstallVarProfiles(false);
 
         $this->RegisterAttributeInteger('repetition', 0);
@@ -278,6 +282,29 @@ class NotificationTimer extends IPSModule
                         ],
                     ],
                 ],
+                [
+                    'type'     => 'ExpansionPanel',
+                    'expanded' => false,
+                    'caption'  => 'Recovery',
+                    'items'    => [
+                        [
+                            'type'    => 'CheckBox',
+                            'name'    => 'recovery_notify',
+                            'caption' => 'Recovery notification'
+                        ],
+                        [
+                            'type'      => 'ValidationTextBox',
+                            'name'      => 'recovery_subject',
+                            'caption'   => '"Subject" for recovery',
+                        ],
+                        [
+                            'type'      => 'ValidationTextBox',
+                            'name'      => 'recovery_message',
+                            'caption'   => '"Message text" for recovery',
+                            'multiline' => true,
+                        ],
+                    ],
+                ],
             ],
         ];
 
@@ -334,9 +361,14 @@ class NotificationTimer extends IPSModule
                             'caption'  => 'Repetition',
                         ],
                         [
+                            'type'     => 'CheckBox',
+                            'name'     => 'recovery',
+                            'caption'  => 'Recovery',
+                        ],
+                        [
                             'type'    => 'Button',
                             'caption' => 'Show notification details',
-                            'onClick' => 'Notification_ShowNotificationDetails($id, $repetition, time());',
+                            'onClick' => 'Notification_ShowNotificationDetails($id, $repetition, 0, $recovery);',
                         ],
                     ],
                 ],
@@ -377,7 +409,7 @@ class NotificationTimer extends IPSModule
                 $delay_timemode = $this->ReadPropertyInteger('delay_timemode');
                 $msec = $this->CalcByTimemode($delay_timemode, $delay_value) * 1000;
                 if ($msec == 0) {
-                    $this->Notify($repetition++, $started);
+                    $this->Notify($repetition++, $started, false);
                     $pause_value = $this->ReadPropertyInteger('pause_value');
                     $pause_varID = $this->ReadPropertyInteger('pause_varID');
                     $pause_timemode = $this->ReadPropertyInteger('pause_timemode');
@@ -391,6 +423,11 @@ class NotificationTimer extends IPSModule
                 $this->SetTimerInterval('LoopTimer', $msec);
             }
         } else {
+            $recovery_notify = $this->ReadPropertyBoolean('recovery_notify');
+            $repetition = $this->ReadAttributeInteger('repetition');
+            if ($recovery_notify && $repetition > 0) {
+                $this->Notify($repetition, $started, true);
+            }
             if ($started) {
                 $this->SendDebug(__FUNCTION__, 'trigger stopped (conditions)', 0);
                 $this->SetValue('TimerStarted', 0);
@@ -432,7 +469,7 @@ class NotificationTimer extends IPSModule
 
         $this->SendDebug(__FUNCTION__, $conditionsS . ', started=' . $startedS . ', repetition=' . $repetition, 0);
         if ($passed) {
-            $this->Notify($repetition++, $started);
+            $this->Notify($repetition++, $started, false);
             $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
             if ($max_repetitions == 0 || $repetition < $max_repetitions) {
                 $pause_value = $this->ReadPropertyInteger('pause_value');
@@ -452,6 +489,10 @@ class NotificationTimer extends IPSModule
                 $this->SetTimerInterval('LoopTimer', 0);
             }
         } else {
+            $recovery_notify = $this->ReadPropertyBoolean('recovery_notify');
+            if ($recovery_notify && $repetition > 0) {
+                $this->Notify($repetition, $started, true);
+            }
             if ($started) {
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetValue('TimerStarted', 0);
@@ -527,16 +568,24 @@ class NotificationTimer extends IPSModule
         return $val * $mul;
     }
 
-    private function Notify(int $repetition, int $started)
+    private function Notify(int $repetition, int $started, bool $recovery)
     {
+        $startedS = $started ? date('d.m.Y H:i:s', $started) : '';
+        $this->SendDebug(__FUNCTION__, 'repetition=' . $repetition . ', started=' . $startedS . ', recovery=' . $this->bool2str($recovery), 0);
+
         $ruleID = $this->ReadPropertyInteger('ruleID');
         $severity = $this->ReadPropertyInteger('severity');
         $severity_increase = $this->ReadPropertyBoolean('severity_increase');
         if ($severity_increase) {
             $severity = min(self::$SEVERITY_ALERT, $severity + $repetition);
         }
-        $subject = $this->ReadPropertyString('subject');
-        $message = $this->ReadPropertyString('message');
+        if ($recovery) {
+            $subject = $this->ReadPropertyString('recovery_subject');
+            $message = $this->ReadPropertyString('recovery_message');
+        } else {
+            $subject = $this->ReadPropertyString('subject');
+            $message = $this->ReadPropertyString('message');
+        }
         $script = $this->ReadPropertyString('script');
         if ($script != '') {
             $params = [
@@ -544,9 +593,10 @@ class NotificationTimer extends IPSModule
                 'started'    => $started,
                 'severity'   => $severity,
                 'ruleID'     => $ruleID,
+                'recovery'   => $recovery,
             ];
             @$r = IPS_RunScriptTextWaitEx($script, $params);
-            $this->SendDebug(__FUNCTION__, 'script(..., ' . print_r($params, true) . ' => ' . $r, 0);
+            $this->SendDebug(__FUNCTION__, 'script("...", ' . print_r($params, true) . ' => ' . $r, 0);
             if ($r != false) {
                 @$j = json_decode($r, true);
                 if ($j != false) {
@@ -593,21 +643,31 @@ class NotificationTimer extends IPSModule
         return $r;
     }
 
-    public function ShowNotificationDetails(int $repetition, int $started)
+    public function ShowNotificationDetails(int $repetition, int $started, bool $recovery)
     {
+        if ($started == 0) {
+            $started = $this->GetValue('TimerStarted');
+        }
+
         $ruleID = $this->ReadPropertyInteger('ruleID');
         $severity = $this->ReadPropertyInteger('severity');
-        $subject = $this->ReadPropertyString('subject');
-        $message = $this->ReadPropertyString('message');
+        if ($recovery) {
+            $subject = $this->ReadPropertyString('recovery_subject');
+            $message = $this->ReadPropertyString('recovery_message');
+        } else {
+            $subject = $this->ReadPropertyString('subject');
+            $message = $this->ReadPropertyString('message');
+        }
         $script = $this->ReadPropertyString('script');
         if ($script != '') {
             $params = [
                 'repetition'    => $repetition,
                 'started'       => $started,
                 'severity'      => $severity,
+                'ruleID'        => $ruleID,
+                'recovery'      => $recovery,
             ];
             $r = IPS_RunScriptTextWaitEx($script, $params);
-            $this->SendDebug(__FUNCTION__, 'script(..., ' . print_r($params, true) . ' => ' . $r, 0);
             if ($r != false) {
                 @$j = json_decode($r, true);
                 if ($j != false) {
