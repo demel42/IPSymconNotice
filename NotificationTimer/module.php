@@ -332,12 +332,18 @@ class NotificationTimer extends IPSModule
     public function StartTimer(bool $force = false)
     {
         $conditions = $this->ReadPropertyString('conditions');
-        $passed = IPS_IsConditionPassing($conditions);
+        if ($conditions != '' && $conditions != []) {
+            $passed = IPS_IsConditionPassing($conditions);
+            $conditionsS = 'conditions ' . ($passed ? 'passed' : 'blocked');
+        } else {
+            $passed = true;
+            $conditionsS = 'no conditions';
+        }
 
         $started = $this->GetValue('TimerStarted');
         $startedS = $started ? date('d.m.Y H:i:s', $started) : '';
 
-        $this->SendDebug(__FUNCTION__, 'conditions ' . ($passed ? 'passed' : 'blocked') . ', started=' . $startedS, 0);
+        $this->SendDebug(__FUNCTION__, $conditionsS . ', started=' . $startedS, 0);
         if ($passed) {
             if ($started == 0 || $force) {
                 $started = time();
@@ -392,14 +398,20 @@ class NotificationTimer extends IPSModule
     public function CheckTimer()
     {
         $conditions = $this->ReadPropertyString('conditions');
-        $passed = IPS_IsConditionPassing($conditions);
+        if ($conditions != '' && $conditions != []) {
+            $passed = IPS_IsConditionPassing($conditions);
+            $conditionsS = 'conditions ' . ($passed ? 'passed' : 'blocked');
+        } else {
+            $passed = true;
+            $conditionsS = 'no conditions';
+        }
 
         $started = $this->GetValue('TimerStarted');
         $startedS = $started ? date('d.m.Y H:i:s', $started) : '';
 
         $repetition = $this->ReadAttributeInteger('repetition');
 
-        $this->SendDebug(__FUNCTION__, 'conditions ' . ($passed ? 'passed' : 'blocked') . ', started=' . $startedS . ', repetition=' . $repetition, 0);
+        $this->SendDebug(__FUNCTION__, $conditionsS . ', started=' . $startedS . ', repetition=' . $repetition, 0);
         if ($passed) {
             $this->Notify($repetition++, $started);
             $max_repetitions = $this->ReadPropertyInteger('max_repetitions');

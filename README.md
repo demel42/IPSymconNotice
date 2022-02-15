@@ -43,12 +43,12 @@ Kürzel _Debug_, Wert 9
 
 Die Idee ist dabei, das Benachrichtigungen in Gruppen zusammengefasst werden, die den gleichen Empfängerkreis haben.
 
-Hierzu gibt es zwei Module:
+Hierzu gibt es drei Module:
 
 ### Benachrichtigungs-Zentrale (_NotificationCenter_)
 Hier werden grundsätzlich Einstellungen gemacht, unter anderem die _Benutzer_ mit deren Kommunikationswegen angelegt.
 Zu jedem Benutzer wird eine Variable angelegt, die den Anwesenheitsstatus repräsentiert. Da es ja ganz unterschiedliche Wege gibt, wie Anwesenheiten ermittelt werden,
-wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen übertragen werden;
+wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen der Benachrichtigungs-Zentrale übertragen werden;
 hierfür gibt es eine passende _RequestAction_.
 
 Es gibt die Präsezstatus:
@@ -97,7 +97,17 @@ Ersatzwert, wenn keine der sonstigen Bedingungen zutrifft
 
 Die Liste der Bedingungen wird der Reihefolge nach abgearbeitet, was insbesondere für _erster Anwesender der Liste_ und _wenn sonst keiner_ relevant ist.
 
-Eine Benachrichtigungsregel ist immer mit einer Benachrichtigungezentrale verknüpft; gibt es nur eine Zentrale kann die Angabe entfallen, da er sich die ersten Zentrale sucht.
+Eine Benachrichtigungsregel ist immer mit einer Benachrichtigungs-Zentrale verknüpft; gibt es nur eine Zentrale kann die Angabe entfallen, da die Regel sich dann die
+erste Zentrale sucht.
+
+### Benachrichtigungs-Timer (_NotificationTimer_)
+Hiermit können Benachrichtigungs-Regeln verzögert bzw. wiederholt aufgerufen werden
+Neben der Timerfunktion können auch Bedingungen angegeben werden, die gültig sein müssen, damit der Timer anläuft bzw. weiterläuft (die Bedingungen werden bei jeder
+Wiederholung neu geprüft).
+
+Gemäß den angegebenen Einstellungen wird eine entsprechende Benachrichtigungs-Regel aufgerufen, dabei können durch vielfältige EInstellungen Naxchrichtentext, Betreff und Schwergrad angepasst werden.
+
+Ein laufender Timer wird standardmässig durch erneuten Aufruf nicht wieder ausgelöst (siehe _StartTimer_).
 
 
 ## 2. Voraussetzungen
@@ -131,21 +141,30 @@ Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Mod
 
 Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als Gerät _Notification Center_ auswählen.
 
-Für jede Regeln eine Instanz vom Typ _Notification Rule_ anlegen
+Für jede Regel muss eine Instanz vom Typ _Notification Rule_ angelegt werden, bei Bedarf _NotificationTimer_
 
 ## 4. Funktionsreferenz
 
+### _NotificationCenter_
+`boolean Notification_Log(integer $InstanzID, string $Text, mixed $Severity, array $Params)`<br>
+Erzeugt einen Eintrag in dem Protokoll vom _NotificationCenter_.
+_Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben)
+Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
+
+### _NotificationRule_
 `boolean Notification_TriggerRule(integer $InstanzID, string $Message, string $Subject, mixed $Severity, array $Params)`<br>
 Löst die Benachrichtigungsregel aus und gemäß der Definition die Benachrichtigungen.
-Der Aufruf erfolgt in dem entsprechenden Script, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
-_InstanzID_ muss vom Typ _NotificationRule_ sein.
+_Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben)
+Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
-`boolean Notification_Log(integer $InstanzID, string $Text, mixed $Severity, array $Params)`<br>
-Der Aufruf erfolgt in dem entsprechenden Script, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
-_InstanzID_ muss vom Typ _NotificationCenter_ sein.
+### _NotificationTimer_
+`int Notification_StartTimer(integer $InstanzID, boolean $Force)`
+Es wird der Timer ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Timer neu gestartet.
+Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
-`int Notification_SeverityDecode(integer $InstanzID, string $ident)`
-wandelt die o.g. Kennungen des _Schweregrades_ in den numerischen Wert um.
+`int Notification_StopTimer(integer $InstanzID)`
+Es wird ein ggfs. laufender Timer ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Timer neu gestartet.
+Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
 ## 5. Konfiguration
 
