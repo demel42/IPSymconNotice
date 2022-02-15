@@ -603,12 +603,14 @@ class NotificationTimer extends IPSModule
         $s .= $this->Translate('Notification rule') . '=' . IPS_GetName($ruleID) . '(' . $ruleID . ')' . PHP_EOL;
         $s .= PHP_EOL;
         $s .= '- ' . $this->Translate('Subject') . ' -' . PHP_EOL;
-		if ($subject!='')
-			$s .= $subject . PHP_EOL;
+        if ($subject != '') {
+            $s .= $subject . PHP_EOL;
+        }
         $s .= PHP_EOL;
-        $s .= '- ' . $this->Translate('Message text') . ' -' . PHP_EOL ;
-		if ($message!='')
-        $s .= $message . PHP_EOL;
+        $s .= '- ' . $this->Translate('Message text') . ' -' . PHP_EOL;
+        if ($message != '') {
+            $s .= $message . PHP_EOL;
+        }
         echo $s;
     }
 }
