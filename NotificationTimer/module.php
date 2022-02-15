@@ -86,6 +86,25 @@ class NotificationTimer extends IPSModule
             }
         }
 
+        $conditions = json_decode($this->ReadPropertyString('conditions'), true);
+        if ($conditions != false) {
+            foreach ($conditions as $condition) {
+                $vars = $condition['rules']['variable'];
+                foreach ($vars as $var) {
+                    $variableID = $var['variableID'];
+                    if ($variableID > 0) {
+                        $this->RegisterReference($variableID);
+                    }
+                    if ($var['type'] == 1) {
+                        $oid = $var['value'];
+                        if ($oid > 0) {
+                            $this->RegisterReference($oid);
+                        }
+                    }
+                }
+            }
+        }
+
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->SetTimerInterval('LoopTimer', 0);
