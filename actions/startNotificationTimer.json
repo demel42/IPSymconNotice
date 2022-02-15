@@ -1,6 +1,6 @@
 {
     "id": "{BFC2AEA7-3D74-A815-9760-9D86F03F2D1F}",
-    "caption": "Start notification timer",
+    "caption": "Start timer",
     "form": [
         {
             "type": "CheckBox",
@@ -16,12 +16,12 @@
     },
     "priority": 10,
     "category": "target",
-    "description": "Start timer if condition passed",
+    "description": "Start notification timer if conditions passed",
     "locale": {
         "de": {
-            "Start notification timer": "Benachrichtigungs-Timer starten",
+            "Start timer": "Timer starten",
             "Force": "erzwingen",
-            "Start timer if condition passed": "Timer starten, wenn Bedingung erfüllt"
+            "Start notification timer if conditions passed": "Benachrichtigungs-Timer starten, wenn die Bedingungen erfüllt sind"
         }
     }
 }
