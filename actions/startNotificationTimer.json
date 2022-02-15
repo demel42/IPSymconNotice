@@ -1,0 +1,27 @@
+{
+    "id": "{BFC2AEA7-3D74-A815-9760-9D86F03F2D1F}",
+    "caption": "Start notification timer",
+    "form": [
+        {
+            "type": "CheckBox",
+            "name": "FORCE",
+            "caption": "Force"
+        }
+    ],
+    "action": "Notification_StartTimer($_IPS['TARGET'], $_IPS['FORCE']);",
+    "restrictions": {
+        "objectType": [ 1 ],
+        "moduleID": [ "{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}" ],
+        "includeEnvironments": [ "TestCommands", "Default" ]
+    },
+    "priority": 10,
+    "category": "target",
+    "description": "Start timer if condition passed",
+    "locale": {
+        "de": {
+            "Start notification timer": "Benachrichtigungs-Timer starten",
+            "Force": "erzwingen",
+            "Start timer if condition passed": "Timer starten, wenn Bedingung erfüllt"
+        }
+    }
+}
