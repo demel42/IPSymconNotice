@@ -218,7 +218,7 @@ class NotificationCenter extends IPSModule
         $propertyNames = ['mail_instID', 'sms_instID', 'scriptID'];
         foreach ($propertyNames as $name) {
             $oid = $this->ReadPropertyInteger($name);
-            if ($oid > 0) {
+            if ($oid >= 10000) {
                 $this->RegisterReference($oid);
             }
         }
@@ -226,7 +226,7 @@ class NotificationCenter extends IPSModule
         if ($users != false) {
             foreach ($users as $user) {
                 $oid = $this->GetArrayElem($user, 'webfront_instID', 0);
-                if ($oid > 0) {
+                if ($oid >= 10000) {
                     $this->RegisterReference($oid);
                 }
             }
@@ -449,7 +449,7 @@ class NotificationCenter extends IPSModule
                 'moduleID' => '{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}',
             ],
         ];
-        if ($this->ReadPropertyInteger('mail_instID') > 0) {
+        if ($this->ReadPropertyInteger('mail_instID') >= 10000) {
             $columns[] = [
                 'caption' => 'Mail address',
                 'name'    => 'mail_addr',
@@ -461,7 +461,7 @@ class NotificationCenter extends IPSModule
                 ],
             ];
         }
-        if ($this->ReadPropertyInteger('sms_instID') > 0) {
+        if ($this->ReadPropertyInteger('sms_instID') >= 10000) {
             $columns[] = [
                 'caption' => 'SMS telno',
                 'name'    => 'sms_telno',
@@ -473,7 +473,7 @@ class NotificationCenter extends IPSModule
                 ],
             ];
         }
-        if ($this->ReadPropertyInteger('scriptID') > 0) {
+        if ($this->ReadPropertyInteger('scriptID') >= 10000) {
             $columns[] = [
                 'caption' => 'Script params',
                 'name'    => 'script_params',
@@ -1241,27 +1241,27 @@ class NotificationCenter extends IPSModule
                     continue;
                 }
                 $webfront_instID = $this->GetArrayElem($user, 'webfront_instID', 0);
-                if ($webfront_instID > 0) {
+                if ($webfront_instID >= 10000) {
                     $targets[] = [
                         'user' => $user,
                         'mode' => self::$MODE_WEBFRONT,
                     ];
                 }
                 $mail_addr = $this->GetArrayElem($user, 'mail_addr', '');
-                if ($mail_instID > 0 && $mail_addr != '') {
+                if ($mail_instID >= 10000 && $mail_addr != '') {
                     $targets[] = [
                         'user' => $user,
                         'mode' => self::$MODE_MAIL,
                     ];
                 }
                 $sms_telno = $this->GetArrayElem($user, 'sms_telno', '');
-                if ($sms_instID > 0 && $sms_telno != '') {
+                if ($sms_instID >= 10000 && $sms_telno != '') {
                     $targets[] = [
                         'user' => $user,
                         'mode' => self::$MODE_SMS,
                     ];
                 }
-                if ($scriptID > 0) {
+                if ($scriptID >= 10000) {
                     $targets[] = [
                         'user' => $user,
                         'mode' => self::$MODE_SCRIPT,
@@ -1315,7 +1315,7 @@ class NotificationCenter extends IPSModule
     {
         $this->SendDebug(__FUNCTION__, 'text=' . $text . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
         $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
-        if ($logger_scriptID > 0) {
+        if ($logger_scriptID >= 10000) {
             $params['text'] = $text;
             $params['severity'] = $severity;
             @$r = IPS_RunScriptWaitEx($logger_scriptID, $params);

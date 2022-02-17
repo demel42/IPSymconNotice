@@ -85,7 +85,7 @@ class NotificationTimer extends IPSModule
         $propertyNames = ['ruleID', 'delay_varID', 'pause_varID'];
         foreach ($propertyNames as $name) {
             $oid = $this->ReadPropertyInteger($name);
-            if ($oid > 0) {
+            if ($oid >= 10000) {
                 $this->RegisterReference($oid);
             }
         }
@@ -96,12 +96,12 @@ class NotificationTimer extends IPSModule
                 $vars = $condition['rules']['variable'];
                 foreach ($vars as $var) {
                     $variableID = $var['variableID'];
-                    if ($variableID > 0) {
+                    if ($variableID >= 10000) {
                         $this->RegisterReference($variableID);
                     }
                     if ($var['type'] == 1) {
                         $oid = $var['value'];
-                        if ($oid > 0) {
+                        if ($oid >= 10000) {
                             $this->RegisterReference($oid);
                         }
                     }

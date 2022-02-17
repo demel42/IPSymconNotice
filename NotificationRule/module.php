@@ -55,7 +55,7 @@ class NotificationRule extends IPSModule
     {
         $targets = false;
         $notificationCenter = $this->GetNotificationCenter();
-        if ($notificationCenter > 0) {
+        if ($notificationCenter >= 10000) {
             $targets = Notification_GetTargetList($notificationCenter);
         }
         $this->SendDebug(__FUNCTION__, 'targets=' . print_r($targets, true), 0);
@@ -66,7 +66,7 @@ class NotificationRule extends IPSModule
     {
         $presence = false;
         $notificationCenter = $this->GetNotificationCenter();
-        if ($notificationCenter > 0) {
+        if ($notificationCenter >= 10000) {
             $presence = Notification_GetPresence($notificationCenter);
         }
         $this->SendDebug(__FUNCTION__, 'presence=' . print_r($presence, true), 0);
@@ -126,7 +126,7 @@ class NotificationRule extends IPSModule
         $propertyNames = ['notificationCenter'];
         foreach ($propertyNames as $name) {
             $oid = $this->ReadPropertyInteger($name);
-            if ($oid > 0) {
+            if ($oid >= 10000) {
                 $this->RegisterReference($oid);
             }
         }
@@ -259,9 +259,9 @@ class NotificationRule extends IPSModule
         ];
 
         $notificationCenter = $this->GetNotificationCenter();
-        if ($notificationCenter > 0) {
+        if ($notificationCenter >= 10000) {
             $scriptID = (int) IPS_GetProperty($notificationCenter, 'scriptID');
-            if ($scriptID > 0) {
+            if ($scriptID >= 10000) {
                 $items[] = [
                     'type'      => 'ExpansionPanel',
                     'caption'   => 'Script',
@@ -435,7 +435,7 @@ class NotificationRule extends IPSModule
         $targetV = $this->EvaluateRule();
         if ($targetV != false) {
             $notificationCenter = $this->GetNotificationCenter();
-            if ($notificationCenter > 0) {
+            if ($notificationCenter >= 10000) {
                 foreach ($targetV as $target) {
                     $r = $this->TargetDecode($target);
                     $mode = $this->ModeDecode($r['mode']);
