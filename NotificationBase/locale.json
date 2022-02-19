@@ -1,7 +1,8 @@
 {
     "translations": {
         "de": {
-			"Notification center": "Benachrichtigungs-Zentrale",
+			"Notification base": "Benachrichtigungs-Basis",
+
 			"Disable instance": "Instanz deaktivieren",
 
 			"Users": "Benutzer",

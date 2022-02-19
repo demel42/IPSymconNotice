@@ -2,6 +2,7 @@
     "translations": {
         "de": {
 			"Notification timer": "Benachrichtigungs-Timer",
+			"Notification rule": "Benachrichtigungs-Regel",
 
 			"Disable instance": "Instanz deaktivieren",
 
@@ -12,7 +13,6 @@
 
 			"Conditions": "Bedingungen",
 			"Notification details": "Benachrichtigung-Details",
-			"Notification rule": "Benachrichtigungs-Regel",
 			"Initial severity": "Initialer Schweregrad",
 			"Increase severity each repetition": "Schweregrad bei jeder Wiederholung erhöhen",
 			"Static \"message text\"": "statische \"Nachricht\"",
@@ -26,11 +26,11 @@
 			"Fix value": "fester Wert",
 			"or": "oder",
 			"Variable": "Variable",
-			"Maximum repetitions": "maximale Wiederholungen",
+			"Maximum repetitions (0=infinite)": "maximale Wiederholungen (0=unendlich)",
 			"Recovery": "Wiederherstellung",
 			"Recovery notification": "Benachrichtigung bei Wiederherstellung",
-			"\"Subject\" for recovery": "\"Betreff\" bei Wiederherstellung",
-			"\"Message text\" for recovery": "\"Nachricht\" für die Wiederherstellung",
+			"Alternate \"Subject\" for recovery": "alternativer \"Betreff\" bei Wiederherstellung",
+			"Alternate \"Message text\" for recovery": "alternativer \"Nachricht\" für die Wiederherstellung",
 
 			"Seconds": "Sekunden",
 			"Minutes": "Minuten",
@@ -44,7 +44,8 @@
 			"Expert area": "Experten-Bereich",
 			"Test area": "Test-Bereich",
 			"Show notification details": "Benachrichtigung-Details anzeigen",
-			"Repetition": "Wiederholung",
+			"Current repetition": "aktuelle Wiederholung",
+			"Is the recovery": "ist die Wiederherstellung",
 			"Result of notification details": "Ergebnis der Benachrichtigung-Details",
 			"Severity": "Schweregrad",
 			"Message text": "Nachricht",

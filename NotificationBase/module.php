@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
 require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
 
-class NotificationCenter extends IPSModule
+class NotificationBase extends IPSModule
 {
     use StubsCommonLib;
     use NotificationLocalLib;
@@ -55,19 +55,19 @@ class NotificationCenter extends IPSModule
 
         $this->RegisterPropertyBoolean('severity_notice_show', true);
         $this->RegisterPropertyInteger('severity_notice_expire', 48);
-        $this->RegisterPropertyInteger('severity_notice_color', hexdec('507dca'));
+        $this->RegisterPropertyInteger('severity_notice_color', 0x507dca);
 
         $this->RegisterPropertyBoolean('severity_warn_show', true);
         $this->RegisterPropertyInteger('severity_warn_expire', 7 * 24);
-        $this->RegisterPropertyInteger('severity_warn_color', hexdec('f57d0c'));
+        $this->RegisterPropertyInteger('severity_warn_color', 0xf57d0c);
 
         $this->RegisterPropertyBoolean('severity_alert_show', true);
         $this->RegisterPropertyInteger('severity_alert_expire', 0);
-        $this->RegisterPropertyInteger('severity_alert_color', hexdec('fc1a29'));
+        $this->RegisterPropertyInteger('severity_alert_color', 0xfc1a29);
 
         $this->RegisterPropertyBoolean('severity_debug_show', false);
         $this->RegisterPropertyInteger('severity_debug_expire', 0);
-        $this->RegisterPropertyInteger('severity_debug_color', hexdec('696969'));
+        $this->RegisterPropertyInteger('severity_debug_color', 0x696969);
 
         $this->InstallVarProfiles(false);
     }
@@ -252,7 +252,7 @@ class NotificationCenter extends IPSModule
 
         $formElements[] = [
             'type'    => 'Label',
-            'caption' => 'Notification center'
+            'caption' => 'Notification base'
         ];
 
         @$s = $this->CheckConfiguration();
@@ -971,15 +971,22 @@ class NotificationCenter extends IPSModule
         $targetID = $this->GetArrayElem($params, 'TargetID', 0);
 
         @$r = WFC_PushNotification($webfront_instID, $subject, $text, $sound, $targetID);
-        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $text . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'done' : 'failed'), 0);
-        $target = $this->TargetEncode($user_id, 'wf');
-        if ($r == false) {
-            $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $target]);
-            $this->Log($s, 'warn', []);
-        } else {
-            $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $target]);
+        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $text . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
+
+        if ($r) {
+            $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $text . '" succeed';
+            $this->LogMessage($s, KL_MESSAGE);
+
+            $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'wf')]);
             $this->Log($s, 'debug', []);
+        } else {
+            $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $text . '" failed';
+            $this->LogMessage($s, KL_NOTIFY);
+
+            $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'wf')]);
+            $this->Log($s, 'warn', []);
         }
+
         return $r;
     }
 
@@ -1040,7 +1047,22 @@ class NotificationCenter extends IPSModule
         $subject = $this->GetArrayElem($params, 'subject', $text);
 
         @$r = SMTP_SendMailEx($mail_instID, $mail_addr, $subject, $text);
-        $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', "' . $mail_addr . '", "' . $subject . '", "' . $text . '") ' . ($r ? 'done' : 'failed'), 0);
+        $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', "' . $mail_addr . '", "' . $subject . '", "' . $text . '") ' . ($r ? 'succeed' : 'failed'), 0);
+
+        if ($r) {
+            $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $text . '" succeed';
+            $this->LogMessage($s, KL_MESSAGE);
+
+            $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'mail')]);
+            $this->Log($s, 'debug', []);
+        } else {
+            $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $text . '" failed';
+            $this->LogMessage($s, KL_NOTIFY);
+
+            $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'mail')]);
+            $this->Log($s, 'warn', []);
+        }
+
         return $r;
     }
 
@@ -1105,15 +1127,30 @@ class NotificationCenter extends IPSModule
         switch ($moduleID) {
             case '{96102E00-FD8C-4DD3-A3C2-376A44895AC2}': // SMS REST
                 @$r = SMS_Send($sms_instID, $sms_telno, $text);
-                $this->SendDebug(__FUNCTION__, 'SMS_Send(' . $sms_instID . ', "' . $sms_telno . '", "' . $text . '") ' . ($r ? 'done' : 'failed'), 0);
+                $this->SendDebug(__FUNCTION__, 'SMS_Send(' . $sms_instID . ', "' . $sms_telno . '", "' . $text . '") ' . ($r ? 'succeed' : 'failed'), 0);
                 break;
             case '{D8C71279-8E04-4466-8996-04B6B6CF2B1D}': // Sipgate
                 @$r = Sipgate_SendSMS($sms_instID, $sms_telno, $text);
-                $this->SendDebug(__FUNCTION__, 'Sipgate_SendSMS(' . $sms_instID . ', "' . $sms_telno . '", "' . $text . '") ' . ($r ? 'done' : 'failed'), 0);
+                $this->SendDebug(__FUNCTION__, 'Sipgate_SendSMS(' . $sms_instID . ', "' . $sms_telno . '", "' . $text . '") ' . ($r ? 'succeed' : 'failed'), 0);
                 break;
             default:
                 break;
         }
+
+        if ($r) {
+            $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $text . '" succeed';
+            $this->LogMessage($s, KL_MESSAGE);
+
+            $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'sms')]);
+            $this->Log($s, 'debug', []);
+        } else {
+            $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $text . '" failed';
+            $this->LogMessage($s, KL_NOTIFY);
+
+            $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'sms')]);
+            $this->Log($s, 'warn', []);
+        }
+
         return $r;
     }
 
@@ -1194,7 +1231,21 @@ class NotificationCenter extends IPSModule
         }
 
         @$r = IPS_RunScriptWaitEx($scriptID, $params);
-        $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'done' : 'failed'), 0);
+        $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'succeed' : 'failed'), 0);
+
+        if ($r) {
+            $s = 'scripting @' . $user_id . ' "' . $text . '" succeed';
+            $this->LogMessage($s, KL_MESSAGE);
+
+            $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'script')]);
+            $this->Log($s, 'debug', []);
+        } else {
+            $s = 'scripting @' . $user_id . ' "' . $text . '" failed';
+            $this->LogMessage($s, KL_NOTIFY);
+
+            $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'failed')]);
+            $this->Log($s, 'warn', []);
+        }
         return $r;
     }
 
@@ -1319,7 +1370,7 @@ class NotificationCenter extends IPSModule
             $params['text'] = $text;
             $params['severity'] = $severity;
             @$r = IPS_RunScriptWaitEx($logger_scriptID, $params);
-            $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $logger_scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'done' : 'failed'), 0);
+            $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $logger_scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'succeed' : 'failed'), 0);
             return $r;
         }
 
@@ -1369,7 +1420,7 @@ class NotificationCenter extends IPSModule
             $new_notification['targets'] = $params['targets'];
         }
         $new_notifications[] = $new_notification;
-        usort($new_notifications, ['NotificationCenter', 'cmp_notifications']);
+        usort($new_notifications, ['NotificationBase', 'cmp_notifications']);
         $new_data = $old_data;
         $new_data['counter'] = $counter;
         $new_data['notifications'] = $new_notifications;

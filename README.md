@@ -45,10 +45,10 @@ Die Idee ist dabei, das Benachrichtigungen in Gruppen zusammengefasst werden, di
 
 Hierzu gibt es drei Module:
 
-### Benachrichtigungs-Zentrale (_NotificationCenter_)
+### Benachrichtigungs-Basis (_NotificationBase_)
 Hier werden grundsätzlich Einstellungen gemacht, unter anderem die _Benutzer_ mit deren Kommunikationswegen angelegt.
 Zu jedem Benutzer wird eine Variable angelegt, die den Anwesenheitsstatus repräsentiert. Da es ja ganz unterschiedliche Wege gibt, wie Anwesenheiten ermittelt werden,
-wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen der Benachrichtigungs-Zentrale übertragen werden;
+wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen der Benachrichtigungs-Basis übertragen werden;
 hierfür gibt es eine passende _RequestAction_.
 
 Es gibt die Präsezstatus:
@@ -97,8 +97,8 @@ Ersatzwert, wenn keine der sonstigen Bedingungen zutrifft
 
 Die Liste der Bedingungen wird der Reihefolge nach abgearbeitet, was insbesondere für _erster Anwesender der Liste_ und _wenn sonst keiner_ relevant ist.
 
-Eine Benachrichtigungsregel ist immer mit einer Benachrichtigungs-Zentrale verknüpft; gibt es nur eine Zentrale kann die Angabe entfallen, da die Regel sich dann die
-erste Zentrale sucht.
+Eine Benachrichtigungsregel ist immer mit einer Benachrichtigungs-Basis verknüpft; gibt es nur eine Benachrichtigungs-Basis kann die Angabe entfallen, da die Regel sich dann die
+erste Instanz sucht.
 
 ### Benachrichtigungs-Timer (_NotificationTimer_)
 Hiermit können Benachrichtigungs-Regeln verzögert bzw. wiederholt aufgerufen werden
@@ -139,15 +139,15 @@ Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Mod
 
 ### b. Einrichtung in IPS
 
-Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als Gerät _Notification Center_ auswählen.
+Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als Gerät _Notification Base_ auswählen.
 
-Für jede Regel muss eine Instanz vom Typ _Notification Rule_ angelegt werden, bei Bedarf _NotificationTimer_
+Für jede Regel muss eine Instanz vom Typ _Notification Rule_ angelegt werden, bei Bedarf _Notification Timer_
 
 ## 4. Funktionsreferenz
 
-### _NotificationCenter_
+### _NotificationBase_
 `boolean Notification_Log(integer $InstanzID, string $Text, mixed $Severity, array $Params)`<br>
-Erzeugt einen Eintrag in dem Protokoll vom _NotificationCenter_.
+Erzeugt einen Eintrag in dem Protokoll vom _NotificationBase_.
 _Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben)
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
@@ -156,6 +156,9 @@ Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine ents
 Löst die Benachrichtigungsregel aus und gemäß der Definition die Benachrichtigungen.
 _Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben)
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
+
+`boolean Notification_Log(integer $InstanzID, string $Text, mixed $Severity, array $Params)`<br>
+Ruft die FUnktion der _NotificationBase_, dient zur Vereinfachung
 
 ### _NotificationTimer_
 `int Notification_TriggerTimer(integer $InstanzID, boolean $Force)`
@@ -181,11 +184,11 @@ GUIDs
 
 - Modul: `{1E92B006-FB7D-6020-B296-2F31BC2892C4}`
 - Instanzen:
-  - NotificationCenter: `{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}`
+  - NotificationBase: `{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}`
   - NotificationRule: `{2335FF1E-9628-E363-AAEC-11DE75788A13}`
   - NotificationTimer: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
 
-- 0.9 @ 16.02.2022 10:57 (test)
+- 0.9 @ 18.02.2022 17:21 (test)
   - initial

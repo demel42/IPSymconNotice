@@ -196,9 +196,9 @@ class NotificationTimer extends IPSModule
                 ],
                 [
                     'type'      => 'ValidationTextBox',
+                    'multiline' => true,
                     'name'      => 'message',
                     'caption'   => 'Static "message text"',
-                    'multiline' => true,
                 ],
                 [
                     'type'      => 'Label',
@@ -235,6 +235,7 @@ class NotificationTimer extends IPSModule
                         ],
                         [
                             'type'    => 'Label',
+                            'bold'    => true,
                             'caption' => 'or'
                         ],
                         [
@@ -265,6 +266,7 @@ class NotificationTimer extends IPSModule
                         ],
                         [
                             'type'    => 'Label',
+                            'bold'    => true,
                             'caption' => 'or'
                         ],
                         [
@@ -278,7 +280,7 @@ class NotificationTimer extends IPSModule
                             'type'    => 'NumberSpinner',
                             'minimum' => 0,
                             'name'    => 'max_repetitions',
-                            'caption' => 'Maximum repetitions'
+                            'caption' => 'Maximum repetitions (0=infinite)'
                         ],
                     ],
                 ],
@@ -293,15 +295,17 @@ class NotificationTimer extends IPSModule
                             'caption' => 'Recovery notification'
                         ],
                         [
-                            'type'      => 'ValidationTextBox',
-                            'name'      => 'recovery_subject',
-                            'caption'   => '"Subject" for recovery',
+                            'type'               => 'ValidationTextBox',
+                            'name'               => 'recovery_subject',
+                            'caption'            => 'Alternate "Subject" for recovery',
+                            'width'              => '500px',
                         ],
                         [
-                            'type'      => 'ValidationTextBox',
-                            'name'      => 'recovery_message',
-                            'caption'   => '"Message text" for recovery',
-                            'multiline' => true,
+                            'type'               => 'ValidationTextBox',
+                            'multiline'          => true,
+                            'name'               => 'recovery_message',
+                            'caption'            => 'Alternate "Message text" for recovery',
+                            'width'              => '500px',
                         ],
                     ],
                 ],
@@ -358,12 +362,12 @@ class NotificationTimer extends IPSModule
                         [
                             'type'     => 'NumberSpinner',
                             'name'     => 'repetition',
-                            'caption'  => 'Repetition',
+                            'caption'  => 'Current repetition',
                         ],
                         [
                             'type'     => 'CheckBox',
                             'name'     => 'recovery',
-                            'caption'  => 'Recovery',
+                            'caption'  => 'Is the recovery',
                         ],
                         [
                             'type'    => 'Button',
@@ -404,40 +408,49 @@ class NotificationTimer extends IPSModule
             if ($started == 0 || $force) {
                 $started = time();
                 $this->SetValue('TimerStarted', $started);
-                $repetition = 0;
-
-                $delay_value = $this->ReadPropertyInteger('delay_value');
-                $delay_varID = $this->ReadPropertyInteger('delay_varID');
-                if ($delay_varID != 0) {
-                    $delay_value = GetValueInteger($delay_varID);
+                $varID = $this->ReadPropertyInteger('delay_varID');
+                if ($varID != 0) {
+                    $tval = GetValueInteger($varID);
+                } else {
+                    $tval = $this->ReadPropertyInteger('delay_value');
                 }
-                $delay_timemode = $this->ReadPropertyInteger('delay_timemode');
-                $msec = $this->CalcByTimemode($delay_timemode, $delay_value) * 1000;
-                if ($msec == 0) {
+                if ($tval > 0) {
+                    $tmode = $this->ReadPropertyInteger('delay_timemode');
+                    $sec = $this->CalcByTimemode($tmode, $tval);
+                    $tvS = $tval . $this->Timemode2Suffix($tmode);
+                    $this->WriteAttributeInteger('repetition', 0);
+                    $this->LogMessage($conditionsS . ', start with delay of ' . $tvS, KL_NOTIFY);
+                } else {
                     $this->Notify($repetition++, $started, false);
-                    $pause_value = $this->ReadPropertyInteger('pause_value');
-                    $pause_varID = $this->ReadPropertyInteger('pause_varID');
-                    $pause_timemode = $this->ReadPropertyInteger('pause_timemode');
-                    if ($pause_varID != 0) {
-                        $pause_value = GetValueInteger($pause_varID);
+                    $varID = $this->ReadPropertyInteger('pause_varID');
+                    if ($varID != 0) {
+                        $tval = GetValueInteger($varID);
+                    } else {
+                        $tval = $this->ReadPropertyInteger('pause_value');
                     }
-                    $msec = $this->CalcByTimemode($pause_timemode, $pause_value) * 1000;
+                    $tmode = $this->ReadPropertyInteger('pause_timemode');
+                    $sec = $this->CalcByTimemode($tmode, $tval);
+                    $tvS = $tval . $this->Timemode2Suffix($tmode);
+                    $this->WriteAttributeInteger('repetition', 1);
+                    $this->LogMessage($conditionsS . ', start with notification and pause ' . $tvS, KL_NOTIFY);
                 }
-                $this->WriteAttributeInteger('repetition', $repetition);
-                $this->SendDebug(__FUNCTION__, 'timer=' . $msec . ' msec', 0);
-                $this->SetTimerInterval('LoopTimer', $msec);
+                $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
+                $this->SetTimerInterval('LoopTimer', $sec * 1000);
             }
         } else {
-            $recovery_notify = $this->ReadPropertyBoolean('recovery_notify');
-            $repetition = $this->ReadAttributeInteger('repetition');
-            if ($recovery_notify && $repetition > 0) {
-                $this->Notify($repetition, $started, true);
-            }
             if ($started) {
-                $this->SendDebug(__FUNCTION__, 'trigger stopped (conditions)', 0);
+                $recovery_notify = $this->ReadPropertyBoolean('recovery_notify');
+                $repetition = $this->ReadAttributeInteger('repetition');
+                if ($recovery_notify && $repetition > 0) {
+                    $this->Notify($repetition, $started, true);
+                }
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
+                $this->LogMessage($conditionsS . ', stop running timer', KL_NOTIFY);
+                $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
+            } else {
+                $this->LogMessage($conditionsS, KL_NOTIFY);
             }
         }
     }
@@ -449,9 +462,10 @@ class NotificationTimer extends IPSModule
         $this->SendDebug(__FUNCTION__, 'started=' . $startedS, 0);
 
         if ($started) {
-            $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
             $this->SetValue('TimerStarted', 0);
             $this->WriteAttributeInteger('repetition', 0);
+            $this->LogMessage('timer stopped manual', KL_NOTIFY);
+            $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
             $this->SetTimerInterval('LoopTimer', 0);
         }
     }
@@ -477,20 +491,24 @@ class NotificationTimer extends IPSModule
             $this->Notify($repetition++, $started, false);
             $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
             if ($max_repetitions == 0 || $repetition < $max_repetitions) {
-                $pause_value = $this->ReadPropertyInteger('pause_value');
-                $pause_varID = $this->ReadPropertyInteger('pause_varID');
-                $pause_timemode = $this->ReadPropertyInteger('pause_timemode');
-                if ($pause_varID != 0) {
-                    $pause_value = GetValueInteger($pause_varID);
+                $varID = $this->ReadPropertyInteger('pause_varID');
+                if ($varID != 0) {
+                    $tval = GetValueInteger($varID);
+                } else {
+                    $tval = $this->ReadPropertyInteger('pause_value');
                 }
-                $msec = $this->CalcByTimemode($pause_timemode, $pause_value) * 1000;
+                $tmode = $this->ReadPropertyInteger('pause_timemode');
+                $sec = $this->CalcByTimemode($tmode, $tval);
+                $tvS = $tval . $this->Timemode2Suffix($tmode);
                 $this->WriteAttributeInteger('repetition', $repetition);
-                $this->SendDebug(__FUNCTION__, 'timer=' . $msec . ' msec', 0);
-                $this->SetTimerInterval('LoopTimer', $msec);
+                $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and pause ' . $tvS, KL_NOTIFY);
+                $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
+                $this->SetTimerInterval('LoopTimer', $sec * 1000);
             } else {
-                $this->SendDebug(__FUNCTION__, 'timer stopped (max_repetitions)', 0);
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
+                $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and stop timer (max repetitions)', KL_NOTIFY);
+                $this->SendDebug(__FUNCTION__, 'timer stopped (max_repetitions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             }
         } else {
@@ -499,9 +517,10 @@ class NotificationTimer extends IPSModule
                 $this->Notify($repetition, $started, true);
             }
             if ($started) {
-                $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
+                $this->LogMessage($conditionsS . ', stop timer', KL_NOTIFY);
+                $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             }
         }
@@ -586,7 +605,13 @@ class NotificationTimer extends IPSModule
         }
         if ($recovery) {
             $subject = $this->ReadPropertyString('recovery_subject');
+            if ($subject == false) {
+                $subject = $this->ReadPropertyString('subject');
+            }
             $message = $this->ReadPropertyString('recovery_message');
+            if ($message == false) {
+                $message = $this->ReadPropertyString('message');
+            }
         } else {
             $subject = $this->ReadPropertyString('subject');
             $message = $this->ReadPropertyString('message');

@@ -2,7 +2,8 @@
     "translations": {
         "de": {
 			"Notification rule": "Benachrichtigungs-Regel",
-			"Notification center": "Benachrichtigungs-Zentrale",
+			"Notification base": "Benachrichtigungs-Basis",
+
 			"Disable instance": "Instanz deaktivieren",
 
 			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",

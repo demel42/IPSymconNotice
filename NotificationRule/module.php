@@ -16,7 +16,7 @@ class NotificationRule extends IPSModule
 
         $this->RegisterPropertyBoolean('module_disable', false);
 
-        $this->RegisterPropertyInteger('notificationCenter', 0);
+        $this->RegisterPropertyInteger('notificationBase', 0);
 
         $this->RegisterPropertyString('default_subject', '');
         $this->RegisterPropertyString('default_text', '');
@@ -39,12 +39,12 @@ class NotificationRule extends IPSModule
         $this->InstallVarProfiles(false);
     }
 
-    private function GetNotificationCenter()
+    private function GetNotificationBase()
     {
-        $notificationCenter = $this->ReadPropertyInteger('notificationCenter');
+        $notificationBase = $this->ReadPropertyInteger('notificationBase');
         $ids = IPS_GetInstanceListByModuleID('{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}');
         foreach ($ids as $id) {
-            if ($notificationCenter == 0 || $notificationCenter == $id) {
+            if ($notificationBase == 0 || $notificationBase == $id) {
                 return $id;
             }
         }
@@ -54,9 +54,9 @@ class NotificationRule extends IPSModule
     private function GetTargetList()
     {
         $targets = false;
-        $notificationCenter = $this->GetNotificationCenter();
-        if ($notificationCenter >= 10000) {
-            $targets = Notification_GetTargetList($notificationCenter);
+        $notificationBase = $this->GetNotificationBase();
+        if ($notificationBase >= 10000) {
+            $targets = Notification_GetTargetList($notificationBase);
         }
         $this->SendDebug(__FUNCTION__, 'targets=' . print_r($targets, true), 0);
         return $targets;
@@ -65,9 +65,9 @@ class NotificationRule extends IPSModule
     private function GetPresence()
     {
         $presence = false;
-        $notificationCenter = $this->GetNotificationCenter();
-        if ($notificationCenter >= 10000) {
-            $presence = Notification_GetPresence($notificationCenter);
+        $notificationBase = $this->GetNotificationBase();
+        if ($notificationBase >= 10000) {
+            $presence = Notification_GetPresence($notificationBase);
         }
         $this->SendDebug(__FUNCTION__, 'presence=' . print_r($presence, true), 0);
         return $presence;
@@ -78,9 +78,9 @@ class NotificationRule extends IPSModule
         $s = '';
         $r = [];
 
-        if ($this->GetNotificationCenter() == 0) {
-            $this->SendDebug(__FUNCTION__, '"notificationCenter" ist empty and no global NotificationCenter-instance', 0);
-            $field = $this->Translate('Notification center');
+        if ($this->GetNotificationBase() == 0) {
+            $this->SendDebug(__FUNCTION__, '"notificationBase" ist empty and no global NotificationBase-instance', 0);
+            $field = $this->Translate('Notification base');
             $r[] = $this->TranslateFormat('Field "{$field}" is not configured', ['{$field}' => $field]);
         }
 
@@ -123,7 +123,7 @@ class NotificationRule extends IPSModule
             $this->UnregisterReference($ref);
         }
 
-        $propertyNames = ['notificationCenter'];
+        $propertyNames = ['notificationBase'];
         foreach ($propertyNames as $name) {
             $oid = $this->ReadPropertyInteger($name);
             if ($oid >= 10000) {
@@ -174,8 +174,8 @@ class NotificationRule extends IPSModule
         $formElements[] = [
             'type'         => 'SelectInstance',
             'validModules' => ['{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}'],
-            'name'         => 'notificationCenter',
-            'caption'      => 'Notification center'
+            'name'         => 'notificationBase',
+            'caption'      => 'Notification base'
         ];
 
         $targets = $this->GetTargetList();
@@ -258,9 +258,9 @@ class NotificationRule extends IPSModule
             ],
         ];
 
-        $notificationCenter = $this->GetNotificationCenter();
-        if ($notificationCenter >= 10000) {
-            $scriptID = (int) IPS_GetProperty($notificationCenter, 'scriptID');
+        $notificationBase = $this->GetNotificationBase();
+        if ($notificationBase >= 10000) {
+            $scriptID = (int) IPS_GetProperty($notificationBase, 'scriptID');
             if ($scriptID >= 10000) {
                 $items[] = [
                     'type'      => 'ExpansionPanel',
@@ -434,8 +434,10 @@ class NotificationRule extends IPSModule
 
         $targetV = $this->EvaluateRule();
         if ($targetV != false) {
-            $notificationCenter = $this->GetNotificationCenter();
-            if ($notificationCenter >= 10000) {
+            $s = 'triggered rule #' . $this->InstanceID . ', targets=' . implode(',', $targetV);
+            $this->LogMessage($s, KL_MESSAGE);
+            $notificationBase = $this->GetNotificationBase();
+            if ($notificationBase >= 10000) {
                 foreach ($targetV as $target) {
                     $r = $this->TargetDecode($target);
                     $mode = $this->ModeDecode($r['mode']);
@@ -506,15 +508,18 @@ class NotificationRule extends IPSModule
                         $l_params['sound'] = $sound;
                     }
 
-                    $r = Notification_Deliver($notificationCenter, $target, $text, $l_params);
+                    $r = Notification_Deliver($notificationBase, $target, $text, $l_params);
                 }
 
                 $log_additionally = $this->ReadPropertyBoolean('log_additionally');
                 if ($log_additionally) {
                     $l_params['targets'] = $targetV;
-                    Notification_Log($notificationCenter, $text, $severity, $l_params);
+                    Notification_Log($notificationBase, $text, $severity, $l_params);
                 }
             }
+        } else {
+            $s = 'triggered rule #' . $this->InstanceID . ' with no matching targets';
+            $this->LogMessage($s, KL_NOTIFY);
         }
         return $result;
     }
@@ -708,5 +713,19 @@ class NotificationRule extends IPSModule
         $formActions[] = $this->GetInformationForm();
 
         return $formActions;
+    }
+
+    public function Log(string $text, string $severity, array $params)
+    {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return false;
+        }
+
+        $notificationBase = $this->GetNotificationBase();
+        if ($notificationBase >= 10000) {
+            return Notification_Log($notificationBase, $text, $severity, $params);
+        }
+        return false;
     }
 }
