@@ -407,7 +407,7 @@ class NotificationTimer extends IPSModule
         if ($passed) {
             if ($started == 0 || $force) {
                 $started = time();
-                $this->SetValue('TimerStarted', $started);
+                $repetition = 0;
                 $varID = $this->ReadPropertyInteger('delay_varID');
                 if ($varID != 0) {
                     $tval = GetValueInteger($varID);
@@ -418,8 +418,7 @@ class NotificationTimer extends IPSModule
                     $tmode = $this->ReadPropertyInteger('delay_timemode');
                     $sec = $this->CalcByTimemode($tmode, $tval);
                     $tvS = $tval . $this->Timemode2Suffix($tmode);
-                    $this->WriteAttributeInteger('repetition', 0);
-                    $this->LogMessage($conditionsS . ', start with delay of ' . $tvS, KL_NOTIFY);
+                    $msg = $conditionsS . ', start with delay of ' . $tvS;
                 } else {
                     $this->Notify($repetition++, $started, false);
                     $varID = $this->ReadPropertyInteger('pause_varID');
@@ -431,9 +430,11 @@ class NotificationTimer extends IPSModule
                     $tmode = $this->ReadPropertyInteger('pause_timemode');
                     $sec = $this->CalcByTimemode($tmode, $tval);
                     $tvS = $tval . $this->Timemode2Suffix($tmode);
-                    $this->WriteAttributeInteger('repetition', 1);
-                    $this->LogMessage($conditionsS . ', start with notification and pause ' . $tvS, KL_NOTIFY);
+                    $msg = $conditionsS . ', start with notification and pause ' . $tvS;
                 }
+                $this->SetValue('TimerStarted', $started);
+                $this->WriteAttributeInteger('repetition', $repetition);
+                $this->LogMessage($msg, KL_NOTIFY);
                 $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
                 $this->SetTimerInterval('LoopTimer', $sec * 1000);
             }
@@ -586,10 +587,10 @@ class NotificationTimer extends IPSModule
                 $s = 'd';
                 break;
             default:
-                $mul = 0;
+                $s = '';
                 break;
         }
-        return $val * $mul;
+        return $s;
     }
 
     private function Notify(int $repetition, int $started, bool $recovery)
