@@ -10,10 +10,10 @@ class NotificationTimer extends IPSModule
     use StubsCommonLib;
     use NotificationLocalLib;
 
-    public static $TIMEMODE_SECONDS = 0;
-    public static $TIMEMODE_MINUTES = 1;
-    public static $TIMEMODE_HOURS = 2;
-    public static $TIMEMODE_DAYS = 3;
+    public static $TIMEUNIT_SECONDS = 0;
+    public static $TIMEUNIT_MINUTES = 1;
+    public static $TIMEUNIT_HOURS = 2;
+    public static $TIMEUNIT_DAYS = 3;
 
     public function Create()
     {
@@ -32,11 +32,11 @@ class NotificationTimer extends IPSModule
 
         $this->RegisterPropertyInteger('delay_value', 0);
         $this->RegisterPropertyInteger('delay_varID', 0);
-        $this->RegisterPropertyInteger('delay_timemode', self::$TIMEMODE_MINUTES);
+        $this->RegisterPropertyInteger('delay_timeunit', self::$TIMEUNIT_MINUTES);
 
         $this->RegisterPropertyInteger('pause_value', 0);
         $this->RegisterPropertyInteger('pause_varID', 0);
-        $this->RegisterPropertyInteger('pause_timemode', self::$TIMEMODE_MINUTES);
+        $this->RegisterPropertyInteger('pause_timeunit', self::$TIMEUNIT_MINUTES);
 
         $this->RegisterPropertyInteger('max_repetitions', 0);
 
@@ -223,8 +223,8 @@ class NotificationTimer extends IPSModule
                     'items'    => [
                         [
                             'type'    => 'Select',
-                            'name'    => 'delay_timemode',
-                            'options' => $this->GetTimemodeAsOptions(),
+                            'name'    => 'delay_timeunit',
+                            'options' => $this->GetTimeunitAsOptions(),
                             'caption' => 'Time unit',
                         ],
                         [
@@ -254,8 +254,8 @@ class NotificationTimer extends IPSModule
                     'items'    => [
                         [
                             'type'    => 'Select',
-                            'name'    => 'pause_timemode',
-                            'options' => $this->GetTimemodeAsOptions(),
+                            'name'    => 'pause_timeunit',
+                            'options' => $this->GetTimeunitAsOptions(),
                             'caption' => 'Time unit',
                         ],
                         [
@@ -415,9 +415,9 @@ class NotificationTimer extends IPSModule
                     $tval = $this->ReadPropertyInteger('delay_value');
                 }
                 if ($tval > 0) {
-                    $tmode = $this->ReadPropertyInteger('delay_timemode');
-                    $sec = $this->CalcByTimemode($tmode, $tval);
-                    $tvS = $tval . $this->Timemode2Suffix($tmode);
+                    $unit = $this->ReadPropertyInteger('delay_timeunit');
+                    $sec = $this->CalcByTimeunit($unit, $tval);
+                    $tvS = $tval . $this->Timeunit2Suffix($unit);
                     $msg = $conditionsS . ', start with delay of ' . $tvS;
                 } else {
                     $this->Notify($repetition++, $started, false);
@@ -427,9 +427,9 @@ class NotificationTimer extends IPSModule
                     } else {
                         $tval = $this->ReadPropertyInteger('pause_value');
                     }
-                    $tmode = $this->ReadPropertyInteger('pause_timemode');
-                    $sec = $this->CalcByTimemode($tmode, $tval);
-                    $tvS = $tval . $this->Timemode2Suffix($tmode);
+                    $unit = $this->ReadPropertyInteger('pause_timeunit');
+                    $sec = $this->CalcByTimeunit($unit, $tval);
+                    $tvS = $tval . $this->Timeunit2Suffix($unit);
                     $msg = $conditionsS . ', start with notification and pause ' . $tvS;
                 }
                 $this->SetValue('TimerStarted', $started);
@@ -498,9 +498,9 @@ class NotificationTimer extends IPSModule
                 } else {
                     $tval = $this->ReadPropertyInteger('pause_value');
                 }
-                $tmode = $this->ReadPropertyInteger('pause_timemode');
-                $sec = $this->CalcByTimemode($tmode, $tval);
-                $tvS = $tval . $this->Timemode2Suffix($tmode);
+                $unit = $this->ReadPropertyInteger('pause_timeunit');
+                $sec = $this->CalcByTimeunit($unit, $tval);
+                $tvS = $tval . $this->Timeunit2Suffix($unit);
                 $this->WriteAttributeInteger('repetition', $repetition);
                 $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and pause ' . $tvS, KL_NOTIFY);
                 $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
@@ -527,41 +527,41 @@ class NotificationTimer extends IPSModule
         }
     }
 
-    private function GetTimemodeAsOptions()
+    private function GetTimeunitAsOptions()
     {
         return [
             [
-                'value'   => self::$TIMEMODE_SECONDS,
+                'value'   => self::$TIMEUNIT_SECONDS,
                 'caption' => $this->Translate('Seconds'),
             ],
             [
-                'value'   => self::$TIMEMODE_MINUTES,
+                'value'   => self::$TIMEUNIT_MINUTES,
                 'caption' => $this->Translate('Minutes'),
             ],
             [
-                'value'   => self::$TIMEMODE_HOURS,
+                'value'   => self::$TIMEUNIT_HOURS,
                 'caption' => $this->Translate('Hours'),
             ],
             [
-                'value'   => self::$TIMEMODE_DAYS,
+                'value'   => self::$TIMEUNIT_DAYS,
                 'caption' => $this->Translate('Days'),
             ],
         ];
     }
 
-    private function CalcByTimemode(int $mode, int $val)
+    private function CalcByTimeunit(int $unit, int $val)
     {
-        switch ($mode) {
-            case self::$TIMEMODE_SECONDS:
+        switch ($unit) {
+            case self::$TIMEUNIT_SECONDS:
                 $mul = 1;
                 break;
-            case self::$TIMEMODE_MINUTES:
+            case self::$TIMEUNIT_MINUTES:
                 $mul = 60;
                 break;
-            case self::$TIMEMODE_HOURS:
+            case self::$TIMEUNIT_HOURS:
                 $mul = 60 * 60;
                 break;
-            case self::$TIMEMODE_DAYS:
+            case self::$TIMEUNIT_DAYS:
                 $mul = 60 * 60 * 24;
                 break;
             default:
@@ -571,19 +571,19 @@ class NotificationTimer extends IPSModule
         return $val * $mul;
     }
 
-    private function Timemode2Suffix(int $mode)
+    private function Timeunit2Suffix(int $unit)
     {
-        switch ($mode) {
-            case self::$TIMEMODE_SECONDS:
+        switch ($unit) {
+            case self::$TIMEUNIT_SECONDS:
                 $s = 's';
                 break;
-            case self::$TIMEMODE_MINUTES:
+            case self::$TIMEUNIT_MINUTES:
                 $s = 'm';
                 break;
-            case self::$TIMEMODE_HOURS:
+            case self::$TIMEUNIT_HOURS:
                 $s = 'h';
                 break;
-            case self::$TIMEMODE_DAYS:
+            case self::$TIMEUNIT_DAYS:
                 $s = 'd';
                 break;
             default:
