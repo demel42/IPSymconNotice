@@ -157,6 +157,17 @@ trait NotificationLocalLib
         ];
     }
 
+    private function SeverityEncode($val, $useCaption)
+    {
+        $severityMap = $this->SeverityMapping();
+        if (isset($severityMap[$val])) {
+            $map = $severityMap[$val];
+        } else {
+            $map = $severityMap[self::$SEVERITY_INFO];
+        }
+        return $useCaption ? $this->Translate($map['caption']) : $map['tag'];
+    }
+
     private function SeverityDecode($ident)
     {
         $severity = self::$SEVERITY_INFO;

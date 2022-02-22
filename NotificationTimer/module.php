@@ -721,8 +721,8 @@ class NotificationTimer extends IPSModule
         }
         $s = $this->Translate('Result of notification details') . PHP_EOL;
         $s .= PHP_EOL;
-        $s .= $this->Translate('Severity') . '=' . $severity . PHP_EOL;
-        $s .= $this->Translate('Notification rule') . '=' . IPS_GetName($ruleID) . '(' . $ruleID . ')' . PHP_EOL;
+        $s .= $this->Translate('Severity') . ': ' . $this->SeverityEncode($severity, true) . PHP_EOL;
+        $s .= $this->Translate('Notification rule') . ': ' . IPS_GetName($ruleID) . '(' . $ruleID . ')' . PHP_EOL;
         $s .= PHP_EOL;
         $s .= '- ' . $this->Translate('Subject') . ' -' . PHP_EOL;
         if ($subject != '') {
