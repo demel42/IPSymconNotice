@@ -1,7 +1,7 @@
 {
     "translations": {
         "de": {
-			"Notification timer": "Benachrichtigungs-Timer",
+			"Notification event": "Benachrichtigungs-Ereignis",
 			"Notification rule": "Benachrichtigungs-Regel",
 
 			"Disable instance": "Instanz deaktivieren",
@@ -9,7 +9,7 @@
 			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",
 			"The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
 
-			"Start of timer": "Auslöse-Zeitpunkt",
+			"Start of event": "Auslöse-Zeitpunkt",
 
 			"Conditions": "Bedingungen",
 			"Notification details": "Benachrichtigung-Details",
@@ -26,7 +26,7 @@
 			"Fix value": "fester Wert",
 			"or": "oder",
 			"Variable": "Variable",
-			"Maximum repetitions (0=infinite)": "maximale Wiederholungen (0=unendlich)",
+			"Maximum repetitions (-1=infinite)": "maximale Wiederholungen (-1=unendlich)",
 			"Recovery": "Wiederherstellung",
 			"Recovery notification": "Benachrichtigung bei Wiederherstellung",
 			"Alternate \"Subject\" for recovery": "alternativer \"Betreff\" bei Wiederherstellung",
@@ -37,8 +37,8 @@
 			"Hours": "Stunden",
 			"Days": "Tage",
 
-			"Trigger timer": "Timer auslösen",
-			"Stop timer": "Timer stoppen",
+			"Trigger event": "Ereignis auslösen",
+			"Stop event": "Ereignis stoppen",
 
 			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
 			"Expert area": "Experten-Bereich",

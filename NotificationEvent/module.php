@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
 require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
 
-class NotificationTimer extends IPSModule
+class NotificationEvent extends IPSModule
 {
     use StubsCommonLib;
     use NotificationLocalLib;
@@ -38,7 +38,7 @@ class NotificationTimer extends IPSModule
         $this->RegisterPropertyInteger('pause_varID', 0);
         $this->RegisterPropertyInteger('pause_timeunit', self::$TIMEUNIT_MINUTES);
 
-        $this->RegisterPropertyInteger('max_repetitions', 0);
+        $this->RegisterPropertyInteger('max_repetitions', -1);
 
         $this->RegisterPropertyBoolean('recovery_notify', 0);
         $this->RegisterPropertyString('recovery_message', '');
@@ -76,7 +76,7 @@ class NotificationTimer extends IPSModule
         parent::ApplyChanges();
 
         $vpos = 0;
-        $this->MaintainVariable('TimerStarted', $this->Translate('Start of timer'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
+        $this->MaintainVariable('TimerStarted', $this->Translate('Start of event'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
         $refs = $this->GetReferenceList();
         foreach ($refs as $ref) {
@@ -130,7 +130,7 @@ class NotificationTimer extends IPSModule
 
         $formElements[] = [
             'type'    => 'Label',
-            'caption' => 'Notification timer'
+            'caption' => 'Notification event'
         ];
 
         $s = $this->CheckConfiguration();
@@ -278,9 +278,9 @@ class NotificationTimer extends IPSModule
                         ],
                         [
                             'type'    => 'NumberSpinner',
-                            'minimum' => 0,
+                            'minimum' => -1,
                             'name'    => 'max_repetitions',
-                            'caption' => 'Maximum repetitions (0=infinite)'
+                            'caption' => 'Maximum repetitions (-1=infinite)'
                         ],
                     ],
                 ],
@@ -324,13 +324,13 @@ class NotificationTimer extends IPSModule
             'items'   => [
                 [
                     'type'      => 'Button',
-                    'caption'   => 'Trigger timer',
-                    'onClick'   => 'Notification_TriggerTimer($id, true);'
+                    'caption'   => 'Trigger event',
+                    'onClick'   => 'Notification_TriggerEvent($id, true);'
                 ],
                 [
                     'type'      => 'Button',
-                    'caption'   => 'Stop timer',
-                    'onClick'   => 'Notification_StopTimer($id);'
+                    'caption'   => 'Stop event',
+                    'onClick'   => 'Notification_StopEvent($id);'
                 ],
             ],
         ];
@@ -384,7 +384,7 @@ class NotificationTimer extends IPSModule
         return $formActions;
     }
 
-    public function TriggerTimer(bool $force = false)
+    public function TriggerEvent(bool $force = false)
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
@@ -432,11 +432,20 @@ class NotificationTimer extends IPSModule
                     $tvS = $tval . $this->Timeunit2Suffix($unit);
                     $msg = $conditionsS . ', start with notification and pause ' . $tvS;
                 }
-                $this->SetValue('TimerStarted', $started);
-                $this->WriteAttributeInteger('repetition', $repetition);
-                $this->LogMessage($msg, KL_NOTIFY);
-                $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
-                $this->SetTimerInterval('LoopTimer', $sec * 1000);
+                $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
+                if ($max_repetitions == -1 || $repetition <= $max_repetitions) {
+                    $this->SetValue('TimerStarted', $started);
+                    $this->WriteAttributeInteger('repetition', $repetition);
+                    $this->LogMessage($msg, KL_NOTIFY);
+                    $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
+                    $this->SetTimerInterval('LoopTimer', $sec * 1000);
+                } else {
+                    $this->SetValue('TimerStarted', 0);
+                    $this->WriteAttributeInteger('repetition', 0);
+                    $this->LogMessage($conditionsS . ', no repetition', KL_NOTIFY);
+                    $this->SendDebug(__FUNCTION__, 'no timer (max_repetitions=' . $max_repetitions. ')', 0);
+                    $this->SetTimerInterval('LoopTimer', 0);
+                }
             }
         } else {
             if ($started) {
@@ -456,7 +465,7 @@ class NotificationTimer extends IPSModule
         }
     }
 
-    public function StopTimer()
+    public function StopEvent()
     {
         $started = $this->GetValue('TimerStarted');
         $startedS = $started ? date('d.m.Y H:i:s', $started) : '';
@@ -491,7 +500,7 @@ class NotificationTimer extends IPSModule
         if ($passed) {
             $this->Notify($repetition++, $started, false);
             $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
-            if ($max_repetitions == 0 || $repetition < $max_repetitions) {
+            if ($max_repetitions == -1 || $repetition <= $max_repetitions) {
                 $varID = $this->ReadPropertyInteger('pause_varID');
                 if ($varID != 0) {
                     $tval = GetValueInteger($varID);
@@ -509,7 +518,7 @@ class NotificationTimer extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and stop timer (max repetitions)', KL_NOTIFY);
-                $this->SendDebug(__FUNCTION__, 'timer stopped (max_repetitions)', 0);
+                $this->SendDebug(__FUNCTION__, 'timer stopped (max_repetitions=' . $max_repetitions . ')', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             }
         } else {

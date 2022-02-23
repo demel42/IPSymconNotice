@@ -1,8 +1,8 @@
 {
     "id": "{4652526F-47C6-5249-0219-3AC83FAC2832}",
-    "caption": "Stop timer",
+    "caption": "Stop event",
     "form": [ ],
-    "action": "Notification_StopTimer($_IPS['TARGET']);",
+    "action": "Notification_StopEvent($_IPS['TARGET']);",
     "restrictions": {
         "objectType": [ 1 ],
         "moduleID": [ "{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}" ],
@@ -10,11 +10,11 @@
     },
     "priority": 10,
     "category": "target",
-    "description": "Stop notification timer",
+    "description": "Stop notification event",
     "locale": {
         "de": {
-            "Stop timer": "Timer stoppen",
-            "Stop notification timer": "Benachrichtigungs-Timer stoppen"
+            "Stop event": "Ereignis stoppen",
+            "Stop notification event": "Benachrichtigungs-Ereignis stoppen"
         }
     }
 }

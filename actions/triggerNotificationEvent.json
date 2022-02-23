@@ -1,6 +1,6 @@
 {
     "id": "{BFC2AEA7-3D74-A815-9760-9D86F03F2D1F}",
-    "caption": "Trigger timer",
+    "caption": "Trigger event",
     "form": [
         {
             "type": "CheckBox",
@@ -8,7 +8,7 @@
             "caption": "Force"
         }
     ],
-    "action": "Notification_TriggerTimer($_IPS['TARGET'], $_IPS['FORCE']);",
+    "action": "Notification_TriggerEvent($_IPS['TARGET'], $_IPS['FORCE']);",
     "restrictions": {
         "objectType": [ 1 ],
         "moduleID": [ "{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}" ],
@@ -16,12 +16,12 @@
     },
     "priority": 10,
     "category": "target",
-    "description": "Start notification timer if conditions passed",
+    "description": "Start notification event if conditions passed",
     "locale": {
         "de": {
-            "Trigger timer": "Timer auslösen",
+            "Trigger event": "Ereignis auslösen",
             "Force": "erzwingen",
-            "Start notification timer if conditions passed": "Benachrichtigungs-Timer starten, wenn die Bedingungen erfüllt sind"
+            "Start notification event if conditions passed": "Benachrichtigungs-Ereignis starten, wenn die Bedingungen erfüllt sind"
         }
     }
 }

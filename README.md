@@ -100,14 +100,14 @@ Die Liste der Bedingungen wird der Reihefolge nach abgearbeitet, was insbesonder
 Eine Benachrichtigungsregel ist immer mit einer Benachrichtigungs-Basis verknüpft; gibt es nur eine Benachrichtigungs-Basis kann die Angabe entfallen, da die Regel sich dann die
 erste Instanz sucht.
 
-### Benachrichtigungs-Timer (_NotificationTimer_)
+### Benachrichtigungs-Ereignis (_NotificationEvent_)
 Hiermit können Benachrichtigungs-Regeln verzögert bzw. wiederholt aufgerufen werden
-Neben der Timerfunktion können auch Bedingungen angegeben werden, die gültig sein müssen, damit der Timer anläuft bzw. weiterläuft (die Bedingungen werden bei jeder
+Neben der Timerfunktion können auch Bedingungen angegeben werden, die gültig sein müssen, damit das Ereignis anläuft bzw. weiterläuft (die Bedingungen werden bei jeder
 Wiederholung neu geprüft).
 
 Gemäß den angegebenen Einstellungen wird eine entsprechende Benachrichtigungs-Regel aufgerufen, dabei können durch vielfältige EInstellungen Naxchrichtentext, Betreff und Schwergrad angepasst werden.
 
-Ein laufender Timer wird standardmässig durch erneuten Aufruf nicht wieder ausgelöst (siehe _TriggerTimer_).
+Ein laufendes Ereignis wird standardmässig durch erneuten Aufruf nicht wieder ausgelöst (siehe _TriggerEvent_).
 
 
 ## 2. Voraussetzungen
@@ -141,7 +141,7 @@ Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Mod
 
 Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als Gerät _Notification Base_ auswählen.
 
-Für jede Regel muss eine Instanz vom Typ _Notification Rule_ angelegt werden, bei Bedarf _Notification Timer_
+Für jede Regel muss eine Instanz vom Typ _Notification Rule_ angelegt werden, bei Bedarf _Notification Event_
 
 ## 4. Funktionsreferenz
 
@@ -160,13 +160,13 @@ Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine ents
 `boolean Notification_Log(integer $InstanzID, string $Text, mixed $Severity, array $Params)`<br>
 Ruft die FUnktion der _NotificationBase_, dient zur Vereinfachung
 
-### _NotificationTimer_
-`int Notification_TriggerTimer(integer $InstanzID, boolean $Force)`
-Es wird der Timer ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Timer neu gestartet.
+### _NotificationEvent_
+`int Notification_TriggerEvent(integer $InstanzID, boolean $Force)`
+Es wird das Benachrichtigungs-Ereignis ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Ereignis neu gestartet.
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
-`int Notification_StopTimer(integer $InstanzID)`
-Es wird ein ggfs. laufender Timer ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Timer neu gestartet.
+`int Notification_StopEvent(integer $InstanzID)`
+Es wird ein ggfs. laufendes Benachrichtigungs-Ereignis  ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufendes Ereignis neu gestartet.
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
 ## 5. Konfiguration
@@ -186,7 +186,7 @@ GUIDs
 - Instanzen:
   - NotificationBase: `{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}`
   - NotificationRule: `{2335FF1E-9628-E363-AAEC-11DE75788A13}`
-  - NotificationTimer: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
+  - NotificationEvent: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
 
