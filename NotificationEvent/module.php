@@ -443,7 +443,7 @@ class NotificationEvent extends IPSModule
                     $this->SetValue('TimerStarted', 0);
                     $this->WriteAttributeInteger('repetition', 0);
                     $this->LogMessage($conditionsS . ', no repetition', KL_NOTIFY);
-                    $this->SendDebug(__FUNCTION__, 'no timer (max_repetitions=' . $max_repetitions. ')', 0);
+                    $this->SendDebug(__FUNCTION__, 'no timer (max_repetitions=' . $max_repetitions . ')', 0);
                     $this->SetTimerInterval('LoopTimer', 0);
                 }
             }
@@ -707,10 +707,13 @@ class NotificationEvent extends IPSModule
                 'ruleID'        => $ruleID,
                 'recovery'      => $recovery,
             ];
+            $this->SendDebug(__FUNCTION__, 'script=' . $script, 0);
+            $this->SendDebug(__FUNCTION__, 'params=' . print_r($params, true), 0);
             $r = IPS_RunScriptTextWaitEx($script, $params);
             if ($r != false) {
                 @$j = json_decode($r, true);
                 if ($j != false) {
+                    $this->SendDebug(__FUNCTION__, 'result=' . print_r($j, true), 0);
                     if (isset($j['message'])) {
                         $message = $j['message'];
                     }
@@ -724,8 +727,11 @@ class NotificationEvent extends IPSModule
                         $ruleID = $j['ruleID'];
                     }
                 } else {
+                    $this->SendDebug(__FUNCTION__, 'message=' . $message, 0);
                     $message = $r;
                 }
+            } else {
+                $this->SendDebug(__FUNCTION__, 'no result', 0);
             }
         }
         $s = $this->Translate('Result of notification details') . PHP_EOL;
