@@ -200,45 +200,48 @@ Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Para
 |                                       |         |              | |
 | Meldungen zu Instanz-Aktivitäten      | integer |              | IPS-Meldungen zu Aktivitäten der Instanz |
 
-* unbeweglich
-z.B. für die Benachriochtigung an einen Admin-Mail-Account
+* unbeweglich<br>
+z.B. für die Benachrichtigung an einen Admin-Mail-Account
 
-* Basiskonfiguration / Webfront
-ein in dem Argument _Params_ der Funktion _Notification_TriggerRule_ übergebener bzw. aus den Standardeinstellungen gewonnener Eintrag _TargetID_ wird *WFC_PushNotification* übergeben.
+* Basiskonfiguration / Webfront<br>
+ein in dem Argument _Params_ der Funktion _Notification_TriggerRule_ übergebener bzw. aus den Standardeinstellungen gewonnener Eintrag _TargetID_ wird *WFC_PushNotification* übergeben.<br>
 
-* Basiskonfiguration / Skript
+* Basiskonfiguration / Skript<br>
 alle Argumente werden über *_IPS* weitergegeben
 
--- die in dem Argument _Params_ den Funktionen übergebenen bzw. aus den Standardeinstellungen gewonnener Einträge
+  * die in dem Argument _Params_ den Funktionen übergebenen bzw. aus den Standardeinstellungen gewonnener Einträge
 
--- zusätzlich bei dem Aufruf aus _NotificationRule_
-| Ident              | Typ     | Bedeutung |
-| :----------------- | :------ | :-------- |
-| ruleID             | integer | ID der aufgerufenen _NotificationRule_ |
-| message            | string  | Nachrichten-Text |
-| subject            | string  | Betreff |
-| severity           | integer | Schweregrad |
-| signal             | string  | Signalisierung (Skript) |
-| sound              | string  | Signaltöne (Webfront) |
+  * zusätzlich bei dem Aufruf aus _NotificationRule_
 
+    | Ident              | Typ     | Bedeutung |
+    | :----------------- | :------ | :-------- |
+    | ruleID             | integer | ID der aufgerufenen _NotificationRule_ |
+    | message            | string  | Nachrichten-Text |
+    | subject            | string  | Betreff |
+    | severity           | integer | Schweregrad |
+    | signal             | string  | Signalisierung (Skript) |
+    | sound              | string  | Signaltöne (Webfront) |
 
--- zusätzlich bei dem Aufruf aus _NotificationEvent_
-| Ident              | Typ     | Bedeutung |
-| :----------------- | :------ | :-------- |
-| eventID            | integer | ID des auslösenden _NotificationEvent_ |
-| repetition         | integer | Wiederholung |
-| recovery           | boolean | handelt sich um eine Wiederherstellungs-Mitteilung |
-| started            | integer | Auslöse-Zeitpunkt |
+  * zusätzlich bei dem Aufruf aus _NotificationEvent_
 
-* Protokollierung / Skript
+    | Ident              | Typ     | Bedeutung |
+    | :----------------- | :------ | :-------- |
+    | eventID            | integer | ID des auslösenden _NotificationEvent_ |
+    | repetition         | integer | Wiederholung |
+    | recovery           | boolean | handelt sich um eine Wiederherstellungs-Mitteilung |
+    | started            | integer | Auslöse-Zeitpunkt |
+
+* Protokollierung / Skript<br>
 alle Argumente werden über *_IPS* weitergegeben
 
--- die in dem Argument _Params_ der Funktion _Notification_Log_ übergebenen bzw. aus den Standardeinstellungen gewonnener Einträge
--- zusätzlich
-| Ident              | Typ     | Bedeutung |
-| :----------------- | :------ | :-------- |
-| message            | string  | Nachrichten-Text |
-| severity           | integer | Schweregrad |
+  * die in dem Argument _Params_ der Funktion _Notification_Log_ übergebenen bzw. aus den Standardeinstellungen gewonnener Einträge
+
+  * zusätzlich
+ 
+    | Ident              | Typ     | Bedeutung |
+    | :----------------- | :------ | :-------- |
+    | message            | string  | Nachrichten-Text |
+    | severity           | integer | Schweregrad |
 
 #### Benachrichtigungs-Regeln (_NotifcationRule_)
 
@@ -259,7 +262,7 @@ alle Argumente werden über *_IPS* weitergegeben
 |   Skript                              |         |              | |
 |     Standardwert für Signalisierungen | string  |              | Kodierung von Signalisierungen |
 |                                       |         |              | |
-| Benachrichtigungen protokollieren     | boolean | false        | |
+| Benachrichtigungen protokollieren     | boolean | false        | ermöglicht, das Benachrichtigungen aus mit im enthaltenen automatisch auch mit dem entsprechendem Schweregrad protokolliert werden.<br>|
 |                                       |         |              | |
 | Empfänger                             |         |              | |
 |                                       |         |              | |
@@ -302,50 +305,50 @@ alle Argumente werden über *_IPS* weitergegeben
 |                                       |         |              | |
 | Meldungen zu Instanz-Aktivitäten      | integer |              | IPS-Meldungen zu Aktivitäten der Instanz |
 
-* Skript ...
-den Skript werden in dem Array *_IPS* folgende Daten übergeben
+* Skript ...<br>
+dem Skript werden in dem Array *_IPS* folgende Daten übergeben
 
-| Ident              | Typ     | Bedeutung |
-| :----------------- | :------ | :-------- |
-| recovery           | boolean | handelt sich um eine Wiederherstellungs-Mitteilung |
-| repetition         | integer | Wiederholung |
-| ruleID             | integer | ID der Benachrichtigungs-Regel |
-| severity           | integer | Schweregrad |
-| started            | integer | Auslöse-Zeitpunkt |
+  | Ident              | Typ     | Bedeutung |
+  | :----------------- | :------ | :-------- |
+  | recovery           | boolean | handelt sich um eine Wiederherstellungs-Mitteilung |
+  | repetition         | integer | Wiederholung |
+  | ruleID             | integer | ID der Benachrichtigungs-Regel |
+  | severity           | integer | Schweregrad |
+  | started            | integer | Auslöse-Zeitpunkt |
 
-Zurückgegeben wird entweder json-kodiertes Array mit den optionalen Argumenten
+  Zurückgegeben wird entweder json-kodiertes Array mit den optionalen Argumenten
 
-| Ident              | Typ     | Bedeutung |
-| :----------------- | :------ | :-------- |
-| message            | string  | Nachrichten-Text |
-| ruleID             | integer | ID der Benachrichtigungs-Regel |
-| severity           | integer | Schweregrad |
-| summary            | string  | Betreff |
+  | Ident              | Typ     | Bedeutung |
+  | :----------------- | :------ | :-------- |
+  | message            | string  | Nachrichten-Text |
+  | ruleID             | integer | ID der Benachrichtigungs-Regel |
+  | severity           | integer | Schweregrad |
+  | summary            | string  | Betreff |
 
-geliefert oder ein String, der als _message_ verwendet wird. Die werte überschreiben dann eventuelle Voreinstellungen.
+  oder ein String, der als _message_ verwendet wird. Die werte überschreiben dann eventuelle Voreinstellungen.
 
 Beispiele:
 
-- einfach
-```
-echo 'Status der USV: ' . GetValueFormatted(12345);
-```
-- komplexer
-```
-$r = [];
-if (GetValueBoolean(88888)) {
-    $r['message'] = 'Wasserstand unter der Heizung erkannt';
-} else if (GetValueBoolean(77777)) {
-    $r['message'] = 'Feuchtigkeit unter der Heizung erkannt';
-} else {
-	if ($_IPS['recovery'])
-		$r['message'] = 'Boden unter der Heizung ist wieder trocken';
-	else
-		$r['message'] = 'Heizung-Wassersensor OK';
-    $r['severity'] = 'info';
-}
-echo json_encode($r);
-```
+  einfach
+  ```
+  echo 'Status der USV: ' . GetValueFormatted(12345);
+  ```
+  komplexer
+  ```
+  $r = [];
+  if (GetValueBoolean(88888)) { 
+      $r['message'] = 'Wasserstand unter der Heizung erkannt';
+  } else if (GetValueBoolean(77777)) { 
+      $r['message'] = 'Feuchtigkeit unter der Heizung erkannt';
+  } else { 
+      if ($_IPS['recovery'])
+          $r['message'] = 'Boden unter der Heizung ist wieder trocken';
+      else
+          $r['message'] = 'Heizung-Wassersensor OK';
+      $r['severity'] = 'info';
+  } 
+  echo json_encode($r);
+  ```
 
 ### Variablen
 
