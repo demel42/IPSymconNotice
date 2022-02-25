@@ -31,16 +31,14 @@ setzt entweder das Symcon-Modul **SMS REST** (Clickatell) voraus oder das Modul 
 ein beliebiges Script um die Anbindung sonstiger Benachrichtigungswege / Dienste zu ermögliche. (_Pushover_, _Pushsafer_ etc).
 
 Es werden 5 Schweregrade unterstützt
-- Information<br>
-Kürzel _info_, Wert 1
-- Hinweis<br>
-Kürzel _notice_, Wert 2
-- Warnung<br>
-Kürzel _warn_, Wert 3
-- Alarm<br>
-Kürzel _alert_, Wert 4
-- Fehlersuche<br>
-Kürzel _Debug_, Wert 9
+
+| Bezeichnung | Kürzel | Wert |
+| :---------- | ;----- | :--- |
+| Information | info   | 1 |
+| Hinweis     | notice | 2 |
+| Warnung     | warn   | 3 |
+| Alarm       | alert  | 4 |
+| Fehlersuche | debug  | 5 |
 
 Die Idee ist dabei, das Benachrichtigungen in Gruppen zusammengefasst werden, die den gleichen Empfängerkreis haben.
 
@@ -49,16 +47,16 @@ Hierzu gibt es drei Module:
 ### Benachrichtigungs-Basis (_NotificationBase_)
 Hier werden grundsätzlich Einstellungen gemacht, unter anderem die _Benutzer_ mit deren Kommunikationswegen angelegt.
 Zu jedem Benutzer wird eine Variable angelegt, die den Anwesenheitsstatus repräsentiert. Da es ja ganz unterschiedliche Wege gibt, wie Anwesenheiten ermittelt werden,
-wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen der Benachrichtigungs-Basis übertragen werden;
-hierfür gibt es eine passende _RequestAction_.
+wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen der Benachrichtigungs-Basis
+übertragen werden; hierfür gibt es eine passende _RequestAction_.
 
 Es gibt die Präsezstatus:
-- zu Hause<br>
-Wert 1
-- unterwegs<br>
-Wert 2
-- im Urlaub<br>
-Wert 3
+
+| Status      | Wert |
+| :---------- | :--- |
+| zu Hause    | 1 |
+| unterwegs   | 2 |
+| im Urlaub   | 3 |
 
 Zu den personenbezogenen Präsenz-Status-Variablen (Variable *PresenceState_\<Benutzerkürzel\>*) gibt es noch drei Variablen
 - _alle abwesend_ (Variable _AllAbsent_)<br>
@@ -75,26 +73,15 @@ Hier werden die enwünschen Empfänger (Kombination von Benutzer und Kommunikati
 
 Bedingungen gibt es folgende
 
-- immer<br>
-der eingetragenen Empfänger wird bedingungslos angesprochen
-
-- wenn zu Haus<br>
-der Empfänger wird genutzt, wenn er im Status "zu Hause" ist
-
-- wenn unterwegs<br>
-der Empfänger wird genutzt, wenn er im Status "unterwegs" ist
-
-- erster Anwesender der Liste<br>
-erste Person auf der Liste, die zu Hause ist
-
-- letzter gegangen<br>
-wenn der definierte Benutzer die Person ist, die zuletzt das Haus verlassen hat
-
-- erster gekommen<br>
-wenn der definierte Benutzer die Person ist, die zuerst in das leere Haus gekommen ist
-
-- wenn sonst keiner<br>
-Ersatzwert, wenn keine der sonstigen Bedingungen zutrifft
+| Bezeichnung                 | Bedeutung |
+| :-------------------------- | ;-------- |
+| immer                       | der eingetragenen Empfänger wird bedingungslos angesprochen |
+| wenn zu Haus                | der Empfänger wird genutzt, wenn er im Status "zu Hause" ist |
+| wenn unterwegs              | der Empfänger wird genutzt, wenn er im Status "unterwegs" ist.<br>Hinweis: hier zählt _im Urlaub_ nicht mit |
+| erster Anwesender der Liste | erste Person auf der Liste, die zu Hause ist |
+| letzter gegangen            | wenn der definierte Benutzer die Person ist, die zuletzt das Haus verlassen hat |
+| erster gekommen             | wenn der definierte Benutzer die Person ist, die zuerst in das leere Haus gekommen ist |
+| wenn sonst keiner           | Ersatzwert, wenn keine der sonstigen Bedingungen zutrifft |
 
 Die Liste der Bedingungen wird der Reihefolge nach abgearbeitet, was insbesondere für _erster Anwesender der Liste_ und _wenn sonst keiner_ relevant ist.
 
@@ -399,5 +386,5 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0 @ 25.02.2022 17:24 (beta)
+- 1.0 @ 25.02.2022 17:42 (beta)
   - initiale Version
