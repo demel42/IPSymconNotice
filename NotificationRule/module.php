@@ -36,6 +36,8 @@ class NotificationRule extends IPSModule
 
         $this->RegisterPropertyString('recipients', json_encode([]));
 
+        $this->RegisterPropertyInteger('activity_loglevel', self::$LOGLEVEL_NOTIFY);
+
         $this->InstallVarProfiles(false);
     }
 
@@ -368,6 +370,13 @@ class NotificationRule extends IPSModule
             ],
         ];
 
+        $formElements[] = [
+            'type'     => 'Select',
+            'options'  => $this->LoglevelAsOptions(),
+            'name'     => 'activity_loglevel',
+            'caption'  => 'Instance activity messages in IP-Symcon'
+        ];
+
         return $formElements;
     }
 
@@ -434,8 +443,10 @@ class NotificationRule extends IPSModule
 
         $targetV = $this->EvaluateRule();
         if ($targetV != false) {
-            $s = 'triggered rule #' . $this->InstanceID . ', targets=' . implode(',', $targetV);
-            $this->LogMessage($s, KL_MESSAGE);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
+                $s = 'triggered rule #' . $this->InstanceID . ', targets=' . implode(',', $targetV);
+                $this->LogMessage($s, KL_MESSAGE);
+            }
             $notificationBase = $this->GetNotificationBase();
             if ($notificationBase >= 10000) {
                 foreach ($targetV as $target) {
@@ -518,8 +529,10 @@ class NotificationRule extends IPSModule
                 }
             }
         } else {
-            $s = 'triggered rule #' . $this->InstanceID . ' with no matching targets';
-            $this->LogMessage($s, KL_NOTIFY);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                $s = 'triggered rule #' . $this->InstanceID . ' with no matching targets';
+                $this->LogMessage($s, KL_NOTIFY);
+            }
         }
         return $result;
     }

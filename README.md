@@ -116,26 +116,10 @@ Ein laufendes Ereignis wird standardmässig durch erneuten Aufruf nicht wieder a
 
 ## 3. Installation
 
-### a. Laden des Moduls
+### a. Installation des Moduls
 
-**Installieren über den Module-Store**
-
-Die Webconsole von IP-Symcon mit `http://\<IP-Symcon IP\>:3777/console/` öffnen.
-
-Anschließend oben rechts auf das Symbol für den Modulstore klicken
-
-Im Suchfeld nun *XXXXX* eingeben, das Modul auswählen und auf Installieren drücken.
-
-**Installieren über die Modules-Instanz**
-
-Die Konsole von IP-Symcon öffnen. Im Objektbaum unter Kerninstanzen die Instanz __*Modules*__ durch einen doppelten Mausklick öffnen.
-
-In der _Modules_ Instanz rechts oben auf den Button __*Hinzufügen*__ drücken.
-
-In dem sich öffnenden Fenster folgende URL hinzufügen: `https://github.com/demel42/IPSymconNotification.git`
-und mit _OK_ bestätigen. Ggfs. auf anderen Branch wechseln (Modul-Eintrag editieren, _Zweig_ auswählen).
-
-Anschließend erscheint ein Eintrag für das Modul in der Liste der Instanz _Modules_
+Im ![Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Symcon Notification* zu finden.
+Alternativ kann das Modul im ![Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotification.git` installiert werden.
 
 ### b. Einrichtung in IPS
 
@@ -190,5 +174,5 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0 @ 24.02.2022 11:28 (beta)
+- 1.0 @ 25.02.2022 10:45 (beta)
   - initiale Version

@@ -69,6 +69,8 @@ class NotificationBase extends IPSModule
         $this->RegisterPropertyInteger('severity_debug_expire', 0);
         $this->RegisterPropertyInteger('severity_debug_color', 0x696969);
 
+        $this->RegisterPropertyInteger('activity_loglevel', self::$LOGLEVEL_NOTIFY);
+
         $this->InstallVarProfiles(false);
     }
 
@@ -415,6 +417,12 @@ class NotificationBase extends IPSModule
                             'width'   => '800px',
                         ],
                     ],
+                ],
+                [
+                    'type'     => 'Select',
+                    'options'  => $this->LoglevelAsOptions(),
+                    'name'     => 'activity_loglevel',
+                    'caption'  => 'Instance activity messages in IP-Symcon'
                 ],
             ],
         ];
@@ -974,14 +982,18 @@ class NotificationBase extends IPSModule
         $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $text . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
 
         if ($r) {
-            $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $text . '" succeed';
-            $this->LogMessage($s, KL_MESSAGE);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $text . '" succeed';
+                $this->LogMessage($s, KL_MESSAGE);
+            }
 
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'wf')]);
             $this->Log($s, 'debug', []);
         } else {
-            $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $text . '" failed';
-            $this->LogMessage($s, KL_NOTIFY);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
+                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $text . '" failed';
+                $this->LogMessage($s, KL_NOTIFY);
+            }
 
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'wf')]);
             $this->Log($s, 'warn', []);
@@ -1050,14 +1062,18 @@ class NotificationBase extends IPSModule
         $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', "' . $mail_addr . '", "' . $subject . '", "' . $text . '") ' . ($r ? 'succeed' : 'failed'), 0);
 
         if ($r) {
-            $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $text . '" succeed';
-            $this->LogMessage($s, KL_MESSAGE);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
+                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $text . '" succeed';
+                $this->LogMessage($s, KL_MESSAGE);
+            }
 
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'mail')]);
             $this->Log($s, 'debug', []);
         } else {
-            $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $text . '" failed';
-            $this->LogMessage($s, KL_NOTIFY);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $text . '" failed';
+                $this->LogMessage($s, KL_NOTIFY);
+            }
 
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'mail')]);
             $this->Log($s, 'warn', []);
@@ -1138,14 +1154,18 @@ class NotificationBase extends IPSModule
         }
 
         if ($r) {
-            $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $text . '" succeed';
-            $this->LogMessage($s, KL_MESSAGE);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
+                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $text . '" succeed';
+                $this->LogMessage($s, KL_MESSAGE);
+            }
 
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'sms')]);
             $this->Log($s, 'debug', []);
         } else {
-            $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $text . '" failed';
-            $this->LogMessage($s, KL_NOTIFY);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $text . '" failed';
+                $this->LogMessage($s, KL_NOTIFY);
+            }
 
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'sms')]);
             $this->Log($s, 'warn', []);
@@ -1234,18 +1254,23 @@ class NotificationBase extends IPSModule
         $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'succeed' : 'failed'), 0);
 
         if ($r) {
-            $s = 'scripting @' . $user_id . ' "' . $text . '" succeed';
-            $this->LogMessage($s, KL_MESSAGE);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
+                $s = 'scripting @' . $user_id . ' "' . $text . '" succeed';
+                $this->LogMessage($s, KL_MESSAGE);
+            }
 
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'script')]);
             $this->Log($s, 'debug', []);
         } else {
-            $s = 'scripting @' . $user_id . ' "' . $text . '" failed';
-            $this->LogMessage($s, KL_NOTIFY);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                $s = 'scripting @' . $user_id . ' "' . $text . '" failed';
+                $this->LogMessage($s, KL_NOTIFY);
+            }
 
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'failed')]);
             $this->Log($s, 'warn', []);
         }
+
         return $r;
     }
 

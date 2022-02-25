@@ -36,6 +36,10 @@ trait NotificationLocalLib
     public static $SEVERITY_ALERT = 4;
     public static $SEVERITY_DEBUG = 9;
 
+    public static $LOGLEVEL_NONE = 0;
+    public static $LOGLEVEL_NOTIFY = 1;
+    public static $LOGLEVEL_MESSAGE = 2;
+
     private function GetFormStatus()
     {
         $formStatus = [];
@@ -159,11 +163,11 @@ trait NotificationLocalLib
 
     private function SeverityEncode($val, $useCaption)
     {
-        $severityMap = $this->SeverityMapping();
-        if (isset($severityMap[$val])) {
-            $map = $severityMap[$val];
+        $maps = $this->SeverityMapping();
+        if (isset($maps[$val])) {
+            $map = $maps[$val];
         } else {
-            $map = $severityMap[self::$SEVERITY_INFO];
+            $map = $maps[self::$SEVERITY_INFO];
         }
         return $useCaption ? $this->Translate($map['caption']) : $map['tag'];
     }
@@ -171,8 +175,8 @@ trait NotificationLocalLib
     private function SeverityDecode($ident)
     {
         $severity = self::$SEVERITY_INFO;
-        $severityMap = $this->SeverityMapping();
-        foreach ($severityMap as $index => $map) {
+        $maps = $this->SeverityMapping();
+        foreach ($maps as $index => $map) {
             if ($map['tag'] == strtolower($ident)) {
                 $severity = $index;
                 break;
@@ -183,21 +187,21 @@ trait NotificationLocalLib
 
     private function SeverityAsOptions(bool $withUndef)
     {
-        $severityMap = $this->SeverityMapping();
-        $severity_opts = [];
+        $maps = $this->SeverityMapping();
+        $opts = [];
         if ($withUndef) {
-            $severity_opts[] = [
+            $opts[] = [
                 'caption' => 'undef',
                 'value'   => self::$SEVERITY_UNKNOWN,
             ];
         }
-        foreach ($severityMap as $i => $e) {
-            $severity_opts[] = [
+        foreach ($maps as $i => $e) {
+            $opts[] = [
                 'caption' => $e['caption'],
                 'value'   => $i,
             ];
         }
-        return $severity_opts;
+        return $opts;
     }
 
     private function UsageMapping()
@@ -229,15 +233,43 @@ trait NotificationLocalLib
 
     private function UsageAsOptions()
     {
-        $usageMapping = $this->UsageMapping();
-        $usage_opts = [];
-        foreach ($usageMapping as $u => $e) {
-            $usage_opts[] = [
+        $maps = $this->UsageMapping();
+        $opts = [];
+        foreach ($maps as $u => $e) {
+            $opts[] = [
                 'caption' => $e['caption'],
                 'value'   => $u,
             ];
         }
-        return $usage_opts;
+        return $opts;
+    }
+
+    private function LoglevelMapping()
+    {
+        return [
+            self::$LOGLEVEL_NONE    => [
+                'caption' => 'None',
+            ],
+            self::$LOGLEVEL_NOTIFY   => [
+                'caption' => 'Notify',
+            ],
+            self::$LOGLEVEL_MESSAGE    => [
+                'caption' => 'Message',
+            ],
+        ];
+    }
+
+    private function LoglevelAsOptions()
+    {
+        $maps = $this->LoglevelMapping();
+        $opts = [];
+        foreach ($maps as $u => $e) {
+            $opts[] = [
+                'caption' => $e['caption'],
+                'value'   => $u,
+            ];
+        }
+        return $opts;
     }
 
     private function WebfrontSounds()

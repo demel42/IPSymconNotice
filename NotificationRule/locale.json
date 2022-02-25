@@ -87,6 +87,11 @@
 			"trickling": "tröpfeln",
 			"turn": "Drehung",
 
+			"Instance activity messages in IP-Symcon": "Meldungen zu Instanz-Aktivitäten in IP-Symcon",
+			"None": "Nichts",
+			"Message": "Standardnachricht",
+			"Notify": "Benachrichtigung",
+
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
 			"Instance is deleted": "Instanz wird gelöscht",

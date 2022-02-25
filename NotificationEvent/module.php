@@ -44,6 +44,8 @@ class NotificationEvent extends IPSModule
         $this->RegisterPropertyString('recovery_message', '');
         $this->RegisterPropertyString('recovery_subject', '');
 
+        $this->RegisterPropertyInteger('activity_loglevel', self::$LOGLEVEL_NOTIFY);
+
         $this->InstallVarProfiles(false);
 
         $this->RegisterAttributeInteger('repetition', 0);
@@ -295,21 +297,28 @@ class NotificationEvent extends IPSModule
                             'caption' => 'Recovery notification'
                         ],
                         [
-                            'type'               => 'ValidationTextBox',
-                            'name'               => 'recovery_subject',
-                            'caption'            => 'Alternate "Subject" for recovery',
-                            'width'              => '500px',
+                            'type'    => 'ValidationTextBox',
+                            'name'    => 'recovery_subject',
+                            'caption' => 'Alternate "Subject" for recovery',
+                            'width'   => '500px',
                         ],
                         [
-                            'type'               => 'ValidationTextBox',
-                            'multiline'          => true,
-                            'name'               => 'recovery_message',
-                            'caption'            => 'Alternate "Message text" for recovery',
-                            'width'              => '500px',
+                            'type'      => 'ValidationTextBox',
+                            'multiline' => true,
+                            'name'      => 'recovery_message',
+                            'caption'   => 'Alternate "Message text" for recovery',
+                            'width'     => '500px',
                         ],
                     ],
                 ],
             ],
+        ];
+
+        $formElements[] = [
+            'type'     => 'Select',
+            'options'  => $this->LoglevelAsOptions(),
+            'name'     => 'activity_loglevel',
+            'caption'  => 'Instance activity messages in IP-Symcon'
         ];
 
         return $formElements;
@@ -360,14 +369,14 @@ class NotificationEvent extends IPSModule
                     'type'    => 'RowLayout',
                     'items'   => [
                         [
-                            'type'     => 'NumberSpinner',
-                            'name'     => 'repetition',
-                            'caption'  => 'Current repetition',
+                            'type'    => 'NumberSpinner',
+                            'name'    => 'repetition',
+                            'caption' => 'Current repetition',
                         ],
                         [
-                            'type'     => 'CheckBox',
-                            'name'     => 'recovery',
-                            'caption'  => 'Is the recovery',
+                            'type'    => 'CheckBox',
+                            'name'    => 'recovery',
+                            'caption' => 'Is the recovery',
                         ],
                         [
                             'type'    => 'Button',
@@ -436,13 +445,17 @@ class NotificationEvent extends IPSModule
                 if ($max_repetitions == -1 || $repetition <= $max_repetitions) {
                     $this->SetValue('TimerStarted', $started);
                     $this->WriteAttributeInteger('repetition', $repetition);
-                    $this->LogMessage($msg, KL_NOTIFY);
+                    if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                        $this->LogMessage($msg, KL_NOTIFY);
+                    }
                     $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
                     $this->SetTimerInterval('LoopTimer', $sec * 1000);
                 } else {
                     $this->SetValue('TimerStarted', 0);
                     $this->WriteAttributeInteger('repetition', 0);
-                    $this->LogMessage($conditionsS . ', no repetition', KL_NOTIFY);
+                    if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                        $this->LogMessage($conditionsS . ', no repetition', KL_NOTIFY);
+                    }
                     $this->SendDebug(__FUNCTION__, 'no timer (max_repetitions=' . $max_repetitions . ')', 0);
                     $this->SetTimerInterval('LoopTimer', 0);
                 }
@@ -456,11 +469,15 @@ class NotificationEvent extends IPSModule
                 }
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
-                $this->LogMessage($conditionsS . ', stop running timer', KL_NOTIFY);
+                if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                    $this->LogMessage($conditionsS . ', stop running timer', KL_NOTIFY);
+                }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             } else {
-                $this->LogMessage($conditionsS, KL_NOTIFY);
+                if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
+                    $this->LogMessage($conditionsS, KL_MESSAGE);
+                }
             }
         }
     }
@@ -474,7 +491,9 @@ class NotificationEvent extends IPSModule
         if ($started) {
             $this->SetValue('TimerStarted', 0);
             $this->WriteAttributeInteger('repetition', 0);
-            $this->LogMessage('timer stopped manual', KL_NOTIFY);
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                $this->LogMessage('timer stopped manual', KL_NOTIFY);
+            }
             $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
             $this->SetTimerInterval('LoopTimer', 0);
         }
@@ -511,13 +530,17 @@ class NotificationEvent extends IPSModule
                 $sec = $this->CalcByTimeunit($unit, $tval);
                 $tvS = $tval . $this->Timeunit2Suffix($unit);
                 $this->WriteAttributeInteger('repetition', $repetition);
-                $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and pause ' . $tvS, KL_NOTIFY);
+                if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                    $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and pause ' . $tvS, KL_NOTIFY);
+                }
                 $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
                 $this->SetTimerInterval('LoopTimer', $sec * 1000);
             } else {
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
-                $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and stop timer (max repetitions)', KL_NOTIFY);
+                if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                    $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and stop timer (max repetitions)', KL_NOTIFY);
+                }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (max_repetitions=' . $max_repetitions . ')', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             }
@@ -529,7 +552,9 @@ class NotificationEvent extends IPSModule
             if ($started) {
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
-                $this->LogMessage($conditionsS . ', stop timer', KL_NOTIFY);
+                if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                    $this->LogMessage($conditionsS . ', stop timer', KL_NOTIFY);
+                }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             }
