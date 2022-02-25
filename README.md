@@ -30,10 +30,11 @@ setzt entweder das Symcon-Modul **SMS REST** (Clickatell) voraus oder das Modul 
 - Skript<br>
 ein beliebiges Script um die Anbindung sonstiger Benachrichtigungswege / Dienste zu ermögliche. (_Pushover_, _Pushsafer_ etc).
 
-Es werden 5 Schweregrade unterstützt
 
-| Bezeichnung | Kürzel | Wert |
-| :---------- | ;----- | :--- |
+Es werden 5 Schweregrade unterstützt:
+
+| Bezeichnung | Ident  | Wert |
+| :---------- | :----- | :--- |
 | Information | info   | 1 |
 | Hinweis     | notice | 2 |
 | Warnung     | warn   | 3 |
@@ -74,7 +75,7 @@ Hier werden die enwünschen Empfänger (Kombination von Benutzer und Kommunikati
 Bedingungen gibt es folgende
 
 | Bezeichnung                 | Bedeutung |
-| :-------------------------- | ;-------- |
+| :-------------------------- | :-------- |
 | immer                       | der eingetragenen Empfänger wird bedingungslos angesprochen |
 | wenn zu Haus                | der Empfänger wird genutzt, wenn er im Status "zu Hause" ist |
 | wenn unterwegs              | der Empfänger wird genutzt, wenn er im Status "unterwegs" ist.<br>Hinweis: hier zählt _im Urlaub_ nicht mit |
@@ -89,14 +90,17 @@ Eine Benachrichtigungsregel ist immer mit einer Benachrichtigungs-Basis verknüp
 erste Instanz sucht.
 
 ### Benachrichtigungs-Ereignis (_NotificationEvent_)
-Hiermit können Benachrichtigungs-Regeln verzögert bzw. wiederholt aufgerufen werden
-Neben der Timerfunktion können auch Bedingungen angegeben werden, die gültig sein müssen, damit das Ereignis anläuft bzw. weiterläuft (die Bedingungen werden bei jeder
-Mdleung, egal ob nach Start-Verzögerung oder Wiederholung neu geprüft).
-Aufgerufen wird das Benachrichtigungs-Ereignis i.d.R. durch IPS-Ereignisse, i.d.R. vermutlich _Ausgelöst_ oder _Zyklisch_, aber auch natprlich durch allen anderen Möglichkeiten (Ablaufplan, Skript).
+Hiermit können Benachrichtigungs-Regeln verzögert bzw. wiederholt aufgerufen werden.<br>
+Neben der Timerfunktion können auch Bedingungen angegeben werden, die gültig sein müssen, damit das Ereignis anläuft bzw. weiterläuft (die Bedingungen werden 
+bei jeder Meldung, egal ob nach Start-Verzögerung oder Wiederholung neu geprüft).
+
+Aufgerufen wird das Benachrichtigungs-Ereignis i.d.R. durch IPS-Ereignisse, i.d.R. vermutlich _Ausgelöst_ oder _Zyklisch_, aber auch natürlich durch allen anderen Möglichkeiten (Ablaufplan, Skript).<br>
 Wichtig ist dabei zu beachten, das die optionalen _Bedingungen_ innerhalb des Benachrichtigungs-Ereignis dazu dienen, zu entscheiden, ob es sich um einen zu meldenden Vorfall handelt oder ggfs. um eine Wiederherstellung (sofern man auch diese Meldung Wert legt).<br>
+<br>
 Bespiel: Überwachung der Stromversorgung eines wichtigen Geräts.
-die Benachrichtigungs-Ereignis prüft in den Bedingungen, ob die Variable (der Spannungsversorgung) auf "AUS" steht - d.h. "AUS" ist der Vorfall, "EIN" ist die Wiederherstellung.
-Das "ausgelöste Ereignis" prüft auf Änderung der Variable, d..h das Benachrichtigungs-Ereignis wird bei dem Wechsel auf "AUS" und auf "EIN" ausgelöst und kann somit eine Wiederherstellung erkennen und melden.
+- die Benachrichtigungs-Ereignis prüft in den Bedingungen, ob die Variable (der Spannungsversorgung) auf "AUS" steht - d.h. "AUS" ist der Vorfall, "EIN" ist die Wiederherstellung.
+- das "ausgelöste Ereignis" prüft auf Änderung der Variable, d..h das Benachrichtigungs-Ereignis wird bei dem Wechsel auf "AUS" und auf "EIN" ausgelöst und kann somit eine Wiederherstellung erkennen und melden.
+<br>
 
 Gemäß den angegebenen Einstellungen wird eine entsprechende Benachrichtigungs-Regel aufgerufen, dabei können durch vielfältige Einstellungen Nachrichtentext, Betreff und Schwergrad angepasst werden.
 
@@ -123,14 +127,14 @@ Für jede Regel muss eine Instanz vom Typ _Notification Rule_ angelegt werden un
 
 ### Benachrichtigungs-Basis (_NotificationBase_)
 `boolean Notification_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
-Erzeugt einen Eintrag in dem Protokoll vom _NotificationBase_.
-_Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben)
+Erzeugt einen Eintrag in dem Protokoll vom _NotificationBase_.<br>
+_Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben).<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
 ### Benachrichtigungs-Regeln (_NotifcationRule_)
 `boolean Notification_TriggerRule(integer $InstanzID, string $Message, string $Subject, mixed $Severity, array $Params)`<br>
-Löst die Benachrichtigungsregel aus und gemäß der Definition die Benachrichtigungen.
-_Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben)
+Löst die Benachrichtigungsregel aus und gemäß der Definition die Benachrichtigungen.<br>
+_Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben).<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
 `boolean Notification_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
@@ -138,18 +142,19 @@ Ruft die korrespondierende Funktion der _NotificationBase_, dient nur zur Verein
 
 ### Benachrichtigungs-Ereignis (_NotificationEvent_)
 `int Notification_TriggerEvent(integer $InstanzID, boolean $Force)`
-Es wird das Benachrichtigungs-Ereignis ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Ereignis neu gestartet.
+Es wird das Benachrichtigungs-Ereignis ausgelöst (sofern die Bedingungen stimmen).
+Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Ereignis neu gestartet.<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
 `int Notification_StopEvent(integer $InstanzID)`
-Es wird ein ggfs. laufendes Benachrichtigungs-Ereignis  ausgelöst (sofern die Bedingungen stimmen). Wenn _Force_ auf _true_ steht, wird ein ggfs. laufendes Ereignis neu gestartet.
+Es wird ein ggfs. laufendes Benachrichtigungs-Ereignis  gestoppt.<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
 `boolean Notification_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
-Ruft die korrespondierende Funktion der _NotificationBase_, dient nur zur Vereinfachung
+Ruft die korrespondierende Funktion der _NotificationBase_, dient nur zur Vereinfachung.
 
 
-Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Params_ werden mit den entspreㄔhenden Voreinstellung in den Instanzen ergänzt entspreㄔhende Der Hierarchie
+Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Params_ werden mit den entspreㄔhenden Voreinstellung in den Instanzen ergänzt entsprechend der Hierarchie.
 
 ## 5. Konfiguration
 
@@ -220,9 +225,9 @@ alle Argumente werden über *_IPS* weitergegeben
 -- zusätzlich bei dem Aufruf aus _NotificationEvent_
 | Ident              | Typ     | Bedeutung |
 | :----------------- | :------ | :-------- |
+| eventID            | integer | ID des auslösenden _NotificationEvent_ |
 | repetition         | integer | Wiederholung |
 | recovery           | boolean | handelt sich um eine Wiederherstellungs-Mitteilung |
-| eventID            | integer | ID des auslösenden _NotificationEvent_ |
 | started            | integer | Auslöse-Zeitpunkt |
 
 * Protokollierung / Skript
@@ -317,15 +322,15 @@ Zurückgegeben wird entweder json-kodiertes Array mit den optionalen Argumenten
 | severity           | integer | Schweregrad |
 | summary            | string  | Betreff |
 
-geliefert oder ein String, der als _message_ verwendet wird.
+geliefert oder ein String, der als _message_ verwendet wird. Die werte überschreiben dann eventuelle Voreinstellungen.
 
-Beispiele
+Beispiele:
 
-Simpel
+- einfach
 ```
 echo 'Status der USV: ' . GetValueFormatted(12345);
 ```
-oder komplexer
+- komplexer
 ```
 $r = [];
 if (GetValueBoolean(88888)) {
@@ -347,7 +352,7 @@ echo json_encode($r);
 #### Benachrichtigungs-Basis (_NotificationBase_)
 
 | Ident                       | Typ          | Bezeichnung |
-| :-------------------------- : :------      | :---------- |
+| :-------------------------- | :------      | :---------- |
 | AllAbsent                   | boolean      | alle abwesend |
 | LastGone                    | string       | zuletzt gegangen |
 | FirstCome                   | string       | zuerst gekommen |
@@ -362,7 +367,7 @@ echo json_encode($r);
 #### Benachrichtigungs-Ereignis (_NotificationEvent_)
 
 | Ident                       | Typ          | Bezeichnung |
-| :-------------------------- : :------      | :---------- |
+| :-------------------------- | :------      | :---------- |
 | TimerStarted                | integer      | Auslöse-Zeitpunkt |
 
 ### Variablenprofile
