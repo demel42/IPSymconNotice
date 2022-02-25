@@ -38,10 +38,10 @@ class NotificationBase extends IPSModule
 
         // MODE_SCRIPT
         $this->RegisterPropertyInteger('scriptID', 0);
-        $this->RegisterPropertyString('default_script_sound_info', '');
-        $this->RegisterPropertyString('default_script_sound_notice', '');
-        $this->RegisterPropertyString('default_script_sound_warn', '');
-        $this->RegisterPropertyString('default_script_sound_alert', '');
+        $this->RegisterPropertyString('default_script_signal_info', '');
+        $this->RegisterPropertyString('default_script_signal_notice', '');
+        $this->RegisterPropertyString('default_script_signal_warn', '');
+        $this->RegisterPropertyString('default_script_signal_alert', '');
         $this->RegisterPropertyString('script_defaults', '');
 
         // Logging
@@ -161,7 +161,8 @@ class NotificationBase extends IPSModule
         $this->MaintainVariable('FirstCome', $this->Translate('first come'), VARIABLETYPE_STRING, '', $vpos++, true);
 
         $vpos = 90;
-        $this->MaintainVariable('Notifications', $this->Translate('Notifications'), VARIABLETYPE_STRING, '~HTMLBox', $vpos++, true);
+        $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
+        $this->MaintainVariable('Notifications', $this->Translate('Notifications'), VARIABLETYPE_STRING, '~HTMLBox', $vpos++, $internal_html);
 
         $vpos = 100;
         $objList = [];
@@ -382,29 +383,29 @@ class NotificationBase extends IPSModule
                             'items'   => [
                                 [
                                     'type'    => 'Label',
-                                    'caption' => 'Default sounds',
+                                    'caption' => 'Default signals',
                                 ],
                                 [
                                     'type'     => 'ValidationTextBox',
-                                    'name'     => 'default_script_sound_info',
+                                    'name'     => 'default_script_signal_info',
                                     'caption'  => 'Information',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'ValidationTextBox',
-                                    'name'     => 'default_script_sound_notice',
+                                    'name'     => 'default_script_signal_notice',
                                     'caption'  => 'Notice',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'ValidationTextBox',
-                                    'name'     => 'default_script_sound_warn',
+                                    'name'     => 'default_script_signal_warn',
                                     'caption'  => 'Warning',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'ValidationTextBox',
-                                    'name'     => 'default_script_sound_alert',
+                                    'name'     => 'default_script_signal_alert',
                                     'caption'  => 'Alert',
                                     'width'    => '200px',
                                 ],
@@ -417,12 +418,6 @@ class NotificationBase extends IPSModule
                             'width'   => '800px',
                         ],
                     ],
-                ],
-                [
-                    'type'     => 'Select',
-                    'options'  => $this->LoglevelAsOptions(),
-                    'name'     => 'activity_loglevel',
-                    'caption'  => 'Instance activity messages in IP-Symcon'
                 ],
             ],
         ];
@@ -700,6 +695,13 @@ class NotificationBase extends IPSModule
             ],
         ];
 
+        $formElements[] = [
+            'type'     => 'Select',
+            'options'  => $this->LoglevelAsOptions(),
+            'name'     => 'activity_loglevel',
+            'caption'  => 'Instance activity messages in IP-Symcon'
+        ];
+
         return $formElements;
     }
 
@@ -707,11 +709,14 @@ class NotificationBase extends IPSModule
     {
         $formActions = [];
 
-        $formActions[] = [
-            'type'    => 'Button',
-            'caption' => 'Rebuild "Notifications"',
-            'onClick' => 'Notification_RebuildHtml($id);'
-        ];
+        $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
+        if ($internal_html) {
+            $formActions[] = [
+                'type'    => 'Button',
+                'caption' => 'Rebuild "Notifications"',
+                'onClick' => 'Notification_RebuildHtml($id);'
+            ];
+        }
 
         $formActions[] = [
             'type'      => 'ExpansionPanel',
@@ -809,7 +814,7 @@ class NotificationBase extends IPSModule
         return false;
     }
 
-    public function SetPresenceState(string $ident, int $state)
+    private function SetPresenceState(string $ident, int $state)
     {
         @$varID = $this->GetIDForIdent($ident);
         if ($varID == false) {
@@ -873,21 +878,7 @@ class NotificationBase extends IPSModule
         return true;
     }
 
-    public function GetUserName(string $user_id)
-    {
-        $user_id = strtoupper($user_id);
-        $users = json_decode($this->ReadPropertyString('users'), true);
-        if ($users != false) {
-            foreach ($users as $user) {
-                if (strtoupper($user['id']) == $user_id) {
-                    return $user['name'];
-                }
-            }
-        }
-        return false;
-    }
-
-    public function GetUser(string $user_id)
+    private function GetUser(string $user_id)
     {
         $user_id = strtoupper($user_id);
         $users = json_decode($this->ReadPropertyString('users'), true);
@@ -901,9 +892,9 @@ class NotificationBase extends IPSModule
         return false;
     }
 
-    public function DeliverWebfront(string $user_id, string $text, array $params)
+    private function DeliverWebfront(string $user_id, string $message, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', message=' . $message . ', params=' . print_r($params, true), 0);
 
         $default_webfront_sound_info = $this->ReadPropertyString('default_webfront_sound_info');
         $default_webfront_sound_notice = $this->ReadPropertyString('default_webfront_sound_notice');
@@ -953,7 +944,7 @@ class NotificationBase extends IPSModule
         }
         $params = array_merge($webfront_defaults, $params);
 
-        $text = $this->GetArrayElem($params, 'text', $text);
+        $message = $this->GetArrayElem($params, 'message', $message);
         $subject = isset($params['subject']) ? substr($params['subject'], 0, 32) : '';
         $sound = $this->GetArrayElem($params, 'sound', '');
         if ($sound == '') {
@@ -978,12 +969,12 @@ class NotificationBase extends IPSModule
         }
         $targetID = $this->GetArrayElem($params, 'TargetID', 0);
 
-        @$r = WFC_PushNotification($webfront_instID, $subject, $text, $sound, $targetID);
-        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $text . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
+        @$r = WFC_PushNotification($webfront_instID, $subject, $message, $sound, $targetID);
+        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $message . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
 
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $text . '" succeed';
+                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" succeed';
                 $this->LogMessage($s, KL_MESSAGE);
             }
 
@@ -991,7 +982,7 @@ class NotificationBase extends IPSModule
             $this->Log($s, 'debug', []);
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $text . '" failed';
+                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" failed';
                 $this->LogMessage($s, KL_NOTIFY);
             }
 
@@ -1002,9 +993,9 @@ class NotificationBase extends IPSModule
         return $r;
     }
 
-    public function DeliverMail(string $user_id, string $text, array $params)
+    private function DeliverMail(string $user_id, string $message, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', message=' . $message . ', params=' . print_r($params, true), 0);
 
         $user = $this->GetUser($user_id);
         if ($user == false) {
@@ -1055,15 +1046,15 @@ class NotificationBase extends IPSModule
         }
         $params = array_merge($mail_defaults, $params);
 
-        $text = $this->GetArrayElem($params, 'text', $text);
-        $subject = $this->GetArrayElem($params, 'subject', $text);
+        $message = $this->GetArrayElem($params, 'message', $message);
+        $subject = $this->GetArrayElem($params, 'subject', $message);
 
-        @$r = SMTP_SendMailEx($mail_instID, $mail_addr, $subject, $text);
-        $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', "' . $mail_addr . '", "' . $subject . '", "' . $text . '") ' . ($r ? 'succeed' : 'failed'), 0);
+        @$r = SMTP_SendMailEx($mail_instID, $mail_addr, $subject, $message);
+        $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', "' . $mail_addr . '", "' . $subject . '", "' . $message . '") ' . ($r ? 'succeed' : 'failed'), 0);
 
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $text . '" succeed';
+                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" succeed';
                 $this->LogMessage($s, KL_MESSAGE);
             }
 
@@ -1071,7 +1062,7 @@ class NotificationBase extends IPSModule
             $this->Log($s, 'debug', []);
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $text . '" failed';
+                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" failed';
                 $this->LogMessage($s, KL_NOTIFY);
             }
 
@@ -1082,9 +1073,9 @@ class NotificationBase extends IPSModule
         return $r;
     }
 
-    public function DeliverSMS(string $user_id, string $text, array $params)
+    private function DeliverSMS(string $user_id, string $message, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', message=' . $message . ', params=' . print_r($params, true), 0);
 
         $user = $this->GetUser($user_id);
         if ($user == false) {
@@ -1138,16 +1129,16 @@ class NotificationBase extends IPSModule
         }
         $params = array_merge($sms_defaults, $params);
 
-        $text = $this->GetArrayElem($params, 'text', $text);
+        $message = $this->GetArrayElem($params, 'message', $message);
 
         switch ($moduleID) {
             case '{96102E00-FD8C-4DD3-A3C2-376A44895AC2}': // SMS REST
-                @$r = SMS_Send($sms_instID, $sms_telno, $text);
-                $this->SendDebug(__FUNCTION__, 'SMS_Send(' . $sms_instID . ', "' . $sms_telno . '", "' . $text . '") ' . ($r ? 'succeed' : 'failed'), 0);
+                @$r = SMS_Send($sms_instID, $sms_telno, $message);
+                $this->SendDebug(__FUNCTION__, 'SMS_Send(' . $sms_instID . ', "' . $sms_telno . '", "' . $message . '") ' . ($r ? 'succeed' : 'failed'), 0);
                 break;
             case '{D8C71279-8E04-4466-8996-04B6B6CF2B1D}': // Sipgate
-                @$r = Sipgate_SendSMS($sms_instID, $sms_telno, $text);
-                $this->SendDebug(__FUNCTION__, 'Sipgate_SendSMS(' . $sms_instID . ', "' . $sms_telno . '", "' . $text . '") ' . ($r ? 'succeed' : 'failed'), 0);
+                @$r = Sipgate_SendSMS($sms_instID, $sms_telno, $message);
+                $this->SendDebug(__FUNCTION__, 'Sipgate_SendSMS(' . $sms_instID . ', "' . $sms_telno . '", "' . $message . '") ' . ($r ? 'succeed' : 'failed'), 0);
                 break;
             default:
                 break;
@@ -1155,7 +1146,7 @@ class NotificationBase extends IPSModule
 
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $text . '" succeed';
+                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" succeed';
                 $this->LogMessage($s, KL_MESSAGE);
             }
 
@@ -1163,7 +1154,7 @@ class NotificationBase extends IPSModule
             $this->Log($s, 'debug', []);
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $text . '" failed';
+                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" failed';
                 $this->LogMessage($s, KL_NOTIFY);
             }
 
@@ -1174,14 +1165,14 @@ class NotificationBase extends IPSModule
         return $r;
     }
 
-    public function DeliverScript(string $user_id, string $text, array $params)
+    private function DeliverScript(string $user_id, string $message, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'user_id=' . $user_id . ', message=' . $message . ', params=' . print_r($params, true), 0);
 
-        $default_script_sound_info = $this->ReadPropertyString('default_script_sound_info');
-        $default_script_sound_notice = $this->ReadPropertyString('default_script_sound_notice');
-        $default_script_sound_warn = $this->ReadPropertyString('default_script_sound_warn');
-        $default_script_sound_alert = $this->ReadPropertyString('default_script_sound_alert');
+        $default_script_signal_info = $this->ReadPropertyString('default_script_signal_info');
+        $default_script_signal_notice = $this->ReadPropertyString('default_script_signal_notice');
+        $default_script_signal_warn = $this->ReadPropertyString('default_script_signal_warn');
+        $default_script_signal_alert = $this->ReadPropertyString('default_script_signal_alert');
 
         $user = $this->GetUser($user_id);
         if ($user == false) {
@@ -1227,27 +1218,28 @@ class NotificationBase extends IPSModule
         $params = array_merge($script_defaults, $script_params, $params);
         $params['user_id'] = $user_id;
         $params['name'] = $user['name'];
-        $params['text'] = $this->GetArrayElem($params, 'text', $text);
-        $sound = $this->GetArrayElem($params, 'sound', '');
-        if ($sound == '') {
+        $params['message'] = $this->GetArrayElem($params, 'message', $message);
+        $signal = $this->GetArrayElem($params, 'signal', '');
+        if ($signal == '') {
             $severity = $this->GetArrayElem($params, 'severity', self::$SEVERITY_UNKNOWN);
             switch ($severity) {
                 case self::$SEVERITY_INFO:
-                    $sound = $default_script_sound_info;
+                    $signal = $default_script_signal_info;
                     break;
                 case self::$SEVERITY_NOTICE:
-                    $sound = $default_script_sound_notice;
+                    $signal = $default_script_signal_notice;
                     break;
                 case self::$SEVERITY_WARN:
-                    $sound = $default_script_sound_warn;
+                    $signal = $default_script_signal_warn;
                     break;
                 case self::$SEVERITY_ALERT:
-                    $sound = $default_script_sound_alert;
+                    $signal = $default_script_signal_alert;
                     break;
                 default:
                     break;
             }
-            $this->SendDebug(__FUNCTION__, 'severity=' . $severity . ', sound=' . $sound, 0);
+            $this->SendDebug(__FUNCTION__, 'severity=' . $severity . ', signal=' . $signal, 0);
+            $params['signal'] = $signal;
         }
 
         @$r = IPS_RunScriptWaitEx($scriptID, $params);
@@ -1255,7 +1247,7 @@ class NotificationBase extends IPSModule
 
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'scripting @' . $user_id . ' "' . $text . '" succeed';
+                $s = 'scripting @' . $user_id . ' "' . $message . '" succeed';
                 $this->LogMessage($s, KL_MESSAGE);
             }
 
@@ -1263,7 +1255,7 @@ class NotificationBase extends IPSModule
             $this->Log($s, 'debug', []);
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'scripting @' . $user_id . ' "' . $text . '" failed';
+                $s = 'scripting @' . $user_id . ' "' . $message . '" failed';
                 $this->LogMessage($s, KL_NOTIFY);
             }
 
@@ -1274,25 +1266,25 @@ class NotificationBase extends IPSModule
         return $r;
     }
 
-    public function Deliver(string $target, string $text, array $params)
+    public function Deliver(string $target, string $message, array $params)
     {
         $r = $this->TargetDecode($target);
-        $this->SendDebug(__FUNCTION__, 'target=' . $target . '(' . print_r($r, true) . '), text=' . $text . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'target=' . $target . '(' . print_r($r, true) . '), message=' . $message . ', params=' . print_r($params, true), 0);
         $user_id = $r['user_id'];
         $mode = $this->ModeDecode($r['mode']);
 
         switch ($mode) {
             case self::$MODE_WEBFRONT:
-                $res = $this->DeliverWebfront($user_id, $text, $params);
+                $res = $this->DeliverWebfront($user_id, $message, $params);
                 break;
             case self::$MODE_MAIL:
-                $res = $this->DeliverMail($user_id, $text, $params);
+                $res = $this->DeliverMail($user_id, $message, $params);
                 break;
             case self::$MODE_SMS:
-                $res = $this->DeliverSMS($user_id, $text, $params);
+                $res = $this->DeliverSMS($user_id, $message, $params);
                 break;
             case self::$MODE_SCRIPT:
-                $res = $this->DeliverScript($user_id, $text, $params);
+                $res = $this->DeliverScript($user_id, $message, $params);
                 break;
             default:
                 $res = false;
@@ -1348,7 +1340,7 @@ class NotificationBase extends IPSModule
         return $targets;
     }
 
-    public function GetPresence()
+    private function GetPresence()
     {
         $presence = [];
         $users = json_decode($this->ReadPropertyString('users'), true);
@@ -1383,16 +1375,20 @@ class NotificationBase extends IPSModule
 
     public function RebuildHtml()
     {
+        if ($this->ReadPropertyInteger('logger_scriptID') >= 10000) {
+            $this->SendDebug(__FUNCTION__, 'external loggin enables', 0);
+            return;
+        }
         $html = $this->BuildHtmlBox(false);
         $this->SetValue('Notifications', $html);
     }
 
-    public function Log(string $text, string $severity, array $params)
+    public function Log(string $message, string $severity, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'text=' . $text . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'message=' . $message . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
         $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
         if ($logger_scriptID >= 10000) {
-            $params['text'] = $text;
+            $params['message'] = $message;
             $params['severity'] = $severity;
             @$r = IPS_RunScriptWaitEx($logger_scriptID, $params);
             $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $logger_scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'succeed' : 'failed'), 0);
@@ -1435,11 +1431,11 @@ class NotificationBase extends IPSModule
             }
         }
         $new_notification = [
-            'id'       => $counter++,
-            'tstamp'   => $now,
-            'text'     => $text,
-            'severity' => $severity,
-            'expires'  => $expires,
+            'id'          => $counter++,
+            'tstamp'      => $now,
+            'message'     => $message,
+            'severity'    => $severity,
+            'expires'     => $expires,
         ];
         if (isset($params['targets'])) {
             $new_notification['targets'] = $params['targets'];
@@ -1454,6 +1450,7 @@ class NotificationBase extends IPSModule
 
         IPS_SemaphoreLeave(self::$semaphoreID);
 
+        $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
         $html = $this->BuildHtmlBox($new_notifications);
         $this->SetValue('Notifications', $html);
 
@@ -1500,13 +1497,13 @@ class NotificationBase extends IPSModule
         $html .= 'th, td { padding: 1; }' . PHP_EOL;
         $html .= 'thead, tdata { text-align: left; }' . PHP_EOL;
         $html .= '#spalte_zeitpunkt { width: 125px; }' . PHP_EOL;
-        $html .= '#spalte_text { }' . PHP_EOL;
+        $html .= '#spalte_message { }' . PHP_EOL;
         $html .= '</style>' . PHP_EOL;
 
         for ($i = count($notifications) - 1; $i; $i--) {
             $notification = $notifications[$i];
             $tstamp = $notification['tstamp'];
-            $text = $notification['text'];
+            $message = $notification['message'];
             $severity = $notification['severity'];
             $expires = $notification['expires'];
             $skip = false;
@@ -1576,7 +1573,7 @@ class NotificationBase extends IPSModule
             if (!$b) {
                 $html .= '<table>' . PHP_EOL;
                 $html .= '<colgroup><col id="spalte_zeitpunkt"></colgroup>' . PHP_EOL;
-                $html .= '<colgroup><col id="spalte_text"></colgroup>' . PHP_EOL;
+                $html .= '<colgroup><col id="spalte_message"></colgroup>' . PHP_EOL;
                 $html .= '<colgroup></colgroup>' . PHP_EOL;
                 $html .= '<thead>' . PHP_EOL;
                 $html .= '<tr>' . PHP_EOL;
@@ -1592,7 +1589,7 @@ class NotificationBase extends IPSModule
 
             $html .= '<tr>' . PHP_EOL;
             $html .= '<td>' . $dt . '</td>' . PHP_EOL;
-            $html .= '<td' . ($color != '' ? ' style="color:' . $color . '"' : '') . '>' . $text . '</td>' . PHP_EOL;
+            $html .= '<td' . ($color != '' ? ' style="color:' . $color . '"' : '') . '>' . $message . '</td>' . PHP_EOL;
             $html .= '</tr>' . PHP_EOL;
         }
 

@@ -19,7 +19,7 @@ class NotificationRule extends IPSModule
         $this->RegisterPropertyInteger('notificationBase', 0);
 
         $this->RegisterPropertyString('default_subject', '');
-        $this->RegisterPropertyString('default_text', '');
+        $this->RegisterPropertyString('default_message', '');
         $this->RegisterPropertyInteger('default_severity', self::$SEVERITY_UNKNOWN);
 
         $this->RegisterPropertyString('default_webfront_sound_info', '');
@@ -27,10 +27,10 @@ class NotificationRule extends IPSModule
         $this->RegisterPropertyString('default_webfront_sound_warn', '');
         $this->RegisterPropertyString('default_webfront_sound_alert', '');
 
-        $this->RegisterPropertyString('default_script_sound_info', '');
-        $this->RegisterPropertyString('default_script_sound_notice', '');
-        $this->RegisterPropertyString('default_script_sound_warn', '');
-        $this->RegisterPropertyString('default_script_sound_alert', '');
+        $this->RegisterPropertyString('default_script_signal_info', '');
+        $this->RegisterPropertyString('default_script_signal_notice', '');
+        $this->RegisterPropertyString('default_script_signal_warn', '');
+        $this->RegisterPropertyString('default_script_signal_alert', '');
 
         $this->RegisterPropertyBoolean('log_additionally', false);
 
@@ -197,6 +197,12 @@ class NotificationRule extends IPSModule
 
         $items = [];
         $items[] = [
+            'type'      => 'Select',
+            'options'   => $this->SeverityAsOptions(true),
+            'name'      => 'default_severity',
+            'caption'   => 'Default value for "severity"',
+        ];
+        $items[] = [
             'type'      => 'ValidationTextBox',
             'name'      => 'default_subject',
             'caption'   => 'Default value for "subject"',
@@ -204,16 +210,10 @@ class NotificationRule extends IPSModule
         ];
         $items[] = [
             'type'      => 'ValidationTextBox',
-            'name'      => 'default_text',
+            'name'      => 'default_message',
             'caption'   => 'Default value for "message text"',
             'multiline' => true,
             'width'     => '80%',
-        ];
-        $items[] = [
-            'type'      => 'Select',
-            'options'   => $this->SeverityAsOptions(true),
-            'name'      => 'default_severity',
-            'caption'   => 'Default value for "severity"',
         ];
         $items[] = [
             'type'      => 'ExpansionPanel',
@@ -274,29 +274,29 @@ class NotificationRule extends IPSModule
                             'items'   => [
                                 [
                                     'type'    => 'Label',
-                                    'caption' => 'Default sounds',
+                                    'caption' => 'Default signals',
                                 ],
                                 [
                                     'type'     => 'ValidationTextBox',
-                                    'name'     => 'default_script_sound_info',
+                                    'name'     => 'default_script_signal_info',
                                     'caption'  => 'Information',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'ValidationTextBox',
-                                    'name'     => 'default_script_sound_notice',
+                                    'name'     => 'default_script_signal_notice',
                                     'caption'  => 'Notice',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'ValidationTextBox',
-                                    'name'     => 'default_script_sound_warn',
+                                    'name'     => 'default_script_signal_warn',
                                     'caption'  => 'Warning',
                                     'width'    => '200px',
                                 ],
                                 [
                                     'type'     => 'ValidationTextBox',
-                                    'name'     => 'default_script_sound_alert',
+                                    'name'     => 'default_script_signal_alert',
                                     'caption'  => 'Alert',
                                     'width'    => '200px',
                                 ],
@@ -402,12 +402,12 @@ class NotificationRule extends IPSModule
         echo $s;
     }
 
-    public function TriggerRule(string $text, string $subject, string $severity, array $params)
+    public function TriggerRule(string $message, string $subject, string $severity, array $params)
     {
-        $this->SendDebug(__FUNCTION__, 'text=' . $text . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
+        $this->SendDebug(__FUNCTION__, 'message=' . $message . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
 
         $default_subject = $this->ReadPropertyString('default_subject');
-        $default_text = $this->ReadPropertyString('default_text');
+        $default_message = $this->ReadPropertyString('default_message');
         $default_severity = $this->ReadPropertyInteger('default_severity');
 
         $default_webfront_sound_info = $this->ReadPropertyString('default_webfront_sound_info');
@@ -415,16 +415,16 @@ class NotificationRule extends IPSModule
         $default_webfront_sound_warn = $this->ReadPropertyString('default_webfront_sound_warn');
         $default_webfront_sound_alert = $this->ReadPropertyString('default_webfront_sound_alert');
 
-        $default_script_sound_info = $this->ReadPropertyString('default_script_sound_info');
-        $default_script_sound_notice = $this->ReadPropertyString('default_script_sound_notice');
-        $default_script_sound_warn = $this->ReadPropertyString('default_script_sound_warn');
-        $default_script_sound_alert = $this->ReadPropertyString('default_script_sound_alert');
+        $default_script_signal_info = $this->ReadPropertyString('default_script_signal_info');
+        $default_script_signal_notice = $this->ReadPropertyString('default_script_signal_notice');
+        $default_script_signal_warn = $this->ReadPropertyString('default_script_signal_warn');
+        $default_script_signal_alert = $this->ReadPropertyString('default_script_signal_alert');
 
         $recipients = json_decode($this->ReadPropertyString('recipients'), true);
 
-        if ($text == '') {
-            $text = $default_text;
-            $this->SendDebug(__FUNCTION__, 'text(default)=' . $text, 0);
+        if ($message == '') {
+            $message = $default_message;
+            $this->SendDebug(__FUNCTION__, 'message(default)=' . $message, 0);
         }
         if ($subject == '') {
             $subject = $default_subject;
@@ -472,9 +472,9 @@ class NotificationRule extends IPSModule
                         $l_params['subject'] = $subject;
                     }
 
-                    $sound = '';
                     switch ($mode) {
                         case self::$MODE_WEBFRONT:
+                            $sound = '';
                             switch ($severity) {
                                 case self::$SEVERITY_INFO:
                                     $sound = $default_webfront_sound_info;
@@ -491,41 +491,47 @@ class NotificationRule extends IPSModule
                                 default:
                                     break;
                             }
+                            if ($sound != '') {
+                                $l_params['sound'] = $sound;
+                            }
                             break;
                         case self::$MODE_MAIL:
                             break;
                         case self::$MODE_SMS:
                             break;
                         case self::$MODE_SCRIPT:
+                            $signal = '';
                             switch ($severity) {
                                 case self::$SEVERITY_INFO:
-                                    $sound = $default_script_sound_info;
+                                    $signal = $default_script_signal_info;
                                     break;
                                 case self::$SEVERITY_NOTICE:
-                                    $sound = $default_script_sound_notice;
+                                    $signal = $default_script_signal_notice;
                                     break;
                                 case self::$SEVERITY_WARN:
-                                    $sound = $default_script_sound_warn;
+                                    $signal = $default_script_signal_warn;
                                     break;
                                 case self::$SEVERITY_ALERT:
-                                    $sound = $default_script_sound_alert;
+                                    $signal = $default_script_signal_alert;
                                     break;
                                 default:
                                     break;
                             }
+                            if ($signal != '') {
+                                $l_params['signal'] = $signal;
+                            }
                             break;
                     }
-                    if ($sound != '') {
-                        $l_params['sound'] = $sound;
-                    }
 
-                    $r = Notification_Deliver($notificationBase, $target, $text, $l_params);
+                    $l_params['ruleID'] = $this->InstanceID;
+
+                    $r = Notification_Deliver($notificationBase, $target, $message, $l_params);
                 }
 
                 $log_additionally = $this->ReadPropertyBoolean('log_additionally');
                 if ($log_additionally) {
                     $l_params['targets'] = $targetV;
-                    Notification_Log($notificationBase, $text, $severity, $l_params);
+                    Notification_Log($notificationBase, $message, $severity, $l_params);
                 }
             }
         } else {
@@ -537,7 +543,7 @@ class NotificationRule extends IPSModule
         return $result;
     }
 
-    public function EvaluateRule()
+    private function EvaluateRule()
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
@@ -644,7 +650,7 @@ class NotificationRule extends IPSModule
                         'items'     => [
                             [
                                 'type'    => 'ValidationTextBox',
-                                'name'    => 'text',
+                                'name'    => 'message',
                                 'caption' => 'Message text',
                                 'width'   => '600px',
                             ],
@@ -665,7 +671,7 @@ class NotificationRule extends IPSModule
                             [
                                 'type'    => 'Button',
                                 'caption' => 'Trigger',
-                                'onClick' => 'Notification_TriggerRule($id, $text, $subject, $severity, []);'
+                                'onClick' => 'Notification_TriggerRule($id, $message, $subject, $severity, []);'
                             ],
                         ],
                         'closeCaption' => 'Cancel',
@@ -728,7 +734,7 @@ class NotificationRule extends IPSModule
         return $formActions;
     }
 
-    public function Log(string $text, string $severity, array $params)
+    public function Log(string $message, string $severity, array $params)
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
             $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
@@ -737,7 +743,7 @@ class NotificationRule extends IPSModule
 
         $notificationBase = $this->GetNotificationBase();
         if ($notificationBase >= 10000) {
-            return Notification_Log($notificationBase, $text, $severity, $params);
+            return Notification_Log($notificationBase, $message, $severity, $params);
         }
         return false;
     }

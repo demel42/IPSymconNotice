@@ -24,10 +24,10 @@ class NotificationEvent extends IPSModule
         $this->RegisterPropertyString('conditions', json_encode([]));
 
         $this->RegisterPropertyInteger('ruleID', 0);
-        $this->RegisterPropertyInteger('severity', 0);
-        $this->RegisterPropertyBoolean('severity_increase', false);
-        $this->RegisterPropertyString('message', '');
         $this->RegisterPropertyString('subject', '');
+        $this->RegisterPropertyString('message', '');
+        $this->RegisterPropertyInteger('severity', self::$SEVERITY_UNKNOWN);
+        $this->RegisterPropertyBoolean('severity_increase', false);
         $this->RegisterPropertyString('script', '');
 
         $this->RegisterPropertyInteger('delay_value', 0);
@@ -41,8 +41,9 @@ class NotificationEvent extends IPSModule
         $this->RegisterPropertyInteger('max_repetitions', -1);
 
         $this->RegisterPropertyBoolean('recovery_notify', 0);
-        $this->RegisterPropertyString('recovery_message', '');
         $this->RegisterPropertyString('recovery_subject', '');
+        $this->RegisterPropertyString('recovery_message', '');
+        $this->RegisterPropertyInteger('recovery_severity', self::$SEVERITY_UNKNOWN);
 
         $this->RegisterPropertyInteger('activity_loglevel', self::$LOGLEVEL_NOTIFY);
 
@@ -182,7 +183,7 @@ class NotificationEvent extends IPSModule
                             'type'      => 'Select',
                             'options'   => $this->SeverityAsOptions(true),
                             'name'      => 'severity',
-                            'caption'   => 'Initial severity',
+                            'caption'   => 'Given "severity"',
                         ],
                         [
                             'type'    => 'CheckBox',
@@ -194,13 +195,13 @@ class NotificationEvent extends IPSModule
                 [
                     'type'      => 'ValidationTextBox',
                     'name'      => 'subject',
-                    'caption'   => 'Static "subject"',
+                    'caption'   => 'Given "subject"',
                 ],
                 [
                     'type'      => 'ValidationTextBox',
                     'multiline' => true,
                     'name'      => 'message',
-                    'caption'   => 'Static "message text"',
+                    'caption'   => 'Given "message text"',
                 ],
                 [
                     'type'      => 'Label',
@@ -308,6 +309,12 @@ class NotificationEvent extends IPSModule
                             'name'      => 'recovery_message',
                             'caption'   => 'Alternate "Message text" for recovery',
                             'width'     => '500px',
+                        ],
+                        [
+                            'type'      => 'Select',
+                            'options'   => $this->SeverityAsOptions(true),
+                            'name'      => 'recovery_severity',
+                            'caption'   => 'Alternate "severity" for recovery',
                         ],
                     ],
                 ],
@@ -633,7 +640,6 @@ class NotificationEvent extends IPSModule
         $this->SendDebug(__FUNCTION__, 'repetition=' . $repetition . ', started=' . $startedS . ', recovery=' . $this->bool2str($recovery), 0);
 
         $ruleID = $this->ReadPropertyInteger('ruleID');
-        $severity = $this->ReadPropertyInteger('severity');
         $severity_increase = $this->ReadPropertyBoolean('severity_increase');
         if ($severity_increase) {
             $severity = min(self::$SEVERITY_ALERT, $severity + $repetition);
@@ -647,18 +653,23 @@ class NotificationEvent extends IPSModule
             if ($message == false) {
                 $message = $this->ReadPropertyString('message');
             }
+            $severity = $this->ReadPropertyInteger('recovery_severity');
+            if ($severity == self::$SEVERITY_UNKNOWN) {
+                $severity = $this->ReadPropertyInteger('severity');
+            }
         } else {
             $subject = $this->ReadPropertyString('subject');
             $message = $this->ReadPropertyString('message');
+            $severity = $this->ReadPropertyInteger('severity');
         }
         $script = $this->ReadPropertyString('script');
         if ($script != '') {
             $params = [
-                'repetition' => $repetition,
-                'started'    => $started,
-                'severity'   => $severity,
-                'ruleID'     => $ruleID,
                 'recovery'   => $recovery,
+                'repetition' => $repetition,
+                'ruleID'     => $ruleID,
+                'severity'   => $severity,
+                'started'    => $started,
             ];
             @$r = IPS_RunScriptTextWaitEx($script, $params);
             $this->SendDebug(__FUNCTION__, 'script("...", ' . print_r($params, true) . ' => ' . $r, 0);
@@ -703,8 +714,14 @@ class NotificationEvent extends IPSModule
             return false;
         }
 
+        $params = [
+            'recovery'   => $recovery,
+            'repetition' => $repetition,
+            'started'    => $started,
+            'eventID'    => $this->InstanceID,
+        ];
         $this->SendDebug(__FUNCTION__, 'trigger rule "' . IPS_GetName($ruleID) . '" (#' . $repetition . ')', 0);
-        $r = Notification_TriggerRule($ruleID, $message, $subject, $severity, []);
+        $r = Notification_TriggerRule($ruleID, $message, $subject, $severity, $params);
         return $r;
     }
 
@@ -726,11 +743,11 @@ class NotificationEvent extends IPSModule
         $script = $this->ReadPropertyString('script');
         if ($script != '') {
             $params = [
-                'repetition'    => $repetition,
-                'started'       => $started,
-                'severity'      => $severity,
-                'ruleID'        => $ruleID,
-                'recovery'      => $recovery,
+                'recovery'   => $recovery,
+                'repetition' => $repetition,
+                'ruleID'     => $ruleID,
+                'severity'   => $severity,
+                'started'    => $started,
             ];
             $this->SendDebug(__FUNCTION__, 'script=' . $script, 0);
             $this->SendDebug(__FUNCTION__, 'params=' . print_r($params, true), 0);
@@ -752,7 +769,7 @@ class NotificationEvent extends IPSModule
                         $ruleID = $j['ruleID'];
                     }
                 } else {
-                    $this->SendDebug(__FUNCTION__, 'message=' . $message, 0);
+                    $this->SendDebug(__FUNCTION__, 'message=' . $r, 0);
                     $message = $r;
                 }
             } else {
@@ -774,5 +791,19 @@ class NotificationEvent extends IPSModule
             $s .= $message . PHP_EOL;
         }
         echo $s;
+    }
+
+    public function Log(string $message, string $severity, array $params)
+    {
+        if ($this->CheckStatus() == self::$STATUS_INVALID) {
+            $this->SendDebug(__FUNCTION__, $this->GetStatusText() . ' => skip', 0);
+            return false;
+        }
+
+        $notificationBase = $this->GetNotificationBase();
+        if ($notificationBase >= 10000) {
+            return Notification_Log($notificationBase, $message, $severity, $params);
+        }
+        return false;
     }
 }
