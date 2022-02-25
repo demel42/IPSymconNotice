@@ -394,5 +394,5 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0 @ 25.02.2022 17:42 (beta)
+- 1.0 @ 25.02.2022 19:32 (beta)
   - initiale Version

@@ -125,8 +125,8 @@ class NotificationBase extends IPSModule
                 }
                 $n_users++;
                 $user_id = $user['id'];
-                $s = $user['script_params'];
-                if ($s != false) {
+                $s = isset($user['script_params']) ? $user['script_params'] : '';
+                if ($s != '') {
                     @$j = json_decode($s, true);
                     if ($j == false) {
                         $this->SendDebug(__FUNCTION__, '"users.script_params" of user ' . $user_id . ' has no json-coded content "' . $s . '"', 0);
