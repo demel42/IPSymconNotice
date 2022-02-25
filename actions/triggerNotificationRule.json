@@ -9,8 +9,8 @@
         },
         {
             "type": "ValidationTextBox",
-            "name": "MESSAGETEXT",
-            "caption": "Message text"
+            "name": "MESSAGE",
+            "caption": "Message"
         },
         {
             "type": "Select",
@@ -36,7 +36,7 @@
             ]
         }
     ],
-    "action": "Notification_TriggerRule($_IPS['TARGET'], $_IPS['MESSAGETEXT'], $_IPS['SUBJECT'], $_IPS['SEVERITY'], []);",
+    "action": "Notification_TriggerRule($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SUBJECT'], $_IPS['SEVERITY'], []);",
     "restrictions": {
         "objectType": [ 1 ],
         "moduleID": [ "{2335FF1E-9628-E363-AAEC-11DE75788A13}" ],
@@ -50,7 +50,7 @@
         "de": {
             "Trigger notification rule": "Löse Benachrichtigungsregel aus",
             "Subject": "Betreff",
-            "Message text": "Nachricht",
+            "Message": "Nachrichten-Text",
             "Severity": "Schweregrad",
             "Information": "Information",
             "Notice": "Hinweis",

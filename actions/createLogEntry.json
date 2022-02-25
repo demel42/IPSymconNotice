@@ -4,8 +4,8 @@
     "form": [
         {
             "type": "ValidationTextBox",
-            "name": "TEXT",
-            "caption": "Text"
+            "name": "MESSAGE",
+            "caption": "Message"
         },
         {
             "type": "Select",
@@ -35,7 +35,7 @@
             ]
         }
     ],
-    "action": "Notification_Log($_IPS['TARGET'], $_IPS['TEXT'], $_IPS['SEVERITY'], []);",
+    "action": "Notification_Log($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SEVERITY'], []);",
     "restrictions": {
         "objectType": [ 1 ],
         "moduleID": [ "{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}" ],
@@ -43,18 +43,18 @@
     },
     "priority": 10,
     "category": "target",
-    "format": "Add log entry with severity \"{SEVERITY}\" and \"{TEXT}\"",
+    "format": "Add log entry with severity \"{SEVERITY}\" and \"{MESSAGE}\"",
     "locale": {
         "de": {
             "Create log entry": "Protokolleintrag erzeugen",
-            "Text": "Text",
+            "Message": "Nachrichten-Text",
             "Severity": "Schweregrad",
             "Information": "Information",
             "Notice": "Hinweis",
             "Warning": "Warnung",
             "Alert": "Alarm",
             "Debug": "Fehlersuche",
-            "Add log entry with severity \"{SEVERITY}\" and \"{TEXT}\"": "Protokolleintrag mit Schweregrad \"{SEVERITY}\" und \"{TEXT}\" hinzufügen"
+            "Add log entry with severity \"{SEVERITY}\" and \"{MESSAGE}\"": "Protokolleintrag mit Schweregrad \"{SEVERITY}\" und \"{MESSAGE}\" hinzufügen"
         }
     }
 }
