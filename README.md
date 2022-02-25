@@ -119,6 +119,7 @@ Ein laufendes Ereignis wird standardmässig durch erneuten Aufruf nicht wieder a
 ### a. Installation des Moduls
 
 Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Symcon Notification* zu finden.
+
 Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotification.git` installiert werden.
 
 ### b. Einrichtung in IPS
