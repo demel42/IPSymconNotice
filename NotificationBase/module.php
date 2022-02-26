@@ -1340,7 +1340,7 @@ class NotificationBase extends IPSModule
         return $targets;
     }
 
-    private function GetPresence()
+    public function GetPresence()
     {
         $presence = [];
         $users = json_decode($this->ReadPropertyString('users'), true);

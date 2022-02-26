@@ -394,5 +394,8 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0 @ 25.02.2022 19:32 (beta)
+- 1.1 @ 26.02.2022 06:52 (beta)
+  - GetPresence() ist wieder public
+
+- 1.0 @ 25.02.2022 19:32
   - initiale Version
