@@ -444,7 +444,7 @@ class NotificationRule extends IPSModule
         $targetV = $this->EvaluateRule();
         if ($targetV != false) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'triggered rule #' . $this->InstanceID . ', targets=' . implode(',', $targetV);
+                $s = 'rule #' . $this->InstanceID . ': targets=' . implode(',', $targetV);
                 $this->LogMessage($s, KL_MESSAGE);
             }
             $notificationBase = $this->GetNotificationBase();
@@ -536,7 +536,7 @@ class NotificationRule extends IPSModule
             }
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'triggered rule #' . $this->InstanceID . ' with no matching targets';
+                $s = 'rule #' . $this->InstanceID . ': no matching targets';
                 $this->LogMessage($s, KL_NOTIFY);
             }
         }

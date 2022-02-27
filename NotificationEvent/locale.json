@@ -7,6 +7,8 @@
 			"Disable instance": "Instanz deaktivieren",
 
 			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",
+			"Number of repetitions is configured, but neither a fixed value nor the variable":
+				"Anzahl der Wiederholungen ist konfiguriert, aber weder ein fester Wert noch die Variable",
 			"The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
 
 			"Start of event": "Auslöse-Zeitpunkt",

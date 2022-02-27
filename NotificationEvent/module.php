@@ -59,9 +59,18 @@ class NotificationEvent extends IPSModule
         $r = [];
 
         $ruleID = $this->ReadPropertyInteger('ruleID');
-        if ($ruleID == 0) {
+        if ($ruleID < 10000) {
             $field = $this->Translate('Notification rule');
             $r[] = $this->TranslateFormat('Field "{$field}" is not configured', ['{$field}' => $field]);
+        }
+
+        $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
+        if ($max_repetitions != 0) {
+            $pause_value = $this->ReadPropertyInteger('pause_value');
+            $pause_varID = $this->ReadPropertyInteger('pause_varID');
+            if ($pause_value == 0 && $pause_varID < 10000) {
+                $r[] = $this->Translate('Number of repetitions is configured, but neither a fixed value nor the variable');
+            }
         }
 
         if ($r != []) {
@@ -102,7 +111,7 @@ class NotificationEvent extends IPSModule
                     if ($variableID >= 10000) {
                         $this->RegisterReference($variableID);
                     }
-                    if ($var['type'] == 1) {
+                    if ($this->GetArrayElem($var, 'type', 0) == 1 /* compare with variable */) {
                         $oid = $var['value'];
                         if ($oid >= 10000) {
                             $this->RegisterReference($oid);
@@ -425,7 +434,7 @@ class NotificationEvent extends IPSModule
                 $started = time();
                 $repetition = 0;
                 $varID = $this->ReadPropertyInteger('delay_varID');
-                if ($varID != 0) {
+                if ($varID >= 10000) {
                     $tval = GetValueInteger($varID);
                 } else {
                     $tval = $this->ReadPropertyInteger('delay_value');
@@ -434,36 +443,39 @@ class NotificationEvent extends IPSModule
                     $unit = $this->ReadPropertyInteger('delay_timeunit');
                     $sec = $this->CalcByTimeunit($unit, $tval);
                     $tvS = $tval . $this->Timeunit2Suffix($unit);
-                    $msg = $conditionsS . ', start with delay of ' . $tvS;
+                    $msg = $conditionsS . ', started with delay of ' . $tvS;
                 } else {
                     $this->Notify($repetition++, $started, false);
-                    $varID = $this->ReadPropertyInteger('pause_varID');
-                    if ($varID != 0) {
-                        $tval = GetValueInteger($varID);
+                    $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
+                    if ($this->ReadPropertyInteger('max_repetitions') == 0) {
+                        $started = 0;
+                        $repetition = 0;
+                        $sec = 0;
+                        $tvS = '';
+                        $msg = $conditionsS . ', started with notification without repetition';
                     } else {
-                        $tval = $this->ReadPropertyInteger('pause_value');
+                        $varID = $this->ReadPropertyInteger('pause_varID');
+                        if ($varID >= 10000) {
+                            $tval = GetValueInteger($varID);
+                        } else {
+                            $tval = $this->ReadPropertyInteger('pause_value');
+                        }
+                        $unit = $this->ReadPropertyInteger('pause_timeunit');
+                        $sec = $this->CalcByTimeunit($unit, $tval);
+                        $tvS = $tval . $this->Timeunit2Suffix($unit);
+                        $msg = $conditionsS . ', started with notification and pausing ' . $tvS;
                     }
-                    $unit = $this->ReadPropertyInteger('pause_timeunit');
-                    $sec = $this->CalcByTimeunit($unit, $tval);
-                    $tvS = $tval . $this->Timeunit2Suffix($unit);
-                    $msg = $conditionsS . ', start with notification and pause ' . $tvS;
                 }
-                $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
-                if ($max_repetitions == -1 || $repetition <= $max_repetitions) {
-                    $this->SetValue('TimerStarted', $started);
-                    $this->WriteAttributeInteger('repetition', $repetition);
-                    if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                        $this->LogMessage($msg, KL_NOTIFY);
-                    }
+                $this->SetValue('TimerStarted', $started);
+                $this->WriteAttributeInteger('repetition', $repetition);
+                if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $msg, KL_NOTIFY);
+                }
+                if ($sec > 0) {
                     $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
                     $this->SetTimerInterval('LoopTimer', $sec * 1000);
                 } else {
-                    $this->SetValue('TimerStarted', 0);
-                    $this->WriteAttributeInteger('repetition', 0);
-                    if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                        $this->LogMessage($conditionsS . ', no repetition', KL_NOTIFY);
-                    }
-                    $this->SendDebug(__FUNCTION__, 'no timer (max_repetitions=' . $max_repetitions . ')', 0);
+                    $this->SendDebug(__FUNCTION__, 'no timer (no repetition)', 0);
                     $this->SetTimerInterval('LoopTimer', 0);
                 }
             }
@@ -477,13 +489,13 @@ class NotificationEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage($conditionsS . ', stop running timer', KL_NOTIFY);
+                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', stopped running timer', KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             } else {
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                    $this->LogMessage($conditionsS, KL_MESSAGE);
+                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', continuing', KL_MESSAGE);
                 }
             }
         }
@@ -499,7 +511,7 @@ class NotificationEvent extends IPSModule
             $this->SetValue('TimerStarted', 0);
             $this->WriteAttributeInteger('repetition', 0);
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $this->LogMessage('timer stopped manual', KL_NOTIFY);
+                $this->LogMessage('event #' . $this->InstanceID . ': timer stopped manual', KL_NOTIFY);
             }
             $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
             $this->SetTimerInterval('LoopTimer', 0);
@@ -528,7 +540,7 @@ class NotificationEvent extends IPSModule
             $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
             if ($max_repetitions == -1 || $repetition <= $max_repetitions) {
                 $varID = $this->ReadPropertyInteger('pause_varID');
-                if ($varID != 0) {
+                if ($varID >= 10000) {
                     $tval = GetValueInteger($varID);
                 } else {
                     $tval = $this->ReadPropertyInteger('pause_value');
@@ -538,7 +550,7 @@ class NotificationEvent extends IPSModule
                 $tvS = $tval . $this->Timeunit2Suffix($unit);
                 $this->WriteAttributeInteger('repetition', $repetition);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and pause ' . $tvS, KL_NOTIFY);
+                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', notification #' . $repetition . ' and pausing ' . $tvS, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
                 $this->SetTimerInterval('LoopTimer', $sec * 1000);
@@ -546,9 +558,9 @@ class NotificationEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and stop timer (max repetitions)', KL_NOTIFY);
+                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', notification #' . $repetition . ' and stopped timer (max repetitions)', KL_NOTIFY);
                 }
-                $this->SendDebug(__FUNCTION__, 'timer stopped (max_repetitions=' . $max_repetitions . ')', 0);
+                $this->SendDebug(__FUNCTION__, 'timer stopped (max repetitions=' . $max_repetitions . ')', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             }
         } else {
@@ -560,7 +572,7 @@ class NotificationEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage($conditionsS . ', stop timer', KL_NOTIFY);
+                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', stopped timer', KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);

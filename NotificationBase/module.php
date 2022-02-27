@@ -125,7 +125,7 @@ class NotificationBase extends IPSModule
                 }
                 $n_users++;
                 $user_id = $user['id'];
-                $s = isset($user['script_params']) ? $user['script_params'] : '';
+                $s = $this->GetArrayElem($user, 'script_params', '');
                 if ($s != '') {
                     @$j = json_decode($s, true);
                     if ($j == false) {
@@ -945,7 +945,14 @@ class NotificationBase extends IPSModule
         $params = array_merge($webfront_defaults, $params);
 
         $message = $this->GetArrayElem($params, 'message', $message);
-        $subject = isset($params['subject']) ? substr($params['subject'], 0, 32) : '';
+        $subject = $this->GetArrayElem($params, 'subject', '');
+        if ($message == '') {
+            $message = $subject;
+            $subject = '';
+        }
+        if (strlen($subject) > 32) {
+            $subject = substr($subject, 0, 32);
+        }
         $sound = $this->GetArrayElem($params, 'sound', '');
         if ($sound == '') {
             $severity = $this->GetArrayElem($params, 'severity', self::$SEVERITY_UNKNOWN);
@@ -973,7 +980,7 @@ class NotificationBase extends IPSModule
         $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $message . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
 
         if ($r) {
-            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
                 $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" succeed';
                 $this->LogMessage($s, KL_MESSAGE);
             }
@@ -981,7 +988,7 @@ class NotificationBase extends IPSModule
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'wf')]);
             $this->Log($s, 'debug', []);
         } else {
-            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
+            if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
                 $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" failed';
                 $this->LogMessage($s, KL_NOTIFY);
             }
