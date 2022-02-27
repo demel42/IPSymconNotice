@@ -469,7 +469,7 @@ class NotificationEvent extends IPSModule
                 $this->SetValue('TimerStarted', $started);
                 $this->WriteAttributeInteger('repetition', $repetition);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $msg, KL_NOTIFY);
+                    $this->LogMessage($msg, KL_NOTIFY);
                 }
                 if ($sec > 0) {
                     $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
@@ -489,13 +489,13 @@ class NotificationEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', stopped running timer', KL_NOTIFY);
+                    $this->LogMessage($conditionsS . ', stopped running timer', KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
             } else {
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', continuing', KL_MESSAGE);
+                    $this->LogMessage($conditionsS . ', continuing', KL_MESSAGE);
                 }
             }
         }
@@ -511,7 +511,7 @@ class NotificationEvent extends IPSModule
             $this->SetValue('TimerStarted', 0);
             $this->WriteAttributeInteger('repetition', 0);
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $this->LogMessage('event #' . $this->InstanceID . ': timer stopped manual', KL_NOTIFY);
+                $this->LogMessage('timer stopped manual', KL_NOTIFY);
             }
             $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
             $this->SetTimerInterval('LoopTimer', 0);
@@ -550,7 +550,7 @@ class NotificationEvent extends IPSModule
                 $tvS = $tval . $this->Timeunit2Suffix($unit);
                 $this->WriteAttributeInteger('repetition', $repetition);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', notification #' . $repetition . ' and pausing ' . $tvS, KL_NOTIFY);
+                    $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and pausing ' . $tvS, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
                 $this->SetTimerInterval('LoopTimer', $sec * 1000);
@@ -558,7 +558,7 @@ class NotificationEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', notification #' . $repetition . ' and stopped timer (max repetitions)', KL_NOTIFY);
+                    $this->LogMessage($conditionsS . ', notification #' . $repetition . ' and stopped timer (max repetitions)', KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (max repetitions=' . $max_repetitions . ')', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
@@ -572,7 +572,7 @@ class NotificationEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $this->LogMessage('event #' . $this->InstanceID . ': ' . $conditionsS . ', stopped timer', KL_NOTIFY);
+                    $this->LogMessage($conditionsS . ', stopped timer', KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->SetTimerInterval('LoopTimer', 0);
@@ -706,7 +706,7 @@ class NotificationEvent extends IPSModule
             }
         }
 
-        if ($ruleID == 0) {
+        if ($ruleID < 10000) {
             $this->SendDebug(__FUNCTION__, 'no notification rule', 0);
             return false;
         }

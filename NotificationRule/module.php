@@ -46,7 +46,7 @@ class NotificationRule extends IPSModule
         $notificationBase = $this->ReadPropertyInteger('notificationBase');
         $ids = IPS_GetInstanceListByModuleID('{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}');
         foreach ($ids as $id) {
-            if ($notificationBase == 0 || $notificationBase == $id) {
+            if ($notificationBase < 10000 || $notificationBase == $id) {
                 return $id;
             }
         }
@@ -80,7 +80,7 @@ class NotificationRule extends IPSModule
         $s = '';
         $r = [];
 
-        if ($this->GetNotificationBase() == 0) {
+        if ($this->GetNotificationBase() < 10000) {
             $this->SendDebug(__FUNCTION__, '"notificationBase" ist empty and no global NotificationBase-instance', 0);
             $field = $this->Translate('Notification base');
             $r[] = $this->TranslateFormat('Field "{$field}" is not configured', ['{$field}' => $field]);
@@ -444,8 +444,7 @@ class NotificationRule extends IPSModule
         $targetV = $this->EvaluateRule();
         if ($targetV != false) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'rule #' . $this->InstanceID . ': targets=' . implode(',', $targetV);
-                $this->LogMessage($s, KL_MESSAGE);
+                $this->LogMessage('targets=' . implode(',', $targetV), KL_MESSAGE);
             }
             $notificationBase = $this->GetNotificationBase();
             if ($notificationBase >= 10000) {
@@ -536,8 +535,7 @@ class NotificationRule extends IPSModule
             }
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'rule #' . $this->InstanceID . ': no matching targets';
-                $this->LogMessage($s, KL_NOTIFY);
+                $this->LogMessage('no matching targets', KL_NOTIFY);
             }
         }
         return $result;
