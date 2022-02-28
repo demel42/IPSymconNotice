@@ -530,6 +530,9 @@ class NotificationRule extends IPSModule
                 $log_additionally = $this->ReadPropertyBoolean('log_additionally');
                 if ($log_additionally) {
                     $l_params['targets'] = $targetV;
+                    if ($message == '') {
+                        $message = $subject;
+                    }
                     Notification_Log($notificationBase, $message, $severity, $l_params);
                 }
             }
