@@ -394,7 +394,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0.3 @ 28.02.2022 10:02 (beta)
+- 1.0.4 @ 28.02.2022 16:18 (beta)
+  - Action createLogEntry gibt es in allen drei Modulen
+
+- 1.0.3 @ 28.02.2022 10:02
   - teilweise (Webfront, Log) wird, wenn "message" nicht angegeben ist, stattdessen "subject" verwendet
 
 - 1.0.2 @ 27.02.2022 11:27
