@@ -125,7 +125,12 @@ class NotificationRule extends IPSModule
             $this->UnregisterReference($ref);
         }
 
-        $propertyNames = ['notificationBase'];
+        $oid = $this->GetNotificationBase();
+        if ($oid >= 10000) {
+            $this->RegisterReference($oid);
+        }
+
+        $propertyNames = [];
         foreach ($propertyNames as $name) {
             $oid = $this->ReadPropertyInteger($name);
             if ($oid >= 10000) {
