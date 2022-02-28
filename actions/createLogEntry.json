@@ -38,7 +38,11 @@
     "action": "Notification_Log($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SEVERITY'], []);",
     "restrictions": {
         "objectType": [ 1 ],
-        "moduleID": [ "{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}" ],
+        "moduleID": [
+			"{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}",
+			"{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}",
+			"{2335FF1E-9628-E363-AAEC-11DE75788A13}"
+		],
         "includeEnvironments": [ "TestCommands", "Default" ]
     },
     "priority": 10,
