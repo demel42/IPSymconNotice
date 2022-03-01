@@ -385,6 +385,123 @@ class NotificationRule extends IPSModule
         return $formElements;
     }
 
+    protected function GetFormActions()
+    {
+        $formActions = [];
+
+        $formActions[] = [
+            'type'  => 'RowLayout',
+            'items' => [
+                [
+                    'type'    => 'Button',
+                    'caption' => 'Check rule validity',
+                    'onClick' => 'Notification_CheckRuleValidity($id);',
+                ],
+                [
+                    'type'    => 'PopupButton',
+                    'caption' => 'Trigger rule',
+                    'popup'   => [
+                        'caption'   => 'Trigger rule',
+                        'items'     => [
+                            [
+                                'type'    => 'ValidationTextBox',
+                                'name'    => 'message',
+                                'caption' => 'Message text',
+                                'width'   => '600px',
+                            ],
+                            [
+                                'type'    => 'ValidationTextBox',
+                                'name'    => 'subject',
+                                'caption' => 'Subject',
+                                'width'   => '300px',
+                            ],
+                            [
+                                'type'    => 'Select',
+                                'name'    => 'severity',
+                                'options' => $this->SeverityAsOptions(true),
+                                'caption' => 'Severity',
+                            ],
+                        ],
+                        'buttons' => [
+                            [
+                                'type'    => 'Button',
+                                'caption' => 'Trigger',
+                                'onClick' => 'Notification_TriggerRule($id, $message, $subject, $severity, []);'
+                            ],
+                        ],
+                        'closeCaption' => 'Cancel',
+                    ],
+                ],
+            ],
+        ];
+
+        $formActions[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Expert area',
+            'expanded'  => false,
+            'items'     => [
+                [
+                    'type'    => 'Button',
+                    'caption' => 'Re-install variable-profiles',
+                    'onClick' => 'Notification_InstallVarProfiles($id, true);'
+                ],
+            ]
+        ];
+
+        $formActions[] = [
+            'type'      => 'ExpansionPanel',
+            'caption'   => 'Test area',
+            'expanded'  => false,
+            'items'     => [
+                [
+                    'type'    => 'TestCenter',
+                ],
+                [
+                    'type'    => 'Label',
+                ],
+                [
+                    'type'    => 'RowLayout',
+                    'items'   => [
+                        [
+                            'type'     => 'SelectModule',
+                            'moduleID' => '{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}',
+                            'caption'  => 'Webfront',
+                            'name'     => 'instID',
+                        ],
+                        [
+                            'type'     => 'Select',
+                            'options'  => $this->WebfrontSounds(),
+                            'name'     => 'sound',
+                            'caption'  => 'Sound',
+                        ],
+                        [
+                            'type'    => 'Button',
+                            'caption' => 'Test sound',
+                            'onClick' => 'WFC_PushNotification($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
+                        ],
+                    ],
+                ],
+            ]
+        ];
+
+        $formActions[] = $this->GetInformationForm();
+        $formActions[] = $this->GetReferencesForm();
+
+        return $formActions;
+    }
+
+    public function RequestAction($Ident, $Value)
+    {
+        if ($this->CommonRequestAction($Ident, $Value)) {
+            return;
+        }
+        switch ($Ident) {
+            default:
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                break;
+        }
+    }
+
     public function CheckRuleValidity()
     {
         $presence = $this->GetPresence();
@@ -634,111 +751,6 @@ class NotificationRule extends IPSModule
         $this->SendDebug(__FUNCTION__, 'targets=' . print_r($targetV, true), 0);
 
         return $targetV;
-    }
-
-    protected function GetFormActions()
-    {
-        $formActions = [];
-
-        $formActions[] = [
-            'type'  => 'RowLayout',
-            'items' => [
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Check rule validity',
-                    'onClick' => 'Notification_CheckRuleValidity($id);',
-                ],
-                [
-                    'type'    => 'PopupButton',
-                    'caption' => 'Trigger rule',
-                    'popup'   => [
-                        'caption'   => 'Trigger rule',
-                        'items'     => [
-                            [
-                                'type'    => 'ValidationTextBox',
-                                'name'    => 'message',
-                                'caption' => 'Message text',
-                                'width'   => '600px',
-                            ],
-                            [
-                                'type'    => 'ValidationTextBox',
-                                'name'    => 'subject',
-                                'caption' => 'Subject',
-                                'width'   => '300px',
-                            ],
-                            [
-                                'type'    => 'Select',
-                                'name'    => 'severity',
-                                'options' => $this->SeverityAsOptions(true),
-                                'caption' => 'Severity',
-                            ],
-                        ],
-                        'buttons' => [
-                            [
-                                'type'    => 'Button',
-                                'caption' => 'Trigger',
-                                'onClick' => 'Notification_TriggerRule($id, $message, $subject, $severity, []);'
-                            ],
-                        ],
-                        'closeCaption' => 'Cancel',
-                    ],
-                ],
-            ],
-        ];
-
-        $formActions[] = [
-            'type'      => 'ExpansionPanel',
-            'caption'   => 'Expert area',
-            'expanded'  => false,
-            'items'     => [
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'Notification_InstallVarProfiles($id, true);'
-                ],
-            ]
-        ];
-
-        $formActions[] = [
-            'type'      => 'ExpansionPanel',
-            'caption'   => 'Test area',
-            'expanded'  => false,
-            'items'     => [
-                [
-                    'type'    => 'TestCenter',
-                ],
-                [
-                    'type'    => 'Label',
-                ],
-                [
-                    'type'    => 'RowLayout',
-                    'items'   => [
-                        [
-                            'type'     => 'SelectModule',
-                            'moduleID' => '{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}',
-                            'caption'  => 'Webfront',
-                            'name'     => 'instID',
-                        ],
-                        [
-                            'type'     => 'Select',
-                            'options'  => $this->WebfrontSounds(),
-                            'name'     => 'sound',
-                            'caption'  => 'Sound',
-                        ],
-                        [
-                            'type'    => 'Button',
-                            'caption' => 'Test sound',
-                            'onClick' => 'WFC_PushNotification($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
-                        ],
-                    ],
-                ],
-            ]
-        ];
-
-        $formActions[] = $this->GetInformationForm();
-        $formActions[] = $this->GetReferencesForm();
-
-        return $formActions;
     }
 
     public function Log(string $message, string $severity, array $params)

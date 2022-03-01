@@ -394,7 +394,7 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0.5 @ 01.03.2022 11:07 (beta)
+- 1.0.5 @ 01.03.2022 21:53 (beta)
   - Anzeige der Referenzen der Instanz
   - Default von 'max_repetitions' ist nun 0
 

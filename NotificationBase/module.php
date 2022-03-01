@@ -775,6 +775,10 @@ class NotificationBase extends IPSModule
 
     public function RequestAction($Ident, $Value)
     {
+        if ($this->CommonRequestAction($Ident, $Value)) {
+            return;
+        }
+
         if ($this->GetStatus() == IS_INACTIVE) {
             $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
             return;

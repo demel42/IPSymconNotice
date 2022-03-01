@@ -410,6 +410,18 @@ class NotificationEvent extends IPSModule
         return $formActions;
     }
 
+    public function RequestAction($Ident, $Value)
+    {
+        if ($this->CommonRequestAction($Ident, $Value)) {
+            return;
+        }
+        switch ($Ident) {
+            default:
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                break;
+        }
+    }
+
     public function TriggerEvent(bool $force = false)
     {
         if ($this->CheckStatus() == self::$STATUS_INVALID) {
