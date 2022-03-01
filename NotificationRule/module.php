@@ -736,6 +736,7 @@ class NotificationRule extends IPSModule
         ];
 
         $formActions[] = $this->GetInformationForm();
+        $formActions[] = $this->GetReferencesForm();
 
         return $formActions;
     }

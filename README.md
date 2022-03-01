@@ -394,7 +394,11 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0.4 @ 28.02.2022 16:18 (beta)
+- 1.0.5 @ 01.03.2022 11:07 (beta)
+  - Anzeige der Referenzen der Instanz
+  - Default von 'max_repetitions' ist nun 0
+
+- 1.0.4 @ 28.02.2022 16:18
   - Action createLogEntry gibt es in allen drei Modulen
 
 - 1.0.3 @ 28.02.2022 10:02

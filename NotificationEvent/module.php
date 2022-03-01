@@ -38,7 +38,7 @@ class NotificationEvent extends IPSModule
         $this->RegisterPropertyInteger('pause_varID', 0);
         $this->RegisterPropertyInteger('pause_timeunit', self::$TIMEUNIT_MINUTES);
 
-        $this->RegisterPropertyInteger('max_repetitions', -1);
+        $this->RegisterPropertyInteger('max_repetitions', 0);
 
         $this->RegisterPropertyBoolean('recovery_notify', 0);
         $this->RegisterPropertyString('recovery_subject', '');
@@ -405,6 +405,7 @@ class NotificationEvent extends IPSModule
         ];
 
         $formActions[] = $this->GetInformationForm();
+        $formActions[] = $this->GetReferencesForm();
 
         return $formActions;
     }
