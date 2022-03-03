@@ -394,7 +394,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0.5 @ 01.03.2022 21:53 (beta)
+- 1.0.6 @ 03.03.2022 10:08 (beta)
+  - Fix in CommonStubs
+
+- 1.0.5 @ 01.03.2022 21:53
   - Anzeige der Referenzen der Instanz
   - Default von 'max_repetitions' ist nun 0
 
