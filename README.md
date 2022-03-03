@@ -394,7 +394,11 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0.6 @ 03.03.2022 10:08 (beta)
+- 1.0.7 @ 03.03.2022 14:02 (beta)
+  - Absicherung $action.restrictions.moduleID
+  - Anzeige referenzierter Statusvariablen
+
+- 1.0.6 @ 03.03.2022 10:08
   - Fix in CommonStubs
 
 - 1.0.5 @ 01.03.2022 21:53
