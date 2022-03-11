@@ -495,6 +495,12 @@ class NotificationRule extends IPSModule
         if ($this->CommonRequestAction($Ident, $Value)) {
             return;
         }
+
+        if ($this->GetStatus() == IS_INACTIVE) {
+            $this->SendDebug(__FUNCTION__, 'instance is inactive, skip', 0);
+            return;
+        }
+
         switch ($Ident) {
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
