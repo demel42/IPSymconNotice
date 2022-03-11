@@ -394,7 +394,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0.7 @ 03.03.2022 14:02 (beta)
+- 1.0.8 @ 11.03.2022 16:59 (beta)
+  - Ausgabe der Aufruf-Historie (CallChain)
+
+- 1.0.7 @ 03.03.2022 14:02
   - Absicherung $action.restrictions.moduleID
   - Anzeige referenzierter Statusvariablen
 

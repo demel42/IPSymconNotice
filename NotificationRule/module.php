@@ -526,6 +526,8 @@ class NotificationRule extends IPSModule
 
     public function TriggerRule(string $message, string $subject, string $severity, array $params)
     {
+        $this->PushCallChain(__FUNCTION__);
+
         $this->SendDebug(__FUNCTION__, 'message=' . $message . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
 
         $default_subject = $this->ReadPropertyString('default_subject');
@@ -566,7 +568,9 @@ class NotificationRule extends IPSModule
         $targetV = $this->EvaluateRule();
         if ($targetV != false) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $this->LogMessage('targets=' . implode(',', $targetV), KL_MESSAGE);
+                $msg = 'targets=' . implode(',', $targetV);
+                $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                $this->LogMessage($msg, KL_MESSAGE);
             }
             $notificationBase = $this->GetNotificationBase();
             if ($notificationBase >= 10000) {
@@ -660,9 +664,14 @@ class NotificationRule extends IPSModule
             }
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $this->LogMessage('no matching targets', KL_NOTIFY);
+                $msg = 'no matching targets';
+                $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                $this->LogMessage($msg, KL_NOTIFY);
             }
         }
+
+        $this->PopCallChain(__FUNCTION__);
+
         return $result;
     }
 
