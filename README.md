@@ -394,7 +394,7 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.0.8 @ 17.03.2022 17:53 (beta)
+- 1.0.8 @ 17.03.2022 17:53
   - Ausgabe der Aufruf-Historie (CallChain)
 
 - 1.0.7 @ 03.03.2022 14:02
