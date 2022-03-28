@@ -69,7 +69,7 @@ die Person, die als erste das leere Haus betreten hat
 
 Neben der Mitteilung wird auch eine "normale" Protokollierung unterstützt.
 
-### Mitteilungs-Regeln (_NotifcationRule_)
+### Mitteilungs-Regeln (_NoticeRule_)
 Hier werden die enwünschen Empfänger (Kombination von Benutzer und Kommunikationsweg) sowie die dazugehörige Bedingung definiert.
 
 Bedingungen gibt es folgende
@@ -131,7 +131,7 @@ Erzeugt einen Eintrag in dem Protokoll vom _NoticeBase_.<br>
 _Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben).<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
-### Mitteilungs-Regeln (_NotifcationRule_)
+### Mitteilungs-Regeln (_NoticeRule_)
 `boolean Notice_TriggerRule(integer $InstanzID, string $Message, string $Subject, mixed $Severity, array $Params)`<br>
 Löst die Mitteilungsregel aus und gemäß der Definition die Mitteilungen.<br>
 _Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben).<br>
@@ -243,13 +243,13 @@ alle Argumente werden über *_IPS* weitergegeben
     | message            | string  | Nachrichten-Text |
     | severity           | integer | Schweregrad |
 
-#### Mitteilungs-Regeln (_NotifcationRule_)
+#### Mitteilungs-Regeln (_NoticeRule_)
 
 | Eigenschaft                           | Typ     | Standardwert | Beschreibung |
 | :------------------------------------ | :------ | :----------- | :----------- |
 | Instanz deaktivieren                  | boolean | false        | Instanz temporär deaktivieren |
 |                                       |         |              | |
-| Mitteilungs-Basis               | integer | 0            | Instanz der zugehörigen Basis, nur erforderlich, wenn man mehr als eine Basis nutzen möchte  |
+| Mitteilungs-Basis                     | integer | 0            | Instanz der zugehörigen Basis, nur erforderlich, wenn man mehr als eine Basis nutzen möchte  |
 |                                       |         |              | |
 | Standardwerte                         |         |              | |
 |   Schweregrad                         | integer |              | Stardard-Schweregrad |
@@ -262,7 +262,7 @@ alle Argumente werden über *_IPS* weitergegeben
 |   Skript                              |         |              | |
 |     Standardwert für Signalisierungen | string  |              | Kodierung von Signalisierungen |
 |                                       |         |              | |
-| Mitteilungen protokollieren     | boolean | false        | ermöglicht, das Mitteilungen aus mit im enthaltenen automatisch auch mit dem entsprechendem Schweregrad protokolliert werden.<br>|
+| Mitteilungen protokollieren           | boolean | false        | ermöglicht, das Mitteilungen aus mit im enthaltenen automatisch auch mit dem entsprechendem Schweregrad protokolliert werden.<br>|
 |                                       |         |              | |
 | Empfänger                             |         |              | |
 |                                       |         |              | |
@@ -276,8 +276,8 @@ alle Argumente werden über *_IPS* weitergegeben
 |                                       |         |              | |
 | Bedingungen                           | string  |              | Bedingung, wann das Ereignis gültig ist |
 |                                       |         |              | |
-| Mitteilungs-Details             |         |              | |
-|   Mitteilungs-Regel             | integer |              | zu verwendende Mitteilungs-Regel |
+| Mitteilungs-Details                   |         |              | |
+|   Mitteilungs-Regel                   | integer |              | zu verwendende Mitteilungs-Regel |
 |                                       |         |              | |
 |   Betreff                             | string  |              | vorgegebener Betreff eine Mitteilung (nur _E-Mail_, _Script_) |
 |   Nachricht                           | string  |              | vorgegebener Nachrichten-Text |
@@ -295,10 +295,10 @@ alle Argumente werden über *_IPS* weitergegeben
 |   Zeiteinheit                         | integer |              | Einheit der angegebenen oder aus der Variable ausgelwsenen Zeitangabe |
 |   fester Wert                         | integer |              | |
 |   Variable                            | integer |              | |
-|   maximale WIederholungen             | integer | -1           | Anzahl Meldungs-Wiederholung (-1=ohne Begrenzung, 0=einmalige Meldung) |
+|   maximale Wiederholungen             | integer | -1           | Anzahl Meldungs-Wiederholung (-1=ohne Begrenzung, 0=einmalige Meldung) |
 |                                       |         |              | |
 | Wiederherstellung                     |         |              | |
-|   Mitteilung ...                | boolean | false        | nach minimal einer erfolgten Meldung kann die Wiederherstellung kommuniziert werden |
+|   Mitteilung ...                      | boolean | false        | nach minimal einer erfolgten Meldung kann die Wiederherstellung kommuniziert werden |
 |   Betreff                             | string  |              | alternativer Betreff einer Mitteilung (nur _E-Mail_, _Script_) |
 |   Nachricht                           | string  |              | alternativer Nachrichten-Text |
 |   Schweregrad                         | integer |              | alternativer Schweregrad |
@@ -365,7 +365,7 @@ Beispiele:
 | Notices               | HTML-Box     | Mitteilungen |
 | Data                        | Medienobjekt | Daten |
 
-#### Mitteilungs-Regeln (_NotifcationRule_)
+#### Mitteilungs-Regeln (_NoticeRule_)
 
 #### Mitteilungs-Ereignis (_NoticeEvent_)
 
