@@ -1,8 +1,8 @@
 {
     "translations": {
         "de": {
-			"Notification event": "Benachrichtigungs-Ereignis",
-			"Notification rule": "Benachrichtigungs-Regel",
+			"Notice event": "Mitteilungs-Ereignis",
+			"Notice rule": "Mitteilungs-Regel",
 
 			"Disable instance": "Instanz deaktivieren",
 
@@ -14,13 +14,13 @@
 			"Start of event": "Auslöse-Zeitpunkt",
 
 			"Conditions": "Bedingungen",
-			"Notification details": "Benachrichtigung-Details",
+			"Notice details": "Mitteilung-Details",
 			"Given \"severity\"": "vorgegebener \"Schweregrad\"",
 			"Increase severity each repetition": "Schweregrad bei jeder Wiederholung erhöhen",
 			"Given \"message text\"": "vorgegebener \"Nachricht\"",
 			"Given \"subject\"": "vorgegebener \"Betreff\"",
-			"Script for generating individual notification texts etc. For information on transfer and return value see documentation":
-				"Skript zur Erzeugung individueller Benachrichtigungs-Texte etc. Informationen zu Übergabe und Rückgabewert siehe Dokumentation",
+			"Script for generating individual notice texts etc. For information on transfer and return value see documentation":
+				"Skript zur Erzeugung individueller Mitteilungs-Texte etc. Informationen zu Übergabe und Rückgabewert siehe Dokumentation",
 
 			"Initial delay": "Start-Verzögerung",
 			"Repetitions": "Wiederholungen",
@@ -32,7 +32,7 @@
 			"Maximum repetitions (-1=infinite)": "maximale Wiederholungen (-1=unendlich)",
 
 			"Recovery": "Wiederherstellung",
-			"Recovery notification": "Benachrichtigung bei Wiederherstellung",
+			"Recovery notice": "Mitteilung bei Wiederherstellung",
 			"Alternate \"Subject\" for recovery": "alternativer \"Betreff\" bei Wiederherstellung",
 			"Alternate \"Message text\" for recovery": "alternative \"Nachricht\" bei Wiederherstellung",
 			"Alternate \"severity\" for recovery": "alternativer \"Schweregrad\" bei Wiederherstellung",
@@ -48,10 +48,10 @@
 			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
 			"Expert area": "Experten-Bereich",
 			"Test area": "Test-Bereich",
-			"Show notification details": "Benachrichtigung-Details anzeigen",
+			"Show notice details": "Mitteilung-Details anzeigen",
 			"Current repetition": "aktuelle Wiederholung",
 			"Is the recovery": "ist die Wiederherstellung",
-			"Result of notification details": "Ergebnis der Benachrichtigung-Details",
+			"Result of notice details": "Ergebnis der Mitteilung-Details",
 			"Severity": "Schweregrad",
 			"Message text": "Nachricht",
 			"Subject": "Betreff",

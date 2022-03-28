@@ -5,10 +5,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
 require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
 
-class NotificationRule extends IPSModule
+class NoticeRule extends IPSModule
 {
     use StubsCommonLib;
-    use NotificationLocalLib;
+    use NoticeLocalLib;
 
     public function Create()
     {
@@ -16,7 +16,7 @@ class NotificationRule extends IPSModule
 
         $this->RegisterPropertyBoolean('module_disable', false);
 
-        $this->RegisterPropertyInteger('notificationBase', 0);
+        $this->RegisterPropertyInteger('noticeBase', 0);
 
         $this->RegisterPropertyString('default_subject', '');
         $this->RegisterPropertyString('default_message', '');
@@ -41,12 +41,12 @@ class NotificationRule extends IPSModule
         $this->InstallVarProfiles(false);
     }
 
-    private function GetNotificationBase()
+    private function GetNoticeBase()
     {
-        $notificationBase = $this->ReadPropertyInteger('notificationBase');
+        $noticeBase = $this->ReadPropertyInteger('noticeBase');
         $ids = IPS_GetInstanceListByModuleID('{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}');
         foreach ($ids as $id) {
-            if ($notificationBase < 10000 || $notificationBase == $id) {
+            if ($noticeBase < 10000 || $noticeBase == $id) {
                 return $id;
             }
         }
@@ -56,9 +56,9 @@ class NotificationRule extends IPSModule
     private function GetTargetList()
     {
         $targets = false;
-        $notificationBase = $this->GetNotificationBase();
-        if ($notificationBase >= 10000) {
-            $targets = Notification_GetTargetList($notificationBase);
+        $noticeBase = $this->GetNoticeBase();
+        if ($noticeBase >= 10000) {
+            $targets = Notice_GetTargetList($noticeBase);
         }
         $this->SendDebug(__FUNCTION__, 'targets=' . print_r($targets, true), 0);
         return $targets;
@@ -67,9 +67,9 @@ class NotificationRule extends IPSModule
     private function GetPresence()
     {
         $presence = false;
-        $notificationBase = $this->GetNotificationBase();
-        if ($notificationBase >= 10000) {
-            $presence = Notification_GetPresence($notificationBase);
+        $noticeBase = $this->GetNoticeBase();
+        if ($noticeBase >= 10000) {
+            $presence = Notice_GetPresence($noticeBase);
         }
         $this->SendDebug(__FUNCTION__, 'presence=' . print_r($presence, true), 0);
         return $presence;
@@ -80,9 +80,9 @@ class NotificationRule extends IPSModule
         $s = '';
         $r = [];
 
-        if ($this->GetNotificationBase() < 10000) {
-            $this->SendDebug(__FUNCTION__, '"notificationBase" ist empty and no global NotificationBase-instance', 0);
-            $field = $this->Translate('Notification base');
+        if ($this->GetNoticeBase() < 10000) {
+            $this->SendDebug(__FUNCTION__, '"noticeBase" ist empty and no global NoticeBase-instance', 0);
+            $field = $this->Translate('Notice base');
             $r[] = $this->TranslateFormat('Field "{$field}" is not configured', ['{$field}' => $field]);
         }
 
@@ -125,7 +125,7 @@ class NotificationRule extends IPSModule
             $this->UnregisterReference($ref);
         }
 
-        $oid = $this->GetNotificationBase();
+        $oid = $this->GetNoticeBase();
         if ($oid >= 10000) {
             $this->RegisterReference($oid);
         }
@@ -158,7 +158,7 @@ class NotificationRule extends IPSModule
 
         $formElements[] = [
             'type'    => 'Label',
-            'caption' => 'Notification rule'
+            'caption' => 'Notice rule'
         ];
 
         $s = $this->CheckConfiguration();
@@ -181,8 +181,8 @@ class NotificationRule extends IPSModule
         $formElements[] = [
             'type'         => 'SelectInstance',
             'validModules' => ['{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}'],
-            'name'         => 'notificationBase',
-            'caption'      => 'Notification base'
+            'name'         => 'noticeBase',
+            'caption'      => 'Notice base'
         ];
 
         $targets = $this->GetTargetList();
@@ -265,9 +265,9 @@ class NotificationRule extends IPSModule
             ],
         ];
 
-        $notificationBase = $this->GetNotificationBase();
-        if ($notificationBase >= 10000) {
-            $scriptID = (int) IPS_GetProperty($notificationBase, 'scriptID');
+        $noticeBase = $this->GetNoticeBase();
+        if ($noticeBase >= 10000) {
+            $scriptID = (int) IPS_GetProperty($noticeBase, 'scriptID');
             if ($scriptID >= 10000) {
                 $items[] = [
                     'type'      => 'ExpansionPanel',
@@ -321,7 +321,7 @@ class NotificationRule extends IPSModule
 
         $formElements[] = [
             'type'      => 'CheckBox',
-            'caption'   => 'Log notification additionally',
+            'caption'   => 'Log notice additionally',
             'name'      => 'log_additionally',
         ];
 
@@ -395,7 +395,7 @@ class NotificationRule extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Check rule validity',
-                    'onClick' => 'Notification_CheckRuleValidity($id);',
+                    'onClick' => 'Notice_CheckRuleValidity($id);',
                 ],
                 [
                     'type'    => 'PopupButton',
@@ -426,7 +426,7 @@ class NotificationRule extends IPSModule
                             [
                                 'type'    => 'Button',
                                 'caption' => 'Trigger',
-                                'onClick' => 'Notification_TriggerRule($id, $message, $subject, $severity, []);'
+                                'onClick' => 'Notice_TriggerRule($id, $message, $subject, $severity, []);'
                             ],
                         ],
                         'closeCaption' => 'Cancel',
@@ -443,7 +443,7 @@ class NotificationRule extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'Notification_InstallVarProfiles($id, true);'
+                    'onClick' => 'Notice_InstallVarProfiles($id, true);'
                 ],
             ]
         ];
@@ -477,7 +477,7 @@ class NotificationRule extends IPSModule
                         [
                             'type'    => 'Button',
                             'caption' => 'Test sound',
-                            'onClick' => 'WFC_PushNotification($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
+                            'onClick' => 'WFC_PushNotice($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
                         ],
                     ],
                 ],
@@ -578,8 +578,8 @@ class NotificationRule extends IPSModule
                 $msg .= ' (' . $this->PrintCallChain(false) . ')';
                 $this->LogMessage($msg, KL_MESSAGE);
             }
-            $notificationBase = $this->GetNotificationBase();
-            if ($notificationBase >= 10000) {
+            $noticeBase = $this->GetNoticeBase();
+            if ($noticeBase >= 10000) {
                 foreach ($targetV as $target) {
                     $r = $this->TargetDecode($target);
                     $mode = $this->ModeDecode($r['mode']);
@@ -656,7 +656,7 @@ class NotificationRule extends IPSModule
 
                     $l_params['ruleID'] = $this->InstanceID;
 
-                    $r = Notification_Deliver($notificationBase, $target, $message, $l_params);
+                    $r = Notice_Deliver($noticeBase, $target, $message, $l_params);
                 }
 
                 $log_additionally = $this->ReadPropertyBoolean('log_additionally');
@@ -665,7 +665,7 @@ class NotificationRule extends IPSModule
                     if ($message == '') {
                         $message = $subject;
                     }
-                    Notification_Log($notificationBase, $message, $severity, $l_params);
+                    Notice_Log($noticeBase, $message, $severity, $l_params);
                 }
             }
         } else {
@@ -775,9 +775,9 @@ class NotificationRule extends IPSModule
             return false;
         }
 
-        $notificationBase = $this->GetNotificationBase();
-        if ($notificationBase >= 10000) {
-            return Notification_Log($notificationBase, $message, $severity, $params);
+        $noticeBase = $this->GetNoticeBase();
+        if ($noticeBase >= 10000) {
+            return Notice_Log($noticeBase, $message, $severity, $params);
         }
         return false;
     }

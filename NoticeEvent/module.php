@@ -5,10 +5,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
 require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
 
-class NotificationEvent extends IPSModule
+class NoticeEvent extends IPSModule
 {
     use StubsCommonLib;
-    use NotificationLocalLib;
+    use NoticeLocalLib;
 
     public static $TIMEUNIT_SECONDS = 0;
     public static $TIMEUNIT_MINUTES = 1;
@@ -50,7 +50,7 @@ class NotificationEvent extends IPSModule
         $this->InstallVarProfiles(false);
 
         $this->RegisterAttributeInteger('repetition', 0);
-        $this->RegisterTimer('LoopTimer', 0, 'Notification_CheckTimer(' . $this->InstanceID . ');');
+        $this->RegisterTimer('LoopTimer', 0, 'Notice_CheckTimer(' . $this->InstanceID . ');');
     }
 
     private function CheckConfiguration()
@@ -60,7 +60,7 @@ class NotificationEvent extends IPSModule
 
         $ruleID = $this->ReadPropertyInteger('ruleID');
         if ($ruleID < 10000) {
-            $field = $this->Translate('Notification rule');
+            $field = $this->Translate('Notice rule');
             $r[] = $this->TranslateFormat('Field "{$field}" is not configured', ['{$field}' => $field]);
         }
 
@@ -142,7 +142,7 @@ class NotificationEvent extends IPSModule
 
         $formElements[] = [
             'type'    => 'Label',
-            'caption' => 'Notification event'
+            'caption' => 'Notice event'
         ];
 
         $s = $this->CheckConfiguration();
@@ -183,7 +183,7 @@ class NotificationEvent extends IPSModule
                     'type'     => 'SelectModule',
                     'moduleID' => '{2335FF1E-9628-E363-AAEC-11DE75788A13}',
                     'name'     => 'ruleID',
-                    'caption'  => 'Notification rule',
+                    'caption'  => 'Notice rule',
                 ],
                 [
                     'type'    => 'RowLayout',
@@ -214,7 +214,7 @@ class NotificationEvent extends IPSModule
                 ],
                 [
                     'type'      => 'Label',
-                    'caption'   => 'Script for generating individual notification texts etc. For information on transfer and return value see documentation',
+                    'caption'   => 'Script for generating individual notice texts etc. For information on transfer and return value see documentation',
                 ],
                 [
                     'type'      => 'ScriptEditor',
@@ -222,7 +222,7 @@ class NotificationEvent extends IPSModule
                     'name'      => 'script',
                 ],
             ],
-            'caption' => 'Notification details',
+            'caption' => 'Notice details',
         ];
 
         $formElements[] = [
@@ -304,7 +304,7 @@ class NotificationEvent extends IPSModule
                         [
                             'type'    => 'CheckBox',
                             'name'    => 'recovery_notify',
-                            'caption' => 'Recovery notification'
+                            'caption' => 'Recovery notice'
                         ],
                         [
                             'type'    => 'ValidationTextBox',
@@ -350,12 +350,12 @@ class NotificationEvent extends IPSModule
                 [
                     'type'      => 'Button',
                     'caption'   => 'Trigger event',
-                    'onClick'   => 'Notification_TriggerEvent($id, true);'
+                    'onClick'   => 'Notice_TriggerEvent($id, true);'
                 ],
                 [
                     'type'      => 'Button',
                     'caption'   => 'Stop event',
-                    'onClick'   => 'Notification_StopEvent($id);'
+                    'onClick'   => 'Notice_StopEvent($id);'
                 ],
             ],
         ];
@@ -368,7 +368,7 @@ class NotificationEvent extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'Notification_InstallVarProfiles($id, true);'
+                    'onClick' => 'Notice_InstallVarProfiles($id, true);'
                 ]
             ]
         ];
@@ -396,8 +396,8 @@ class NotificationEvent extends IPSModule
                         ],
                         [
                             'type'    => 'Button',
-                            'caption' => 'Show notification details',
-                            'onClick' => 'Notification_ShowNotificationDetails($id, $repetition, 0, $recovery);',
+                            'caption' => 'Show notice details',
+                            'onClick' => 'Notice_ShowNoticeDetails($id, $repetition, 0, $recovery);',
                         ],
                     ],
                 ],
@@ -473,7 +473,7 @@ class NotificationEvent extends IPSModule
                         $repetition = 0;
                         $sec = 0;
                         $tvS = '';
-                        $msg = $conditionsS . ', started with notification without repetition';
+                        $msg = $conditionsS . ', started with notice without repetition';
                     } else {
                         $varID = $this->ReadPropertyInteger('pause_varID');
                         if ($varID >= 10000) {
@@ -484,7 +484,7 @@ class NotificationEvent extends IPSModule
                         $unit = $this->ReadPropertyInteger('pause_timeunit');
                         $sec = $this->CalcByTimeunit($unit, $tval);
                         $tvS = $tval . $this->Timeunit2Suffix($unit);
-                        $msg = $conditionsS . ', started with notification and pausing ' . $tvS;
+                        $msg = $conditionsS . ', started with notice and pausing ' . $tvS;
                     }
                 }
                 $this->SetValue('TimerStarted', $started);
@@ -586,7 +586,7 @@ class NotificationEvent extends IPSModule
                 $tvS = $tval . $this->Timeunit2Suffix($unit);
                 $this->WriteAttributeInteger('repetition', $repetition);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', notification #' . $repetition . ' and pausing ' . $tvS;
+                    $msg = $conditionsS . ', notice #' . $repetition . ' and pausing ' . $tvS;
                     $msg .= ' (' . $this->PrintCallChain(false) . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
@@ -596,7 +596,7 @@ class NotificationEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', notification #' . $repetition . ' and stopped timer (max repetitions)';
+                    $msg = $conditionsS . ', notice #' . $repetition . ' and stopped timer (max repetitions)';
                     $msg .= ' (' . $this->PrintCallChain(false) . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
@@ -751,7 +751,7 @@ class NotificationEvent extends IPSModule
         }
 
         if ($ruleID < 10000) {
-            $this->SendDebug(__FUNCTION__, 'no notification rule', 0);
+            $this->SendDebug(__FUNCTION__, 'no notice rule', 0);
             return false;
         }
         @$inst = IPS_GetInstance($ruleID);
@@ -777,11 +777,11 @@ class NotificationEvent extends IPSModule
             'eventID'    => $this->InstanceID,
         ];
         $this->SendDebug(__FUNCTION__, 'trigger rule "' . IPS_GetName($ruleID) . '" (#' . $repetition . ')', 0);
-        $r = Notification_TriggerRule($ruleID, $message, $subject, $severity, $params);
+        $r = Notice_TriggerRule($ruleID, $message, $subject, $severity, $params);
         return $r;
     }
 
-    public function ShowNotificationDetails(int $repetition, int $started, bool $recovery)
+    public function ShowNoticeDetails(int $repetition, int $started, bool $recovery)
     {
         if ($started == 0) {
             $started = $this->GetValue('TimerStarted');
@@ -832,10 +832,10 @@ class NotificationEvent extends IPSModule
                 $this->SendDebug(__FUNCTION__, 'no result', 0);
             }
         }
-        $s = $this->Translate('Result of notification details') . PHP_EOL;
+        $s = $this->Translate('Result of notice details') . PHP_EOL;
         $s .= PHP_EOL;
         $s .= $this->Translate('Severity') . ': ' . $this->SeverityEncode($severity, true) . PHP_EOL;
-        $s .= $this->Translate('Notification rule') . ': ' . IPS_GetName($ruleID) . '(' . $ruleID . ')' . PHP_EOL;
+        $s .= $this->Translate('Notice rule') . ': ' . IPS_GetName($ruleID) . '(' . $ruleID . ')' . PHP_EOL;
         $s .= PHP_EOL;
         $s .= '- ' . $this->Translate('Subject') . ' -' . PHP_EOL;
         if ($subject != '') {
@@ -856,9 +856,9 @@ class NotificationEvent extends IPSModule
             return false;
         }
 
-        $notificationBase = $this->GetNotificationBase();
-        if ($notificationBase >= 10000) {
-            return Notification_Log($notificationBase, $message, $severity, $params);
+        $noticeBase = $this->GetNoticeBase();
+        if ($noticeBase >= 10000) {
+            return Notice_Log($noticeBase, $message, $severity, $params);
         }
         return false;
     }

@@ -1,12 +1,12 @@
 {
     "id": "{2335FF1E-9628-E363-AAEC-11DE75788A13}",
-    "name": "Notification Rule",
+    "name": "Notice Rule",
     "type": 3,
     "vendor": "",
     "aliases": [],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
-    "prefix": "Notification",
-    "url": "https://github.com/demel42/IPSymconNotification/blob/main/README.md"
+    "prefix": "Notice",
+    "url": "https://github.com/demel42/IPSymconNotice/blob/main/README.md"
 }

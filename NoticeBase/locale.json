@@ -1,7 +1,7 @@
 {
     "translations": {
         "de": {
-			"Notification base": "Benachrichtigungs-Basis",
+			"Notice base": "Mitteilungs-Basis",
 
 			"Disable instance": "Instanz deaktivieren",
 
@@ -40,13 +40,13 @@
 			"Script for alternate logging": "Skript für alternative Protokollierung",
 			"days": "Tage",
 			"maximun age of log entries": "Maximales Alter der Protokoll-Einträge",
-			"Visualization of \"Notifications\"": "Darstellung der \"Benachrichtigungen\"",
+			"Visualization of \"Notices\"": "Darstellung der \"Mitteilungen\"",
 			"Show": "Anzeigen",
 			"hours": "Stunden",
 			"Expiration": "Gültigkeit",
 			"Textcolor": "Zeichenfarbe",
 
-			"Rebuild \"Notifications\"": "\"Benachrichtigungen\" neu erzeugen",
+			"Rebuild \"Notices\"": "\"Mitteilungen\" neu erzeugen",
 
 			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
 			"Expert area": "Experten-Bereich",
@@ -58,7 +58,7 @@
 			"last gone": "zuletzt gegangen",
 			"first come": "zuerst gekommen",
 
-			"Notifications": "Benachrichtigungen",
+			"Notices": "Mitteilungen",
 			"Data": "Daten",
 
 			"unknown": "unbekannt",
@@ -71,8 +71,8 @@
 
 			"Presence state of": "Präsenz-Status von",
 
-			"Notify {$target} failed": "Benachrichtigung von {$target} fehlgeschlagen",
-			"Notify {$target} succeed": "Benachrichtigung von {$target} erfolgreich",
+			"Notify {$target} failed": "Mitteilung von {$target} fehlgeschlagen",
+			"Notify {$target} succeed": "Mitteilung von {$target} erfolgreich",
 
 			"undef": "- nicht angegeben -",
 			"Information": "Information",

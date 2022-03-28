@@ -1,12 +1,12 @@
 {
     "id": "{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}",
-    "name": "Notification Event",
+    "name": "Notice Event",
     "type": 3,
     "vendor": "",
     "aliases": [],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
-    "prefix": "Notification",
-    "url": "https://github.com/demel42/IPSymconNotification/blob/main/README.md"
+    "prefix": "Notice",
+    "url": "https://github.com/demel42/IPSymconNotice/blob/main/README.md"
 }

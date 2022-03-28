@@ -1,4 +1,4 @@
-# IPSymconNotification
+# IPSymconNotice
 
 [![IPS-Version](https://img.shields.io/badge/Symcon_Version-6.0+-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 ![Code](https://img.shields.io/badge/Code-PHP-blue.svg)
@@ -18,9 +18,9 @@
 
 ## 1. Funktionsumfang
 
-In dem Modul geht es darum, Benachrichtigungen von Benutzern in Abhängigkeit von den Anwesenheit der Benutzer zu steuern.
+In dem Modul geht es darum, Mitteilungen von Benutzern in Abhängigkeit von den Anwesenheit der Benutzer zu steuern.
 
-Es werden 4 Wege der Benachrichtigung unterstützt
+Es werden 4 Wege der Mitteilung unterstützt
 - Push-Nachricht via WebFront<br>
 setzt ein oder mehrere Webfront-Instanzen voraus, die mit Endgeräten gekoppelt sind
 - E-Mail<br>
@@ -28,7 +28,7 @@ setzt ein eingerichtetes Symcon-Modul **SMTP** voraus
 - SMS<br>
 setzt entweder das Symcon-Modul **SMS REST** (Clickatell) voraus oder das Modul **Sipgate Basic**
 - Skript<br>
-ein beliebiges Script um die Anbindung sonstiger Benachrichtigungswege / Dienste zu ermögliche. (_Pushover_, _Pushsafer_ etc).
+ein beliebiges Script um die Anbindung sonstiger Mitteilungswege / Dienste zu ermögliche. (_Pushover_, _Pushsafer_ etc).
 
 
 Es werden 5 Schweregrade unterstützt:
@@ -41,14 +41,14 @@ Es werden 5 Schweregrade unterstützt:
 | Alarm       | alert  | 4 |
 | Fehlersuche | debug  | 5 |
 
-Die Idee ist dabei, das Benachrichtigungen in Gruppen zusammengefasst werden, die den gleichen Empfängerkreis haben.
+Die Idee ist dabei, das Mitteilungen in Gruppen zusammengefasst werden, die den gleichen Empfängerkreis haben.
 
 Hierzu gibt es drei Module:
 
-### Benachrichtigungs-Basis (_NotificationBase_)
+### Mitteilungs-Basis (_NoticeBase_)
 Hier werden grundsätzlich Einstellungen gemacht, unter anderem die _Benutzer_ mit deren Kommunikationswegen angelegt.
 Zu jedem Benutzer wird eine Variable angelegt, die den Anwesenheitsstatus repräsentiert. Da es ja ganz unterschiedliche Wege gibt, wie Anwesenheiten ermittelt werden,
-wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen der Benachrichtigungs-Basis
+wird das von dem Modul nicht selbst ermittelt sondern die Ermittlung (z.B. mittels _Geofency_) muss über ein Ereignis in die entsprechenden Variablen der Mitteilungs-Basis
 übertragen werden; hierfür gibt es eine passende _RequestAction_.
 
 Es gibt die Präsezstatus:
@@ -67,9 +67,9 @@ Person, die als letzt das Haus verlassen hat, danach ist das Haus "leer"
 - _zuerst gekommen_ (Variable _FirstCome_)<br>
 die Person, die als erste das leere Haus betreten hat
 
-Neben der Benachrichtigung wird auch eine "normale" Protokollierung unterstützt.
+Neben der Mitteilung wird auch eine "normale" Protokollierung unterstützt.
 
-### Benachrichtigungs-Regeln (_NotifcationRule_)
+### Mitteilungs-Regeln (_NotifcationRule_)
 Hier werden die enwünschen Empfänger (Kombination von Benutzer und Kommunikationsweg) sowie die dazugehörige Bedingung definiert.
 
 Bedingungen gibt es folgende
@@ -86,23 +86,23 @@ Bedingungen gibt es folgende
 
 Die Liste der Bedingungen wird der Reihefolge nach abgearbeitet, was insbesondere für _erster Anwesender der Liste_ und _wenn sonst keiner_ relevant ist.
 
-Eine Benachrichtigungsregel ist immer mit einer Benachrichtigungs-Basis verknüpft; gibt es nur eine Benachrichtigungs-Basis kann die Angabe entfallen, da die Regel sich dann die
+Eine Mitteilungsregel ist immer mit einer Mitteilungs-Basis verknüpft; gibt es nur eine Mitteilungs-Basis kann die Angabe entfallen, da die Regel sich dann die
 erste Instanz sucht.
 
-### Benachrichtigungs-Ereignis (_NotificationEvent_)
-Hiermit können Benachrichtigungs-Regeln verzögert bzw. wiederholt aufgerufen werden.<br>
+### Mitteilungs-Ereignis (_NoticeEvent_)
+Hiermit können Mitteilungs-Regeln verzögert bzw. wiederholt aufgerufen werden.<br>
 Neben der Timerfunktion können auch Bedingungen angegeben werden, die gültig sein müssen, damit das Ereignis anläuft bzw. weiterläuft (die Bedingungen werden 
 bei jeder Meldung, egal ob nach Start-Verzögerung oder Wiederholung neu geprüft).
 
-Aufgerufen wird das Benachrichtigungs-Ereignis i.d.R. durch IPS-Ereignisse, i.d.R. vermutlich _Ausgelöst_ oder _Zyklisch_, aber auch natürlich durch allen anderen Möglichkeiten (Ablaufplan, Skript).<br>
-Wichtig ist dabei zu beachten, das die optionalen _Bedingungen_ innerhalb des Benachrichtigungs-Ereignis dazu dienen, zu entscheiden, ob es sich um einen zu meldenden Vorfall handelt oder ggfs. um eine Wiederherstellung (sofern man auch diese Meldung Wert legt).<br>
+Aufgerufen wird das Mitteilungs-Ereignis i.d.R. durch IPS-Ereignisse, i.d.R. vermutlich _Ausgelöst_ oder _Zyklisch_, aber auch natürlich durch allen anderen Möglichkeiten (Ablaufplan, Skript).<br>
+Wichtig ist dabei zu beachten, das die optionalen _Bedingungen_ innerhalb des Mitteilungs-Ereignis dazu dienen, zu entscheiden, ob es sich um einen zu meldenden Vorfall handelt oder ggfs. um eine Wiederherstellung (sofern man auch diese Meldung Wert legt).<br>
 <br>
 Bespiel: Überwachung der Stromversorgung eines wichtigen Geräts.
-- die Benachrichtigungs-Ereignis prüft in den Bedingungen, ob die Variable (der Spannungsversorgung) auf "AUS" steht - d.h. "AUS" ist der Vorfall, "EIN" ist die Wiederherstellung.
-- das "ausgelöste Ereignis" prüft auf Änderung der Variable, d..h das Benachrichtigungs-Ereignis wird bei dem Wechsel auf "AUS" und auf "EIN" ausgelöst und kann somit eine Wiederherstellung erkennen und melden.
+- die Mitteilungs-Ereignis prüft in den Bedingungen, ob die Variable (der Spannungsversorgung) auf "AUS" steht - d.h. "AUS" ist der Vorfall, "EIN" ist die Wiederherstellung.
+- das "ausgelöste Ereignis" prüft auf Änderung der Variable, d..h das Mitteilungs-Ereignis wird bei dem Wechsel auf "AUS" und auf "EIN" ausgelöst und kann somit eine Wiederherstellung erkennen und melden.
 <br>
 
-Gemäß den angegebenen Einstellungen wird eine entsprechende Benachrichtigungs-Regel aufgerufen, dabei können durch vielfältige Einstellungen Nachrichtentext, Betreff und Schwergrad angepasst werden.
+Gemäß den angegebenen Einstellungen wird eine entsprechende Mitteilungs-Regel aufgerufen, dabei können durch vielfältige Einstellungen Nachrichtentext, Betreff und Schwergrad angepasst werden.
 
 Ein laufendes Ereignis wird standardmässig durch erneuten Aufruf nicht wieder ausgelöst (siehe _TriggerEvent_).
 
@@ -115,43 +115,43 @@ Ein laufendes Ereignis wird standardmässig durch erneuten Aufruf nicht wieder a
 
 ### a. Installation des Moduls
 
-Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Symcon Notification* zu finden.<br>
-Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotification.git` installiert werden.
+Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Symcon Notice* zu finden.<br>
+Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotice.git` installiert werden.
 
 ### b. Einrichtung in IPS
 
-Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als Gerät _Notification Base_ auswählen.
-Für jede Regel muss eine Instanz vom Typ _Notification Rule_ angelegt werden und bei Bedarf _Notification Event_-Instanzen.
+Nun _Instanz hinzufügen_ anwählen und als Hersteller _(sonstiges)_ sowie als Gerät _Notice Base_ auswählen.
+Für jede Regel muss eine Instanz vom Typ _Notice Rule_ angelegt werden und bei Bedarf _Notice Event_-Instanzen.
 
 ## 4. Funktionsreferenz
 
-### Benachrichtigungs-Basis (_NotificationBase_)
-`boolean Notification_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
-Erzeugt einen Eintrag in dem Protokoll vom _NotificationBase_.<br>
+### Mitteilungs-Basis (_NoticeBase_)
+`boolean Notice_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
+Erzeugt einen Eintrag in dem Protokoll vom _NoticeBase_.<br>
 _Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben).<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
-### Benachrichtigungs-Regeln (_NotifcationRule_)
-`boolean Notification_TriggerRule(integer $InstanzID, string $Message, string $Subject, mixed $Severity, array $Params)`<br>
-Löst die Benachrichtigungsregel aus und gemäß der Definition die Benachrichtigungen.<br>
+### Mitteilungs-Regeln (_NotifcationRule_)
+`boolean Notice_TriggerRule(integer $InstanzID, string $Message, string $Subject, mixed $Severity, array $Params)`<br>
+Löst die Mitteilungsregel aus und gemäß der Definition die Mitteilungen.<br>
 _Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben).<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
-`boolean Notification_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
-Ruft die korrespondierende Funktion der _NotificationBase_, dient nur zur Vereinfachung
+`boolean Notice_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
+Ruft die korrespondierende Funktion der _NoticeBase_, dient nur zur Vereinfachung
 
-### Benachrichtigungs-Ereignis (_NotificationEvent_)
-`int Notification_TriggerEvent(integer $InstanzID, boolean $Force)`
-Es wird das Benachrichtigungs-Ereignis ausgelöst (sofern die Bedingungen stimmen).
+### Mitteilungs-Ereignis (_NoticeEvent_)
+`int Notice_TriggerEvent(integer $InstanzID, boolean $Force)`
+Es wird das Mitteilungs-Ereignis ausgelöst (sofern die Bedingungen stimmen).
 Wenn _Force_ auf _true_ steht, wird ein ggfs. laufender Ereignis neu gestartet.<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
-`int Notification_StopEvent(integer $InstanzID)`
-Es wird ein ggfs. laufendes Benachrichtigungs-Ereignis  gestoppt.<br>
+`int Notice_StopEvent(integer $InstanzID)`
+Es wird ein ggfs. laufendes Mitteilungs-Ereignis  gestoppt.<br>
 Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
 
-`boolean Notification_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
-Ruft die korrespondierende Funktion der _NotificationBase_, dient nur zur Vereinfachung.
+`boolean Notice_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
+Ruft die korrespondierende Funktion der _NoticeBase_, dient nur zur Vereinfachung.
 
 
 Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Params_ werden mit den entspreㄔhenden Voreinstellung in den Instanzen ergänzt entsprechend der Hierarchie.
@@ -160,7 +160,7 @@ Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Para
 
 ### Eigenschaften 
 
-#### Benachrichtigungs-Basis (_NotificationBase_)
+#### Mitteilungs-Basis (_NoticeBase_)
 
 | Eigenschaft                           | Typ     | Standardwert | Beschreibung |
 | :------------------------------------ | :------ | :----------- | :----------- |
@@ -201,32 +201,32 @@ Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Para
 | Meldungen zu Instanz-Aktivitäten      | integer |              | IPS-Meldungen zu Aktivitäten der Instanz |
 
 * unbeweglich<br>
-z.B. für die Benachrichtigung an einen Admin-Mail-Account
+z.B. für die Mitteilung an einen Admin-Mail-Account
 
 * Basiskonfiguration / Webfront<br>
-ein in dem Argument _Params_ der Funktion _Notification_TriggerRule_ übergebener bzw. aus den Standardeinstellungen gewonnener Eintrag _TargetID_ wird *WFC_PushNotification* übergeben.<br>
+ein in dem Argument _Params_ der Funktion _Notice_TriggerRule_ übergebener bzw. aus den Standardeinstellungen gewonnener Eintrag _TargetID_ wird *WFC_PushNotice* übergeben.<br>
 
 * Basiskonfiguration / Skript<br>
 alle Argumente werden über *_IPS* weitergegeben
 
   * die in dem Argument _Params_ den Funktionen übergebenen bzw. aus den Standardeinstellungen gewonnener Einträge
 
-  * zusätzlich bei dem Aufruf aus _NotificationRule_
+  * zusätzlich bei dem Aufruf aus _NoticeRule_
 
     | Ident              | Typ     | Bedeutung |
     | :----------------- | :------ | :-------- |
-    | ruleID             | integer | ID der aufgerufenen _NotificationRule_ |
+    | ruleID             | integer | ID der aufgerufenen _NoticeRule_ |
     | message            | string  | Nachrichten-Text |
     | subject            | string  | Betreff |
     | severity           | integer | Schweregrad |
     | signal             | string  | Signalisierung (Skript) |
     | sound              | string  | Signaltöne (Webfront) |
 
-  * zusätzlich bei dem Aufruf aus _NotificationEvent_
+  * zusätzlich bei dem Aufruf aus _NoticeEvent_
 
     | Ident              | Typ     | Bedeutung |
     | :----------------- | :------ | :-------- |
-    | eventID            | integer | ID des auslösenden _NotificationEvent_ |
+    | eventID            | integer | ID des auslösenden _NoticeEvent_ |
     | repetition         | integer | Wiederholung |
     | recovery           | boolean | handelt sich um eine Wiederherstellungs-Mitteilung |
     | started            | integer | Auslöse-Zeitpunkt |
@@ -234,7 +234,7 @@ alle Argumente werden über *_IPS* weitergegeben
 * Protokollierung / Skript<br>
 alle Argumente werden über *_IPS* weitergegeben
 
-  * die in dem Argument _Params_ der Funktion _Notification_Log_ übergebenen bzw. aus den Standardeinstellungen gewonnener Einträge
+  * die in dem Argument _Params_ der Funktion _Notice_Log_ übergebenen bzw. aus den Standardeinstellungen gewonnener Einträge
 
   * zusätzlich
  
@@ -243,17 +243,17 @@ alle Argumente werden über *_IPS* weitergegeben
     | message            | string  | Nachrichten-Text |
     | severity           | integer | Schweregrad |
 
-#### Benachrichtigungs-Regeln (_NotifcationRule_)
+#### Mitteilungs-Regeln (_NotifcationRule_)
 
 | Eigenschaft                           | Typ     | Standardwert | Beschreibung |
 | :------------------------------------ | :------ | :----------- | :----------- |
 | Instanz deaktivieren                  | boolean | false        | Instanz temporär deaktivieren |
 |                                       |         |              | |
-| Benachrichtigungs-Basis               | integer | 0            | Instanz der zugehörigen Basis, nur erforderlich, wenn man mehr als eine Basis nutzen möchte  |
+| Mitteilungs-Basis               | integer | 0            | Instanz der zugehörigen Basis, nur erforderlich, wenn man mehr als eine Basis nutzen möchte  |
 |                                       |         |              | |
 | Standardwerte                         |         |              | |
 |   Schweregrad                         | integer |              | Stardard-Schweregrad |
-|   Betreff                             | string  |              | Standard-Betreff eine Benachrichtigung (nur _E-Mail_, _Script_) |
+|   Betreff                             | string  |              | Standard-Betreff eine Mitteilung (nur _E-Mail_, _Script_) |
 |   Nachricht                           | string  |              | Standard-Nachrichten-Text |
 |                                       |         |              | |
 |   Webfront                            |         |              | |
@@ -262,13 +262,13 @@ alle Argumente werden über *_IPS* weitergegeben
 |   Skript                              |         |              | |
 |     Standardwert für Signalisierungen | string  |              | Kodierung von Signalisierungen |
 |                                       |         |              | |
-| Benachrichtigungen protokollieren     | boolean | false        | ermöglicht, das Benachrichtigungen aus mit im enthaltenen automatisch auch mit dem entsprechendem Schweregrad protokolliert werden.<br>|
+| Mitteilungen protokollieren     | boolean | false        | ermöglicht, das Mitteilungen aus mit im enthaltenen automatisch auch mit dem entsprechendem Schweregrad protokolliert werden.<br>|
 |                                       |         |              | |
 | Empfänger                             |         |              | |
 |                                       |         |              | |
 | Meldungen zu Instanz-Aktivitäten      | integer |              | IPS-Meldungen zu Aktivitäten der Instanz |
 
-#### Benachrichtigungs-Ereignis (_NotificationEvent_)
+#### Mitteilungs-Ereignis (_NoticeEvent_)
 
 | Eigenschaft                           | Typ     | Standardwert | Beschreibung |
 | :------------------------------------ | :------ | :----------- | :----------- |
@@ -276,10 +276,10 @@ alle Argumente werden über *_IPS* weitergegeben
 |                                       |         |              | |
 | Bedingungen                           | string  |              | Bedingung, wann das Ereignis gültig ist |
 |                                       |         |              | |
-| Benachrichtigungs-Details             |         |              | |
-|   Benachrichtigungs-Regel             | integer |              | zu verwendende Benachrichtigungs-Regel |
+| Mitteilungs-Details             |         |              | |
+|   Mitteilungs-Regel             | integer |              | zu verwendende Mitteilungs-Regel |
 |                                       |         |              | |
-|   Betreff                             | string  |              | vorgegebener Betreff eine Benachrichtigung (nur _E-Mail_, _Script_) |
+|   Betreff                             | string  |              | vorgegebener Betreff eine Mitteilung (nur _E-Mail_, _Script_) |
 |   Nachricht                           | string  |              | vorgegebener Nachrichten-Text |
 |   Schweregrad                         | integer |              | vorgegebener Schweregrad |
 |   ... erhöhen                         | boolean | false        | Schweregrad bei jeder Widerholung erhöhen |
@@ -298,8 +298,8 @@ alle Argumente werden über *_IPS* weitergegeben
 |   maximale WIederholungen             | integer | -1           | Anzahl Meldungs-Wiederholung (-1=ohne Begrenzung, 0=einmalige Meldung) |
 |                                       |         |              | |
 | Wiederherstellung                     |         |              | |
-|   Benachrichtigung ...                | boolean | false        | nach minimal einer erfolgten Meldung kann die Wiederherstellung kommuniziert werden |
-|   Betreff                             | string  |              | alternativer Betreff einer Benachrichtigung (nur _E-Mail_, _Script_) |
+|   Mitteilung ...                | boolean | false        | nach minimal einer erfolgten Meldung kann die Wiederherstellung kommuniziert werden |
+|   Betreff                             | string  |              | alternativer Betreff einer Mitteilung (nur _E-Mail_, _Script_) |
 |   Nachricht                           | string  |              | alternativer Nachrichten-Text |
 |   Schweregrad                         | integer |              | alternativer Schweregrad |
 |                                       |         |              | |
@@ -312,7 +312,7 @@ dem Skript werden in dem Array *_IPS* folgende Daten übergeben
   | :----------------- | :------ | :-------- |
   | recovery           | boolean | handelt sich um eine Wiederherstellungs-Mitteilung |
   | repetition         | integer | Wiederholung |
-  | ruleID             | integer | ID der Benachrichtigungs-Regel |
+  | ruleID             | integer | ID der Mitteilungs-Regel |
   | severity           | integer | Schweregrad |
   | started            | integer | Auslöse-Zeitpunkt |
 
@@ -321,7 +321,7 @@ dem Skript werden in dem Array *_IPS* folgende Daten übergeben
   | Ident              | Typ     | Bedeutung |
   | :----------------- | :------ | :-------- |
   | message            | string  | Nachrichten-Text |
-  | ruleID             | integer | ID der Benachrichtigungs-Regel |
+  | ruleID             | integer | ID der Mitteilungs-Regel |
   | severity           | integer | Schweregrad |
   | summary            | string  | Betreff |
 
@@ -352,7 +352,7 @@ Beispiele:
 
 ### Variablen
 
-#### Benachrichtigungs-Basis (_NotificationBase_)
+#### Mitteilungs-Basis (_NoticeBase_)
 
 | Ident                       | Typ          | Bezeichnung |
 | :-------------------------- | :------      | :---------- |
@@ -362,12 +362,12 @@ Beispiele:
 |                             |              | |
 | PresenceState_\<*Kürzel*\>  | integer      | Präsenz-Status von ... |
 |                             |              | |
-| Notifications               | HTML-Box     | Benachrichtigungen |
+| Notices               | HTML-Box     | Mitteilungen |
 | Data                        | Medienobjekt | Daten |
 
-#### Benachrichtigungs-Regeln (_NotifcationRule_)
+#### Mitteilungs-Regeln (_NotifcationRule_)
 
-#### Benachrichtigungs-Ereignis (_NotificationEvent_)
+#### Mitteilungs-Ereignis (_NoticeEvent_)
 
 | Ident                       | Typ          | Bezeichnung |
 | :-------------------------- | :------      | :---------- |
@@ -377,10 +377,10 @@ Beispiele:
 
 Es werden folgende Variablenprofile angelegt:
 * Boolean<br>
-Notification.YesNo
+Notice.YesNo
 
 * Integer<br>
-Notification.Presence
+Notice.Presence
 
 ## 6. Anhang
 
@@ -388,11 +388,14 @@ GUIDs
 
 - Modul: `{1E92B006-FB7D-6020-B296-2F31BC2892C4}`
 - Instanzen:
-  - NotificationBase: `{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}`
-  - NotificationRule: `{2335FF1E-9628-E363-AAEC-11DE75788A13}`
-  - NotificationEvent: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
+  - NoticeBase: `{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}`
+  - NoticeRule: `{2335FF1E-9628-E363-AAEC-11DE75788A13}`
+  - NoticeEvent: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
+
+- 1.1 @ 28.03.2022 10:31
+  - Aufgrund von Namenskonflikten: Notification -> Notice
 
 - 1.0.8 @ 17.03.2022 17:53
   - Ausgabe der Aufruf-Historie (CallChain)

@@ -35,7 +35,7 @@
             ]
         }
     ],
-    "action": "Notification_Log($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SEVERITY'], []);",
+    "action": "Notice_Log($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SEVERITY'], []);",
     "restrictions": {
         "objectType": [ 1 ],
         "moduleID": [

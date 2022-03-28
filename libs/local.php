@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-trait NotificationLocalLib
+trait NoticeLocalLib
 {
     public static $IS_INVALIDCONFIG = IS_EBASE + 1;
 
@@ -78,12 +78,12 @@ trait NotificationLocalLib
         $associations[] = ['Wert' => self::$STATE_AT_HOME, 'Name' => $this->Translate('at home'), 'Farbe' => 0x64C466];
         $associations[] = ['Wert' => self::$STATE_BE_AWAY, 'Name' => $this->Translate('be away'), 'Farbe' => 0xEB4D3D];
         $associations[] = ['Wert' => self::$STATE_ON_VACATION, 'Name' => $this->Translate('on vacation'), 'Farbe' => 0x087FC9];
-        $this->CreateVarProfile('Notification.Presence', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
+        $this->CreateVarProfile('Notice.Presence', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
 
         $associations = [];
         $associations[] = ['Wert' => false, 'Name' => $this->Translate('No'), 'Farbe' => -1];
         $associations[] = ['Wert' => true, 'Name' => $this->Translate('Yes'), 'Farbe' => 0xEE0000];
-        $this->CreateVarProfile('Notification.YesNo', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 0, '', $associations, $reInstall);
+        $this->CreateVarProfile('Notice.YesNo', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 0, '', $associations, $reInstall);
     }
 
     private function ModeMapping()

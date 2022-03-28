@@ -8,7 +8,7 @@
             "caption": "Force"
         }
     ],
-    "action": "Notification_TriggerEvent($_IPS['TARGET'], $_IPS['FORCE']);",
+    "action": "Notice_TriggerEvent($_IPS['TARGET'], $_IPS['FORCE']);",
     "restrictions": {
         "objectType": [ 1 ],
         "moduleID": [ "{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}" ],
@@ -16,12 +16,12 @@
     },
     "priority": 10,
     "category": "target",
-    "description": "Start notification event if conditions passed",
+    "description": "Start notice event if conditions passed",
     "locale": {
         "de": {
             "Trigger event": "Ereignis auslösen",
             "Force": "erzwingen",
-            "Start notification event if conditions passed": "Benachrichtigungs-Ereignis starten, wenn die Bedingungen erfüllt sind"
+            "Start notice event if conditions passed": "Mitteilungs-Ereignis starten, wenn die Bedingungen erfüllt sind"
         }
     }
 }

@@ -1,12 +1,12 @@
 {
     "id": "{1E92B006-FB7D-6020-B296-2F31BC2892C4}",
-    "name": "Notification",
+    "name": "Notice",
     "author": "Ch. Damsky",
-    "url": "https://github.com/demel42/IPSymconNotification",
+    "url": "https://github.com/demel42/IPSymconNotice",
     "compatibility": {
         "version": "6.0"
     },
-    "version": "1.0.8",
-    "build": 1,
-    "date": 1647535991
+    "version": "1.1",
+    "build": 0,
+    "date": 1648456275
 }

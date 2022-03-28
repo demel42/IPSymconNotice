@@ -5,10 +5,10 @@ declare(strict_types=1);
 require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
 require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
 
-class NotificationBase extends IPSModule
+class NoticeBase extends IPSModule
 {
     use StubsCommonLib;
-    use NotificationLocalLib;
+    use NoticeLocalLib;
 
     private static $semaphoreID = __CLASS__ . 'Data';
     private static $semaphoreTM = 5 * 1000;
@@ -156,13 +156,13 @@ class NotificationBase extends IPSModule
         parent::ApplyChanges();
 
         $vpos = 0;
-        $this->MaintainVariable('AllAbsent', $this->Translate('all absent'), VARIABLETYPE_BOOLEAN, 'Notification.YesNo', $vpos++, true);
+        $this->MaintainVariable('AllAbsent', $this->Translate('all absent'), VARIABLETYPE_BOOLEAN, 'Notice.YesNo', $vpos++, true);
         $this->MaintainVariable('LastGone', $this->Translate('last gone'), VARIABLETYPE_STRING, '', $vpos++, true);
         $this->MaintainVariable('FirstCome', $this->Translate('first come'), VARIABLETYPE_STRING, '', $vpos++, true);
 
         $vpos = 90;
         $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
-        $this->MaintainVariable('Notifications', $this->Translate('Notifications'), VARIABLETYPE_STRING, '~HTMLBox', $vpos++, $internal_html);
+        $this->MaintainVariable('Notices', $this->Translate('Notices'), VARIABLETYPE_STRING, '~HTMLBox', $vpos++, $internal_html);
 
         $vpos = 100;
         $objList = [];
@@ -199,7 +199,7 @@ class NotificationBase extends IPSModule
             $ident = 'PresenceState_' . strtoupper($user_id);
             $desc = $this->Translate('Presence state of') . ' ' . $name;
 
-            $this->MaintainVariable($ident, $desc, VARIABLETYPE_INTEGER, 'Notification.Presence', $vpos++, true);
+            $this->MaintainVariable($ident, $desc, VARIABLETYPE_INTEGER, 'Notice.Presence', $vpos++, true);
             $this->MaintainAction($ident, true);
             $identList[] = $ident;
         }
@@ -255,7 +255,7 @@ class NotificationBase extends IPSModule
 
         $formElements[] = [
             'type'    => 'Label',
-            'caption' => 'Notification base'
+            'caption' => 'Notice base'
         ];
 
         @$s = $this->CheckConfiguration();
@@ -540,7 +540,7 @@ class NotificationBase extends IPSModule
                 [
                     'type'    => 'Label',
                     'bold'    => true,
-                    'caption' => 'Visualization of "Notifications"',
+                    'caption' => 'Visualization of "Notices"',
                 ],
                 [
                     'type'    => 'RowLayout',
@@ -713,8 +713,8 @@ class NotificationBase extends IPSModule
         if ($internal_html) {
             $formActions[] = [
                 'type'    => 'Button',
-                'caption' => 'Rebuild "Notifications"',
-                'onClick' => 'Notification_RebuildHtml($id);'
+                'caption' => 'Rebuild "Notices"',
+                'onClick' => 'Notice_RebuildHtml($id);'
             ];
         }
 
@@ -726,7 +726,7 @@ class NotificationBase extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'Notification_InstallVarProfiles($id, true);'
+                    'onClick' => 'Notice_InstallVarProfiles($id, true);'
                 ],
             ]
         ];
@@ -760,7 +760,7 @@ class NotificationBase extends IPSModule
                         [
                             'type'    => 'Button',
                             'caption' => 'Test sound',
-                            'onClick' => 'WFC_PushNotification($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
+                            'onClick' => 'WFC_PushNotice($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
                         ],
                     ],
                 ],
@@ -810,7 +810,7 @@ class NotificationBase extends IPSModule
 
     private function CheckPresenceState(int $state)
     {
-        $r = IPS_GetVariableProfile('Notification.Presence');
+        $r = IPS_GetVariableProfile('Notice.Presence');
         foreach ($r['Associations'] as $a) {
             if ($a['Value'] == (int) $state) {
                 return true;
@@ -981,8 +981,8 @@ class NotificationBase extends IPSModule
         }
         $targetID = $this->GetArrayElem($params, 'TargetID', 0);
 
-        @$r = WFC_PushNotification($webfront_instID, $subject, $message, $sound, $targetID);
-        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $message . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
+        @$r = WFC_PushNotice($webfront_instID, $subject, $message, $sound, $targetID);
+        $this->SendDebug(__FUNCTION__, 'WFC_PushNotice(' . $webfront_instID . ', "' . $subject . '", "' . $message . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
 
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
@@ -1385,7 +1385,7 @@ class NotificationBase extends IPSModule
         return $presence;
     }
 
-    private function cmp_notifications($a, $b)
+    private function cmp_notices($a, $b)
     {
         $a_tstamp = $a['tstamp'];
         $b_tstamp = $b['tstamp'];
@@ -1404,7 +1404,7 @@ class NotificationBase extends IPSModule
             return;
         }
         $html = $this->BuildHtmlBox(false);
-        $this->SetValue('Notifications', $html);
+        $this->SetValue('Notices', $html);
     }
 
     public function Log(string $message, string $severity, array $params)
@@ -1440,21 +1440,21 @@ class NotificationBase extends IPSModule
 
         $ref_ts = $now - ($max_age * 24 * 60 * 60);
 
-        $new_notifications = [];
+        $new_notices = [];
         $s = $this->GetMediaData('Data');
         $old_data = json_decode((string) $s, true);
-        $old_notifications = isset($old_data['notifications']) ? $old_data['notifications'] : [];
+        $old_notices = isset($old_data['notices']) ? $old_data['notices'] : [];
         $counter = isset($old_data['counter']) ? $old_data['counter'] : 1;
-        if ($old_notifications != '') {
-            foreach ($old_notifications as $old_notification) {
-                if ($old_notification['tstamp'] < $ref_ts) {
-                    $this->SendDebug(__FUNCTION__, 'delete notification from ' . date('d.m.Y H:i:s', $old_notification['tstamp']), 0);
+        if ($old_notices != '') {
+            foreach ($old_notices as $old_notice) {
+                if ($old_notice['tstamp'] < $ref_ts) {
+                    $this->SendDebug(__FUNCTION__, 'delete notice from ' . date('d.m.Y H:i:s', $old_notice['tstamp']), 0);
                     continue;
                 }
-                $new_notifications[] = $old_notification;
+                $new_notices[] = $old_notice;
             }
         }
-        $new_notification = [
+        $new_notice = [
             'id'          => $counter++,
             'tstamp'      => $now,
             'message'     => $message,
@@ -1462,26 +1462,26 @@ class NotificationBase extends IPSModule
             'expires'     => $expires,
         ];
         if (isset($params['targets'])) {
-            $new_notification['targets'] = $params['targets'];
+            $new_notice['targets'] = $params['targets'];
         }
-        $new_notifications[] = $new_notification;
-        usort($new_notifications, ['NotificationBase', 'cmp_notifications']);
+        $new_notices[] = $new_notice;
+        usort($new_notices, ['NoticeBase', 'cmp_notices']);
         $new_data = $old_data;
         $new_data['counter'] = $counter;
-        $new_data['notifications'] = $new_notifications;
+        $new_data['notices'] = $new_notices;
         $s = json_encode($new_data);
         $this->SetMediaData('Data', $s, MEDIATYPE_DOCUMENT, '.dat', false);
 
         IPS_SemaphoreLeave(self::$semaphoreID);
 
         $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
-        $html = $this->BuildHtmlBox($new_notifications);
-        $this->SetValue('Notifications', $html);
+        $html = $this->BuildHtmlBox($new_notices);
+        $this->SetValue('Notices', $html);
 
         return true;
     }
 
-    private function BuildHtmlBox($notifications)
+    private function BuildHtmlBox($notices)
     {
         $severity_info_show = $this->ReadPropertyBoolean('severity_info_show');
         $severity_info_expire = $this->ReadPropertyInteger('severity_info_expire');
@@ -1503,10 +1503,10 @@ class NotificationBase extends IPSModule
         $severity_debug_expire = $this->ReadPropertyInteger('severity_debug_expire');
         $severity_debug_color = $this->ReadPropertyInteger('severity_debug_color');
 
-        if ($notifications == false) {
+        if ($notices == false) {
             $s = $this->GetMediaData('Data');
             $data = json_decode((string) $s, true);
-            $notifications = isset($data['notifications']) ? $data['notifications'] : [];
+            $notices = isset($data['notices']) ? $data['notices'] : [];
         }
 
         $now = time();
@@ -1524,12 +1524,12 @@ class NotificationBase extends IPSModule
         $html .= '#spalte_message { }' . PHP_EOL;
         $html .= '</style>' . PHP_EOL;
 
-        for ($i = count($notifications) - 1; $i; $i--) {
-            $notification = $notifications[$i];
-            $tstamp = $notification['tstamp'];
-            $message = $notification['message'];
-            $severity = $notification['severity'];
-            $expires = $notification['expires'];
+        for ($i = count($notices) - 1; $i; $i--) {
+            $notice = $notices[$i];
+            $tstamp = $notice['tstamp'];
+            $message = $notice['message'];
+            $severity = $notice['severity'];
+            $expires = $notice['expires'];
             $skip = false;
             $color = '';
             switch ($severity) {
@@ -1621,7 +1621,7 @@ class NotificationBase extends IPSModule
             $html .= '</tdata>' . PHP_EOL;
             $html .= '</table>' . PHP_EOL;
         } else {
-            $html .= '<center>keine Benachrichtigungen</center><br>' . PHP_EOL;
+            $html .= '<center>keine Mitteilungen</center><br>' . PHP_EOL;
         }
         $html .= '</body>' . PHP_EOL;
         $html .= '</html>' . PHP_EOL;

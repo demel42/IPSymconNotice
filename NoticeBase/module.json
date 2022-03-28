@@ -1,12 +1,12 @@
 {
     "id": "{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}",
-    "name": "Notification Base",
+    "name": "Notice Base",
     "type": 3,
     "vendor": "",
     "aliases": [],
     "parentRequirements": [],
     "childRequirements": [],
     "implemented": [],
-    "prefix": "Notification",
-    "url": "https://github.com/demel42/IPSymconNotification/blob/main/README.md"
+    "prefix": "Notice",
+    "url": "https://github.com/demel42/IPSymconNotice/blob/main/README.md"
 }

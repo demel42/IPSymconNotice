@@ -1,8 +1,8 @@
 {
     "translations": {
         "de": {
-			"Notification rule": "Benachrichtigungs-Regel",
-			"Notification base": "Benachrichtigungs-Basis",
+			"Notice rule": "Mitteilungs-Regel",
+			"Notice base": "Mitteilungs-Basis",
 
 			"Disable instance": "Instanz deaktivieren",
 
@@ -23,7 +23,7 @@
 			"Default signals": "Standardwert für Signalisierungen",
             "Other defaults": "sonstige Standardeinstellungen",
 
-			"Log notification additionally": "Benachrichtigung zusätzlich protokollieren",
+			"Log notice additionally": "Mitteilung zusätzlich protokollieren",
 
 			"Recipients": "Empfänger",
 			"Usage": "Verwendung",
