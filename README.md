@@ -115,8 +115,9 @@ Ein laufendes Ereignis wird standardmässig durch erneuten Aufruf nicht wieder a
 
 ### a. Installation des Moduls
 
-Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff *Symcon Notice* zu finden.<br>
-Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotice.git` installiert werden.
+Im [Module Store](https://www.symcon.de/service/dokumentation/komponenten/verwaltungskonsole/module-store/) ist das Modul unter dem Suchbegriff
+*Mitteilungen* ( *Notices* ) zu finden.<br>
+Alternativ kann das Modul über [Module Control](https://www.symcon.de/service/dokumentation/modulreferenz/module-control/) unter Angabe der URL `https://github.com/demel42/IPSymconNotice` installiert werden.
 
 ### b. Einrichtung in IPS
 
@@ -394,8 +395,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.1.1 @ 29.03.2022 10:27
+- 1.1.1 @ 29.03.2022 13:47
   - Korrektur zu 1.1 (WFC_PushNotification war fehlerhafterweise zu WFC_PushNotice geworden)
+  - Korrektur im README.md
 
 - 1.1 @ 28.03.2022 10:31
   - Aufgrund von Namenskonflikten: Notification -> Notice
