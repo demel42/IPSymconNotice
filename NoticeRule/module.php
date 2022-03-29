@@ -477,7 +477,7 @@ class NoticeRule extends IPSModule
                         [
                             'type'    => 'Button',
                             'caption' => 'Test sound',
-                            'onClick' => 'WFC_PushNotice($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
+                            'onClick' => 'WFC_PushNotification($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
                         ],
                     ],
                 ],

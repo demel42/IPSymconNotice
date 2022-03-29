@@ -204,7 +204,7 @@ Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Para
 z.B. für die Mitteilung an einen Admin-Mail-Account
 
 * Basiskonfiguration / Webfront<br>
-ein in dem Argument _Params_ der Funktion _Notice_TriggerRule_ übergebener bzw. aus den Standardeinstellungen gewonnener Eintrag _TargetID_ wird *WFC_PushNotice* übergeben.<br>
+ein in dem Argument _Params_ der Funktion _Notice_TriggerRule_ übergebener bzw. aus den Standardeinstellungen gewonnener Eintrag _TargetID_ wird *WFC_PushNotification* übergeben.<br>
 
 * Basiskonfiguration / Skript<br>
 alle Argumente werden über *_IPS* weitergegeben
@@ -393,6 +393,9 @@ GUIDs
   - NoticeEvent: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
+
+- 1.1.1 @ 29.03.2022 10:27
+  - Korrektur zu 1.1 (WFC_PushNotification war fehlerhafterweise zu WFC_PushNotice geworden)
 
 - 1.1 @ 28.03.2022 10:31
   - Aufgrund von Namenskonflikten: Notification -> Notice

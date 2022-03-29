@@ -760,7 +760,7 @@ class NoticeBase extends IPSModule
                         [
                             'type'    => 'Button',
                             'caption' => 'Test sound',
-                            'onClick' => 'WFC_PushNotice($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
+                            'onClick' => 'WFC_PushNotification($instID, "' . $this->Translate('Test sound') . '", $sound, $sound, 0);',
                         ],
                     ],
                 ],
@@ -981,8 +981,8 @@ class NoticeBase extends IPSModule
         }
         $targetID = $this->GetArrayElem($params, 'TargetID', 0);
 
-        @$r = WFC_PushNotice($webfront_instID, $subject, $message, $sound, $targetID);
-        $this->SendDebug(__FUNCTION__, 'WFC_PushNotice(' . $webfront_instID . ', "' . $subject . '", "' . $message . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
+        @$r = WFC_PushNotification($webfront_instID, $subject, $message, $sound, $targetID);
+        $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $message . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
 
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
