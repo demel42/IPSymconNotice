@@ -37,6 +37,10 @@
 			"Alternate \"Message text\" for recovery": "alternative \"Nachricht\" bei Wiederherstellung",
 			"Alternate \"severity\" for recovery": "alternativer \"Schweregrad\" bei Wiederherstellung",
 
+			"Log additionally": "zusätzlich protokollieren",
+			"yes": "ja",
+			"no": "nein",
+
 			"Seconds": "Sekunden",
 			"Minutes": "Minuten",
 			"Hours": "Stunden",

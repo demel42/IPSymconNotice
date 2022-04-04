@@ -659,7 +659,11 @@ class NoticeRule extends IPSModule
                     $r = Notice_Deliver($noticeBase, $target, $message, $l_params);
                 }
 
-                $log_additionally = $this->ReadPropertyBoolean('log_additionally');
+                if (isset($params['log_additionally'])) {
+                    $log_additionally = $params['log_additionally'];
+                } else {
+                    $log_additionally = $this->ReadPropertyBoolean('log_additionally');
+                }
                 if ($log_additionally) {
                     $l_params['targets'] = $targetV;
                     if ($message == '') {

@@ -316,8 +316,9 @@ dem Skript werden in dem Array *_IPS* folgende Daten übergeben
   | ruleID             | integer | ID der Mitteilungs-Regel |
   | severity           | integer | Schweregrad |
   | started            | integer | Auslöse-Zeitpunkt |
+  | instanceID         | integer | ID des Mitteilungs-Ereignisses |
 
-  Zurückgegeben wird entweder json-kodiertes Array mit den optionalen Argumenten
+  Zurückgegeben wird entweder ein json-kodiertes Array mit den optionalen Argumenten
 
   | Ident              | Typ     | Bedeutung |
   | :----------------- | :------ | :-------- |
@@ -325,6 +326,7 @@ dem Skript werden in dem Array *_IPS* folgende Daten übergeben
   | ruleID             | integer | ID der Mitteilungs-Regel |
   | severity           | integer | Schweregrad |
   | summary            | string  | Betreff |
+  | log_additionally   | boolean | Mitteilung zusätzlich protokollieren |
 
   oder ein String, der als _message_ verwendet wird. Die werte überschreiben dann eventuelle Voreinstellungen.
 
@@ -363,7 +365,7 @@ Beispiele:
 |                             |              | |
 | PresenceState_\<*Kürzel*\>  | integer      | Präsenz-Status von ... |
 |                             |              | |
-| Notices               | HTML-Box     | Mitteilungen |
+| Notices                     | HTML-Box     | Mitteilungen |
 | Data                        | Medienobjekt | Daten |
 
 #### Mitteilungs-Regeln (_NoticeRule_)
@@ -394,6 +396,9 @@ GUIDs
   - NoticeEvent: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
+
+- 1.2 @ 04.04.2022 11:14 (beta)
+  - Script des Mitteilungs-Ereignisses: Möglichkeit, die Mitteilung zusätzlich zu protokollieren (übersteuert die Einstellung in der Regel)
 
 - 1.1.1 @ 29.03.2022 13:47
   - Korrektur zu 1.1 (WFC_PushNotification war fehlerhafterweise zu WFC_PushNotice geworden)

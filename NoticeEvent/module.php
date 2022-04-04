@@ -718,6 +718,7 @@ class NoticeEvent extends IPSModule
             $message = $this->ReadPropertyString('message');
             $severity = $this->ReadPropertyInteger('severity');
         }
+        $log_additionally = null;
         $script = $this->ReadPropertyString('script');
         if ($script != '') {
             $params = [
@@ -726,6 +727,7 @@ class NoticeEvent extends IPSModule
                 'ruleID'     => $ruleID,
                 'severity'   => $severity,
                 'started'    => $started,
+                'instanceID' => $this->InstanceID,
             ];
             @$r = IPS_RunScriptTextWaitEx($script, $params);
             $this->SendDebug(__FUNCTION__, 'script("...", ' . print_r($params, true) . ' => ' . $r, 0);
@@ -743,6 +745,9 @@ class NoticeEvent extends IPSModule
                     }
                     if (isset($j['ruleID'])) {
                         $ruleID = $j['ruleID'];
+                    }
+                    if (isset($j['log_additionally'])) {
+                        $log_additionally = $j['log_additionally'];
                     }
                 } else {
                     $message = $r;
@@ -776,6 +781,9 @@ class NoticeEvent extends IPSModule
             'started'    => $started,
             'eventID'    => $this->InstanceID,
         ];
+        if (is_null($log_additionally) == false) {
+            $params['log_additionally'] = $log_additionally;
+        }
         $this->SendDebug(__FUNCTION__, 'trigger rule "' . IPS_GetName($ruleID) . '" (#' . $repetition . ')', 0);
         $r = Notice_TriggerRule($ruleID, $message, $subject, $severity, $params);
         return $r;
@@ -796,6 +804,7 @@ class NoticeEvent extends IPSModule
             $subject = $this->ReadPropertyString('subject');
             $message = $this->ReadPropertyString('message');
         }
+        $log_additionally = null;
         $script = $this->ReadPropertyString('script');
         if ($script != '') {
             $params = [
@@ -804,6 +813,7 @@ class NoticeEvent extends IPSModule
                 'ruleID'     => $ruleID,
                 'severity'   => $severity,
                 'started'    => $started,
+                'instanceID' => $this->InstanceID,
             ];
             $this->SendDebug(__FUNCTION__, 'script=' . $script, 0);
             $this->SendDebug(__FUNCTION__, 'params=' . print_r($params, true), 0);
@@ -824,6 +834,9 @@ class NoticeEvent extends IPSModule
                     if (isset($j['ruleID'])) {
                         $ruleID = $j['ruleID'];
                     }
+                    if (isset($j['log_additionally'])) {
+                        $log_additionally = $j['log_additionally'];
+                    }
                 } else {
                     $this->SendDebug(__FUNCTION__, 'message=' . $r, 0);
                     $message = $r;
@@ -836,6 +849,9 @@ class NoticeEvent extends IPSModule
         $s .= PHP_EOL;
         $s .= $this->Translate('Severity') . ': ' . $this->SeverityEncode($severity, true) . PHP_EOL;
         $s .= $this->Translate('Notice rule') . ': ' . IPS_GetName($ruleID) . '(' . $ruleID . ')' . PHP_EOL;
+        if (is_null($log_additionally) == false) {
+            $s .= $this->Translate('Log additionally') . ': ' . $this->Translate($log_additionally ? 'yes' : 'no') . PHP_EOL;
+        }
         $s .= PHP_EOL;
         $s .= '- ' . $this->Translate('Subject') . ' -' . PHP_EOL;
         if ($subject != '') {
