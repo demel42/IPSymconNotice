@@ -123,7 +123,7 @@ class NoticeEvent extends IPSModule
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
-            $this->SetTimerInterval('LoopTimer', 0);
+            $this->MaintainTimer('LoopTimer', 0);
             $this->SetStatus(IS_INACTIVE);
             return;
         }
@@ -495,10 +495,10 @@ class NoticeEvent extends IPSModule
                 }
                 if ($sec > 0) {
                     $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
-                    $this->SetTimerInterval('LoopTimer', $sec * 1000);
+                    $this->MaintainTimer('LoopTimer', $sec * 1000);
                 } else {
                     $this->SendDebug(__FUNCTION__, 'no timer (no repetition)', 0);
-                    $this->SetTimerInterval('LoopTimer', 0);
+                    $this->MaintainTimer('LoopTimer', 0);
                 }
             }
         } else {
@@ -516,7 +516,7 @@ class NoticeEvent extends IPSModule
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
-                $this->SetTimerInterval('LoopTimer', 0);
+                $this->MaintainTimer('LoopTimer', 0);
             } else {
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
                     $msg = $conditionsS . ', continuing';
@@ -546,7 +546,7 @@ class NoticeEvent extends IPSModule
                 $this->LogMessage($msg, KL_NOTIFY);
             }
             $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
-            $this->SetTimerInterval('LoopTimer', 0);
+            $this->MaintainTimer('LoopTimer', 0);
         }
 
         $this->PopCallChain(__FUNCTION__);
@@ -591,7 +591,7 @@ class NoticeEvent extends IPSModule
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
-                $this->SetTimerInterval('LoopTimer', $sec * 1000);
+                $this->MaintainTimer('LoopTimer', $sec * 1000);
             } else {
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
@@ -601,7 +601,7 @@ class NoticeEvent extends IPSModule
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (max repetitions=' . $max_repetitions . ')', 0);
-                $this->SetTimerInterval('LoopTimer', 0);
+                $this->MaintainTimer('LoopTimer', 0);
             }
         } else {
             $recovery_notify = $this->ReadPropertyBoolean('recovery_notify');
@@ -617,7 +617,7 @@ class NoticeEvent extends IPSModule
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
-                $this->SetTimerInterval('LoopTimer', 0);
+                $this->MaintainTimer('LoopTimer', 0);
             }
         }
 

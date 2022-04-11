@@ -397,7 +397,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.2 @ 04.04.2022 11:14 (beta)
+- 1.2.1 @ 11.04.2022 12:29 (beta)
+  - Ausgabe der Instanz-Timer unter "Referenzen"
+
+- 1.2 @ 04.04.2022 11:14
   - Script des Mitteilungs-Ereignisses: Möglichkeit, die Mitteilung zusätzlich zu protokollieren (übersteuert die Einstellung in der Regel)
 
 - 1.1.1 @ 29.03.2022 13:47
