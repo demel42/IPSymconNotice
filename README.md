@@ -399,6 +399,7 @@ GUIDs
 
 - 1.2.1 @ 11.04.2022 12:29 (beta)
   - Ausgabe der Instanz-Timer unter "Referenzen"
+  - Steuerung der zusätzlichen Protokollierung aus dem Event-Script (siehe 'log_additionally')
 
 - 1.2 @ 04.04.2022 11:14
   - Script des Mitteilungs-Ereignisses: Möglichkeit, die Mitteilung zusätzlich zu protokollieren (übersteuert die Einstellung in der Regel)
