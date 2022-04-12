@@ -397,7 +397,7 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.2.1 @ 11.04.2022 12:29 (beta)
+- 1.2.1 @ 12.04.2022 18:05
   - Ausgabe der Instanz-Timer unter "Referenzen"
   - Steuerung der zusätzlichen Protokollierung aus dem Event-Script (siehe 'log_additionally')
 
