@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/CommonStubs/common.php'; // globale Funktionen
-require_once __DIR__ . '/../libs/local.php';  // lokale Funktionen
+require_once __DIR__ . '/../libs/common.php';
+require_once __DIR__ . '/../libs/local.php';
 
 class NoticeEvent extends IPSModule
 {
-    use StubsCommonLib;
+    use Notice\StubsCommonLib;
     use NoticeLocalLib;
 
     public static $TIMEUNIT_SECONDS = 0;

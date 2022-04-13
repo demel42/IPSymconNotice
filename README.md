@@ -397,6 +397,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.2.2 @ 13.04.2022 15:13
+  - potentieller Namenskonflikt behoben (trait CommonStubs)
+
 - 1.2.1 @ 12.04.2022 18:05
   - Ausgabe der Instanz-Timer unter "Referenzen"
   - Steuerung der zusätzlichen Protokollierung aus dem Event-Script (siehe 'log_additionally')
