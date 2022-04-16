@@ -490,9 +490,9 @@ class NoticeRule extends IPSModule
         return $formActions;
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction($ident, $value)
     {
-        if ($this->CommonRequestAction($Ident, $Value)) {
+        if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
 
@@ -501,9 +501,9 @@ class NoticeRule extends IPSModule
             return;
         }
 
-        switch ($Ident) {
+        switch ($ident) {
             default:
-                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
         }
     }
@@ -571,11 +571,12 @@ class NoticeRule extends IPSModule
 
         $result = false;
 
+        $chainS = $this->PrintCallChain(false);
+
         $targetV = $this->EvaluateRule();
         if ($targetV != false) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $msg = 'targets=' . implode(',', $targetV);
-                $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                $msg = 'targets=' . implode(',', $targetV) . ' (' . $chainS . ')';
                 $this->LogMessage($msg, KL_MESSAGE);
             }
             $noticeBase = $this->GetNoticeBase();
@@ -674,8 +675,7 @@ class NoticeRule extends IPSModule
             }
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $msg = 'no matching targets';
-                $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                $msg = 'no matching targets (' . $chainS . ')';
                 $this->LogMessage($msg, KL_NOTIFY);
             }
         }

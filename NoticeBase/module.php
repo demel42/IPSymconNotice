@@ -773,9 +773,9 @@ class NoticeBase extends IPSModule
         return $formActions;
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction($ident, $value)
     {
-        if ($this->CommonRequestAction($Ident, $Value)) {
+        if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
 
@@ -786,24 +786,22 @@ class NoticeBase extends IPSModule
 
         $r = false;
 
-        if (preg_match('#^PresenceState_#', $Ident)) {
+        if (preg_match('#^PresenceState_#', $ident)) {
             $users = json_decode($this->ReadPropertyString('users'), true);
             if ($users != false) {
                 foreach ($users as $user) {
-                    $user_id = $user['id'];
-                    $ident = 'PresenceState_' . strtoupper($user_id);
-                    if ($ident == $Ident) {
-                        @$varID = $this->GetIDForIdent($Ident);
-                        $r = $this->SetPresenceState($Ident, (int) $Value);
+                    if ($ident == 'PresenceState_' . strtoupper($user['id'])) {
+                        @$varID = $this->GetIDForIdent($ident);
+                        $r = $this->SetPresenceState($ident, (int) $value);
                         return;
                     }
                 }
             }
         }
 
-        switch ($Ident) {
+        switch ($ident) {
             default:
-                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
         }
     }
@@ -984,10 +982,10 @@ class NoticeBase extends IPSModule
         @$r = WFC_PushNotification($webfront_instID, $subject, $message, $sound, $targetID);
         $this->SendDebug(__FUNCTION__, 'WFC_PushNotification(' . $webfront_instID . ', "' . $subject . '", "' . $message . '", "' . $sound . '", ' . $targetID . ') ' . ($r ? 'succeed' : 'failed'), 0);
 
+        $chainS = $this->PrintCallChain(false);
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" succeed';
-                $s .= ' (' . $this->PrintCallChain(false) . ')';
+                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" succeed (' . $chainS . ')';
                 $this->LogMessage($s, KL_MESSAGE);
             }
 
@@ -995,8 +993,7 @@ class NoticeBase extends IPSModule
             $this->Log($s, 'debug', []);
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" failed';
-                $s .= ' (' . $this->PrintCallChain(false) . ')';
+                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" failed (' . $chainS . ')';
                 $this->LogMessage($s, KL_NOTIFY);
             }
 
@@ -1066,10 +1063,10 @@ class NoticeBase extends IPSModule
         @$r = SMTP_SendMailEx($mail_instID, $mail_addr, $subject, $message);
         $this->SendDebug(__FUNCTION__, 'SMTP_SendMailEx(' . $mail_instID . ', "' . $mail_addr . '", "' . $subject . '", "' . $message . '") ' . ($r ? 'succeed' : 'failed'), 0);
 
+        $chainS = $this->PrintCallChain(false);
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" succeed';
-                $s .= ' (' . $this->PrintCallChain(false) . ')';
+                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" succeed (' . $chainS . ')';
                 $this->LogMessage($s, KL_MESSAGE);
             }
 
@@ -1077,8 +1074,7 @@ class NoticeBase extends IPSModule
             $this->Log($s, 'debug', []);
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" failed';
-                $s .= ' (' . $this->PrintCallChain(false) . ')';
+                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" failed (' . $chainS . ')';
                 $this->LogMessage($s, KL_NOTIFY);
             }
 
@@ -1160,10 +1156,10 @@ class NoticeBase extends IPSModule
                 break;
         }
 
+        $chainS = $this->PrintCallChain(false);
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" succeed';
-                $s .= ' (' . $this->PrintCallChain(false) . ')';
+                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" succeed (' . $chainS . ')';
                 $this->LogMessage($s, KL_MESSAGE);
             }
 
@@ -1171,8 +1167,7 @@ class NoticeBase extends IPSModule
             $this->Log($s, 'debug', []);
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" failed';
-                $s .= ' (' . $this->PrintCallChain(false) . ')';
+                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" failed (' . $chainS . ')';
                 $this->LogMessage($s, KL_NOTIFY);
             }
 
@@ -1263,10 +1258,10 @@ class NoticeBase extends IPSModule
         @$r = IPS_RunScriptWaitEx($scriptID, $params);
         $this->SendDebug(__FUNCTION__, 'IPS_RunScriptWaitEx(' . $scriptID . ', ' . print_r($params, true) . ') ' . ($r ? 'succeed' : 'failed'), 0);
 
+        $chainS = $this->PrintCallChain(false);
         if ($r) {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'scripting @' . $user_id . ' "' . $message . '" succeed';
-                $s .= ' (' . $this->PrintCallChain(false) . ')';
+                $s = 'scripting @' . $user_id . ' "' . $message . '" succeed (' . $chainS . ')';
                 $this->LogMessage($s, KL_MESSAGE);
             }
 
@@ -1274,8 +1269,7 @@ class NoticeBase extends IPSModule
             $this->Log($s, 'debug', []);
         } else {
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'scripting @' . $user_id . ' "' . $message . '" failed';
-                $s .= ' (' . $this->PrintCallChain(false) . ')';
+                $s = 'scripting @' . $user_id . ' "' . $message . '" failed (' . $chainS . ')';
                 $this->LogMessage($s, KL_NOTIFY);
             }
 

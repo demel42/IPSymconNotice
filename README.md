@@ -317,6 +317,10 @@ dem Skript werden in dem Array *_IPS* folgende Daten übergeben
   | severity           | integer | Schweregrad |
   | started            | integer | Auslöse-Zeitpunkt |
   | instanceID         | integer | ID des Mitteilungs-Ereignisses |
+  |                    |         | falls in den Systemvariablen gesetzt ... |
+  | VARIABLE           | integer | siehe [hier](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
+  | VALUE              | string  | siehe [hier](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
+  | OLDVALUE           | string  | siehe [hier](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
 
   Zurückgegeben wird entweder ein json-kodiertes Array mit den optionalen Argumenten
 
@@ -396,6 +400,10 @@ GUIDs
   - NoticeEvent: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
+
+- 1.2.3 @ 16.04.2022 10:25
+  - Übergabe zusätzlicher Variablen an das Ereignis-Script
+  - Instanz-Debug etwas ergänzt
 
 - 1.2.2 @ 13.04.2022 15:13
   - potentieller Namenskonflikt behoben (trait CommonStubs)

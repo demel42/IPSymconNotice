@@ -410,9 +410,9 @@ class NoticeEvent extends IPSModule
         return $formActions;
     }
 
-    public function RequestAction($Ident, $Value)
+    public function RequestAction($ident, $value)
     {
-        if ($this->CommonRequestAction($Ident, $Value)) {
+        if ($this->CommonRequestAction($ident, $value)) {
             return;
         }
 
@@ -421,9 +421,9 @@ class NoticeEvent extends IPSModule
             return;
         }
 
-        switch ($Ident) {
+        switch ($ident) {
             default:
-                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $Ident, 0);
+                $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
         }
     }
@@ -448,8 +448,10 @@ class NoticeEvent extends IPSModule
 
         $started = $this->GetValue('TimerStarted');
         $startedS = $started ? date('d.m.Y H:i:s', $started) : '';
-
         $this->SendDebug(__FUNCTION__, $conditionsS . ', started=' . $startedS, 0);
+
+        $chainS = $this->PrintCallChain(false);
+
         if ($passed) {
             if ($started == 0 || $force) {
                 $started = time();
@@ -490,7 +492,7 @@ class NoticeEvent extends IPSModule
                 $this->SetValue('TimerStarted', $started);
                 $this->WriteAttributeInteger('repetition', $repetition);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                    $msg .= ' (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 if ($sec > 0) {
@@ -511,16 +513,14 @@ class NoticeEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', stopped running timer';
-                    $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                    $msg = $conditionsS . ', stopped running timer (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->MaintainTimer('LoopTimer', 0);
             } else {
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                    $msg = $conditionsS . ', continuing';
-                    $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                    $msg = $conditionsS . ', continuing (' . $chainS . ')';
                     $this->LogMessage($msg, KL_MESSAGE);
                 }
             }
@@ -537,12 +537,13 @@ class NoticeEvent extends IPSModule
         $startedS = $started ? date('d.m.Y H:i:s', $started) : '';
         $this->SendDebug(__FUNCTION__, 'started=' . $startedS, 0);
 
+        $chainS = $this->PrintCallChain(false);
+
         if ($started) {
             $this->SetValue('TimerStarted', 0);
             $this->WriteAttributeInteger('repetition', 0);
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $msg = 'timer stopped manual';
-                $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                $msg = 'timer stopped manual (' . $chainS . ')';
                 $this->LogMessage($msg, KL_NOTIFY);
             }
             $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
@@ -567,10 +568,11 @@ class NoticeEvent extends IPSModule
 
         $started = $this->GetValue('TimerStarted');
         $startedS = $started ? date('d.m.Y H:i:s', $started) : '';
-
         $repetition = $this->ReadAttributeInteger('repetition');
-
         $this->SendDebug(__FUNCTION__, $conditionsS . ', started=' . $startedS . ', repetition=' . $repetition, 0);
+
+        $chainS = $this->PrintCallChain(false);
+
         if ($passed) {
             $this->Notify($repetition++, $started, false);
             $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
@@ -586,8 +588,7 @@ class NoticeEvent extends IPSModule
                 $tvS = $tval . $this->Timeunit2Suffix($unit);
                 $this->WriteAttributeInteger('repetition', $repetition);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', notice #' . $repetition . ' and pausing ' . $tvS;
-                    $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                    $msg = $conditionsS . ', notice #' . $repetition . ' and pausing ' . $tvS . ' (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
@@ -596,8 +597,7 @@ class NoticeEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', notice #' . $repetition . ' and stopped timer (max repetitions)';
-                    $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                    $msg = $conditionsS . ', notice #' . $repetition . ' and stopped timer (max repetitions) (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (max repetitions=' . $max_repetitions . ')', 0);
@@ -612,8 +612,7 @@ class NoticeEvent extends IPSModule
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', stopped timer';
-                    $msg .= ' (' . $this->PrintCallChain(false) . ')';
+                    $msg = $conditionsS . ', stopped timer (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
@@ -729,6 +728,11 @@ class NoticeEvent extends IPSModule
                 'started'    => $started,
                 'instanceID' => $this->InstanceID,
             ];
+            foreach (['VARIABLE', 'VALUE', 'OLDVALUE'] as $elem) {
+                if (isset($_IPS[$elem])) {
+                    $params[$elem] = $_IPS[$elem];
+                }
+            }
             @$r = IPS_RunScriptTextWaitEx($script, $params);
             $this->SendDebug(__FUNCTION__, 'script("...", ' . print_r($params, true) . ' => ' . $r, 0);
             if ($r != false) {
