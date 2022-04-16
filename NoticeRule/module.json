@@ -1,12 +1,12 @@
 {
-    "id": "{2335FF1E-9628-E363-AAEC-11DE75788A13}",
-    "name": "Notice Rule",
-    "type": 3,
-    "vendor": "",
-    "aliases": [],
-    "parentRequirements": [],
-    "childRequirements": [],
-    "implemented": [],
-    "prefix": "Notice",
-    "url": "https://github.com/demel42/IPSymconNotice/blob/main/README.md"
+	"id": "{2335FF1E-9628-E363-AAEC-11DE75788A13}",
+	"name": "Notice Rule",
+	"type": 3,
+	"vendor": "",
+	"aliases": [],
+	"parentRequirements": [],
+	"childRequirements": [],
+	"implemented": [],
+	"prefix": "Notice",
+	"url": "https://github.com/demel42/IPSymconNotice/blob/main/README.md"
 }
