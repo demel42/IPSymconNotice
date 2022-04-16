@@ -318,9 +318,9 @@ dem Skript werden in dem Array *_IPS* folgende Daten übergeben
   | started            | integer | Auslöse-Zeitpunkt |
   | instanceID         | integer | ID des Mitteilungs-Ereignisses |
   |                    |         | falls in den Systemvariablen gesetzt ... |
-  | VARIABLE           | integer | siehe [hier](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
-  | VALUE              | string  | siehe [hier](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
-  | OLDVALUE           | string  | siehe [hier](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
+  | VARIABLE           | integer | siehe [Symcon-Dokumentation](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
+  | VALUE              | string  | siehe [Symcon-Dokumentation](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
+  | OLDVALUE           | string  | siehe [Symcon-Dokumentation](https://www.symcon.de/service/dokumentation/konzepte/automationen/php-skripte/systemvariablen/#Variable) |
 
   Zurückgegeben wird entweder ein json-kodiertes Array mit den optionalen Argumenten
 
