@@ -1,27 +1,34 @@
 {
-    "id": "{BFC2AEA7-3D74-A815-9760-9D86F03F2D1F}",
-    "caption": "Trigger event",
-    "form": [
-        {
-            "type": "CheckBox",
-            "name": "FORCE",
-            "caption": "Force"
-        }
-    ],
-    "action": "Notice_TriggerEvent($_IPS['TARGET'], $_IPS['FORCE']);",
-    "restrictions": {
-        "objectType": [ 1 ],
-        "moduleID": [ "{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}" ],
-        "includeEnvironments": [ "TestCommands", "Default" ]
-    },
-    "priority": 10,
-    "category": "target",
-    "description": "Start notice event if conditions passed",
-    "locale": {
-        "de": {
-            "Trigger event": "Ereignis auslösen",
-            "Force": "erzwingen",
-            "Start notice event if conditions passed": "Mitteilungs-Ereignis starten, wenn die Bedingungen erfüllt sind"
-        }
-    }
+	"id": "{BFC2AEA7-3D74-A815-9760-9D86F03F2D1F}",
+	"caption": "Trigger event",
+	"form": [
+		{
+			"type": "CheckBox",
+			"name": "FORCE",
+			"caption": "Force"
+		}
+	],
+	"action": "Notice_TriggerEvent($_IPS['TARGET'], $_IPS['FORCE']);",
+	"restrictions": {
+		"objectType": [
+			1
+		],
+		"moduleID": [
+			"{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}"
+		],
+		"includeEnvironments": [
+			"TestCommands",
+			"Default"
+		]
+	},
+	"priority": 10,
+	"category": "target",
+	"description": "Start notice event if conditions passed",
+	"locale": {
+		"de": {
+			"Trigger event": "Ereignis auslösen",
+			"Force": "erzwingen",
+			"Start notice event if conditions passed": "Mitteilungs-Ereignis starten, wenn die Bedingungen erfüllt sind"
+		}
+	}
 }

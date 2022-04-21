@@ -1,20 +1,27 @@
 {
-    "id": "{4652526F-47C6-5249-0219-3AC83FAC2832}",
-    "caption": "Stop event",
-    "form": [ ],
-    "action": "Notice_StopEvent($_IPS['TARGET']);",
-    "restrictions": {
-        "objectType": [ 1 ],
-        "moduleID": [ "{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}" ],
-        "includeEnvironments": [ "TestCommands", "Default" ]
-    },
-    "priority": 10,
-    "category": "target",
-    "description": "Stop notice event",
-    "locale": {
-        "de": {
-            "Stop event": "Ereignis stoppen",
-            "Stop notice event": "Mitteilungs-Ereignis stoppen"
-        }
-    }
+	"id": "{4652526F-47C6-5249-0219-3AC83FAC2832}",
+	"caption": "Stop event",
+	"form": [],
+	"action": "Notice_StopEvent($_IPS['TARGET']);",
+	"restrictions": {
+		"objectType": [
+			1
+		],
+		"moduleID": [
+			"{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}"
+		],
+		"includeEnvironments": [
+			"TestCommands",
+			"Default"
+		]
+	},
+	"priority": 10,
+	"category": "target",
+	"description": "Stop notice event",
+	"locale": {
+		"de": {
+			"Stop event": "Ereignis stoppen",
+			"Stop notice event": "Mitteilungs-Ereignis stoppen"
+		}
+	}
 }

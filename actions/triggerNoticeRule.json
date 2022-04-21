@@ -1,63 +1,70 @@
 {
-    "id": "{3E71737C-AA35-A7F0-3456-7E3023AE49AF}",
-    "caption": "Trigger notice rule",
-    "form": [
-        {
-            "type": "ValidationTextBox",
-            "name": "SUBJECT",
-            "caption": "Subject"
-        },
-        {
-            "type": "ValidationTextBox",
-            "name": "MESSAGE",
-            "caption": "Message"
-        },
-        {
-            "type": "Select",
-            "name": "SEVERITY",
-            "caption": "Severity",
-            "options": [
-                {
-                    "value": "info",
-                    "caption": "Information"
-                },
-                {
-                    "value": "notice",
-                    "caption": "Notice"
-                },
-                {
-                    "value": "warn",
-                    "caption": "Warning"
-                },
-                {
-                    "value": "alert",
-                    "caption": "Alert"
-                }
-            ]
-        }
-    ],
-    "action": "Notice_TriggerRule($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SUBJECT'], $_IPS['SEVERITY'], []);",
-    "restrictions": {
-        "objectType": [ 1 ],
-        "moduleID": [ "{2335FF1E-9628-E363-AAEC-11DE75788A13}" ],
-        "includeEnvironments": [ "TestCommands", "Default" ]
-    },
-    "priority": 10,
-    "category": "target",
-    "description": "Trigger a notice rule to the configured targets",
-    "format": "Trigger notice with severity \"{SEVERITY}\"",
-    "locale": {
-        "de": {
-            "Trigger notice rule": "Löse Mitteilungsregel aus",
-            "Subject": "Betreff",
-            "Message": "Nachrichten-Text",
-            "Severity": "Schweregrad",
-            "Information": "Information",
-            "Notice": "Hinweis",
-            "Warning": "Warnung",
-            "Alert": "Alarm",
-            "Trigger a notice rule to the configured targets": "Auslösen einer Mitteilungsregel für die konfigurierten Ziele",
-            "Trigger notice with severity \"{SEVERITY}\"": "Löse Mitteilung mit Schweregrad \"{SEVERITY}\" aus"
-        }
-    }
+	"id": "{3E71737C-AA35-A7F0-3456-7E3023AE49AF}",
+	"caption": "Trigger notice rule",
+	"form": [
+		{
+			"type": "ValidationTextBox",
+			"name": "SUBJECT",
+			"caption": "Subject"
+		},
+		{
+			"type": "ValidationTextBox",
+			"name": "MESSAGE",
+			"caption": "Message"
+		},
+		{
+			"type": "Select",
+			"name": "SEVERITY",
+			"caption": "Severity",
+			"options": [
+				{
+					"value": "info",
+					"caption": "Information"
+				},
+				{
+					"value": "notice",
+					"caption": "Notice"
+				},
+				{
+					"value": "warn",
+					"caption": "Warning"
+				},
+				{
+					"value": "alert",
+					"caption": "Alert"
+				}
+			]
+		}
+	],
+	"action": "Notice_TriggerRule($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SUBJECT'], $_IPS['SEVERITY'], []);",
+	"restrictions": {
+		"objectType": [
+			1
+		],
+		"moduleID": [
+			"{2335FF1E-9628-E363-AAEC-11DE75788A13}"
+		],
+		"includeEnvironments": [
+			"TestCommands",
+			"Default"
+		]
+	},
+	"priority": 10,
+	"category": "target",
+	"description": "Trigger a notice rule to the configured targets",
+	"format": "Trigger notice with severity \"{SEVERITY}\"",
+	"locale": {
+		"de": {
+			"Trigger notice rule": "Löse Mitteilungsregel aus",
+			"Subject": "Betreff",
+			"Message": "Nachrichten-Text",
+			"Severity": "Schweregrad",
+			"Information": "Information",
+			"Notice": "Hinweis",
+			"Warning": "Warnung",
+			"Alert": "Alarm",
+			"Trigger a notice rule to the configured targets": "Auslösen einer Mitteilungsregel für die konfigurierten Ziele",
+			"Trigger notice with severity \"{SEVERITY}\"": "Löse Mitteilung mit Schweregrad \"{SEVERITY}\" aus"
+		}
+	}
 }

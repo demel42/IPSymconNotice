@@ -1,64 +1,69 @@
 {
-    "id": "{02DD059F-D09F-FE76-7A7E-B08D590F0EEF}",
-    "caption": "Create log entry",
-    "form": [
-        {
-            "type": "ValidationTextBox",
-            "name": "MESSAGE",
-            "caption": "Message"
-        },
-        {
-            "type": "Select",
-            "name": "SEVERITY",
-            "caption": "Severity",
-            "options": [
-                {
-                    "value": "info",
-                    "caption": "Information"
-                },
-                {
-                    "value": "notice",
-                    "caption": "Notice"
-                },
-                {
-                    "value": "warn",
-                    "caption": "Warning"
-                },
-                {
-                    "value": "alert",
-                    "caption": "Alert"
-                },
-                {
-                    "value": "debug",
-                    "caption": "Debug"
-                }
-            ]
-        }
-    ],
-    "action": "Notice_Log($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SEVERITY'], []);",
-    "restrictions": {
-        "objectType": [ 1 ],
-        "moduleID": [
+	"id": "{02DD059F-D09F-FE76-7A7E-B08D590F0EEF}",
+	"caption": "Create log entry",
+	"form": [
+		{
+			"type": "ValidationTextBox",
+			"name": "MESSAGE",
+			"caption": "Message"
+		},
+		{
+			"type": "Select",
+			"name": "SEVERITY",
+			"caption": "Severity",
+			"options": [
+				{
+					"value": "info",
+					"caption": "Information"
+				},
+				{
+					"value": "notice",
+					"caption": "Notice"
+				},
+				{
+					"value": "warn",
+					"caption": "Warning"
+				},
+				{
+					"value": "alert",
+					"caption": "Alert"
+				},
+				{
+					"value": "debug",
+					"caption": "Debug"
+				}
+			]
+		}
+	],
+	"action": "Notice_Log($_IPS['TARGET'], $_IPS['MESSAGE'], $_IPS['SEVERITY'], []);",
+	"restrictions": {
+		"objectType": [
+			1
+		],
+		"moduleID": [
 			"{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}",
 			"{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}",
 			"{2335FF1E-9628-E363-AAEC-11DE75788A13}"
 		],
-        "includeEnvironments": [ "TestCommands", "Default" ]
-    },
-    "priority": 10,
-    "category": "target",
-    "format": "Add log entry with severity \"{SEVERITY}\" and \"{MESSAGE}\"",
-    "locale": {
-        "de": {
-            "Create log entry": "Protokolleintrag erzeugen",
-            "Message": "Nachrichten-Text",
-            "Severity": "Schweregrad",
-            "Information": "Information",
-            "Notice": "Hinweis",
-            "Warning": "Warnung",
-            "Alert": "Alarm",
-            "Debug": "Fehlersuche",
-            "Add log entry with severity \"{SEVERITY}\" and \"{MESSAGE}\"": "Protokolleintrag mit Schweregrad \"{SEVERITY}\" und \"{MESSAGE}\" hinzufügen"
-        }
-    }
+		"includeEnvironments": [
+			"TestCommands",
+			"Default"
+		]
+	},
+	"priority": 10,
+	"category": "target",
+	"format": "Add log entry with severity \"{SEVERITY}\" and \"{MESSAGE}\"",
+	"locale": {
+		"de": {
+			"Create log entry": "Protokolleintrag erzeugen",
+			"Message": "Nachrichten-Text",
+			"Severity": "Schweregrad",
+			"Information": "Information",
+			"Notice": "Hinweis",
+			"Warning": "Warnung",
+			"Alert": "Alarm",
+			"Debug": "Fehlersuche",
+			"Add log entry with severity \"{SEVERITY}\" and \"{MESSAGE}\"": "Protokolleintrag mit Schweregrad \"{SEVERITY}\" und \"{MESSAGE}\" hinzufügen"
+		}
+	}
 }

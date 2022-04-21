@@ -71,12 +71,15 @@ class NoticeBase extends IPSModule
 
         $this->RegisterPropertyInteger('activity_loglevel', self::$LOGLEVEL_NOTIFY);
 
+        $this->RegisterAttributeString('UpdateInfo', '');
+
         $this->InstallVarProfiles(false);
+
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
-    private function CheckConfiguration()
+    private function CheckModuleConfiguration()
     {
-        $s = '';
         $r = [];
 
         $s = $this->ReadPropertyString('webfront_defaults');
@@ -141,19 +144,48 @@ class NoticeBase extends IPSModule
             $r[] = $this->Translate('at minimum one valid users must be defined');
         }
 
-        if ($r != []) {
-            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
-            foreach ($r as $p) {
-                $s .= '- ' . $p . PHP_EOL;
-            }
-        }
-
-        return $s;
+        return $r;
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
+
+        $refs = $this->GetReferenceList();
+        foreach ($refs as $ref) {
+            $this->UnregisterReference($ref);
+        }
+        $propertyNames = ['mail_instID', 'sms_instID', 'scriptID'];
+        foreach ($propertyNames as $name) {
+            $oid = $this->ReadPropertyInteger($name);
+            if ($oid >= 10000) {
+                $this->RegisterReference($oid);
+            }
+        }
+        $users = json_decode($this->ReadPropertyString('users'), true);
+        if ($users != false) {
+            foreach ($users as $user) {
+                $oid = $this->GetArrayElem($user, 'webfront_instID', 0);
+                if ($oid >= 10000) {
+                    $this->RegisterReference($oid);
+                }
+            }
+        }
+
+        if ($this->CheckPrerequisites() != false) {
+            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            return;
+        }
+
+        if ($this->CheckUpdate() != false) {
+            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
+            return;
+        }
+
+        if ($this->CheckConfiguration() != false) {
+            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            return;
+        }
 
         $vpos = 0;
         $this->MaintainVariable('AllAbsent', $this->Translate('all absent'), VARIABLETYPE_BOOLEAN, 'Notice.YesNo', $vpos++, true);
@@ -214,59 +246,32 @@ class NoticeBase extends IPSModule
 
         $vpos = 100;
 
-        $refs = $this->GetReferenceList();
-        foreach ($refs as $ref) {
-            $this->UnregisterReference($ref);
-        }
-        $propertyNames = ['mail_instID', 'sms_instID', 'scriptID'];
-        foreach ($propertyNames as $name) {
-            $oid = $this->ReadPropertyInteger($name);
-            if ($oid >= 10000) {
-                $this->RegisterReference($oid);
-            }
-        }
-        $users = json_decode($this->ReadPropertyString('users'), true);
-        if ($users != false) {
-            foreach ($users as $user) {
-                $oid = $this->GetArrayElem($user, 'webfront_instID', 0);
-                if ($oid >= 10000) {
-                    $this->RegisterReference($oid);
-                }
-            }
-        }
-
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
-            $this->SetStatus(IS_INACTIVE);
-            return;
-        }
-
-        if ($this->CheckConfiguration() != false) {
-            $this->SetStatus(self::$IS_INVALIDCONFIG);
+            $this->SetStatus(self::$IS_DEACTIVATED);
             return;
         }
 
         $this->SetStatus(IS_ACTIVE);
+
+        if (IPS_GetKernelRunlevel() == KR_READY) {
+        }
+    }
+
+    public function MessageSink($tstamp, $senderID, $message, $data)
+    {
+        parent::MessageSink($tstamp, $senderID, $message, $data);
+
+        if ($message == IPS_KERNELMESSAGE && $data[0] == KR_READY) {
+        }
     }
 
     protected function GetFormElements()
     {
-        $formElements = [];
+        $formElements = $this->GetCommonFormElements('Notice base');
 
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Notice base'
-        ];
-
-        @$s = $this->CheckConfiguration();
-        if ($s != '') {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => $s
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-            ];
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            return $formElements;
         }
 
         $formElements[] = [
@@ -709,12 +714,21 @@ class NoticeBase extends IPSModule
     {
         $formActions = [];
 
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            $formActions[] = $this->GetCompleteUpdateFormAction();
+
+            $formActions[] = $this->GetInformationFormAction();
+            $formActions[] = $this->GetReferencesFormAction();
+
+            return $formActions;
+        }
+
         $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
         if ($internal_html) {
             $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Rebuild "Notices"',
-                'onClick' => 'Notice_RebuildHtml($id);'
+                'onClick' => $this->GetModulePrefix() . '_RebuildHtml($id);'
             ];
         }
 
@@ -726,7 +740,7 @@ class NoticeBase extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'Notice_InstallVarProfiles($id, true);'
+                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
                 ],
             ]
         ];
@@ -767,8 +781,8 @@ class NoticeBase extends IPSModule
             ]
         ];
 
-        $formActions[] = $this->GetInformationForm();
-        $formActions[] = $this->GetReferencesForm();
+        $formActions[] = $this->GetInformationFormAction();
+        $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }
@@ -949,7 +963,7 @@ class NoticeBase extends IPSModule
 
         $message = $this->GetArrayElem($params, 'message', $message);
         $subject = $this->GetArrayElem($params, 'subject', '');
-        if ($message == '') {
+        if ($message == '' && $subject != '') {
             $message = $subject;
             $subject = '';
         }
@@ -1142,6 +1156,9 @@ class NoticeBase extends IPSModule
         $params = array_merge($sms_defaults, $params);
 
         $message = $this->GetArrayElem($params, 'message', $message);
+        if ($message == '') {
+            $message = $this->GetArrayElem($params, 'subject', '');
+        }
 
         switch ($moduleID) {
             case '{96102E00-FD8C-4DD3-A3C2-376A44895AC2}': // SMS REST

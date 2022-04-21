@@ -38,7 +38,11 @@ class NoticeRule extends IPSModule
 
         $this->RegisterPropertyInteger('activity_loglevel', self::$LOGLEVEL_NOTIFY);
 
+        $this->RegisterAttributeString('UpdateInfo', '');
+
         $this->InstallVarProfiles(false);
+
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
     private function GetNoticeBase()
@@ -75,9 +79,8 @@ class NoticeRule extends IPSModule
         return $presence;
     }
 
-    private function CheckConfiguration()
+    private function CheckModuleConfiguration()
     {
-        $s = '';
         $r = [];
 
         if ($this->GetNoticeBase() < 10000) {
@@ -104,21 +107,12 @@ class NoticeRule extends IPSModule
             }
         }
 
-        if ($r != []) {
-            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
-            foreach ($r as $p) {
-                $s .= '- ' . $p . PHP_EOL;
-            }
-        }
-
-        return $s;
+        return $r;
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
-
-        $vpos = 0;
 
         $refs = $this->GetReferenceList();
         foreach ($refs as $ref) {
@@ -138,9 +132,13 @@ class NoticeRule extends IPSModule
             }
         }
 
-        $module_disable = $this->ReadPropertyBoolean('module_disable');
-        if ($module_disable) {
-            $this->SetStatus(IS_INACTIVE);
+        if ($this->CheckPrerequisites() != false) {
+            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            return;
+        }
+
+        if ($this->CheckUpdate() != false) {
+            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
@@ -149,27 +147,34 @@ class NoticeRule extends IPSModule
             return;
         }
 
+        $vpos = 0;
+
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        if ($module_disable) {
+            $this->SetStatus(self::$IS_DEACTIVATED);
+            return;
+        }
+
         $this->SetStatus(IS_ACTIVE);
+
+        if (IPS_GetKernelRunlevel() == KR_READY) {
+        }
+    }
+
+    public function MessageSink($tstamp, $senderID, $message, $data)
+    {
+        parent::MessageSink($tstamp, $senderID, $message, $data);
+
+        if ($message == IPS_KERNELMESSAGE && $data[0] == KR_READY) {
+        }
     }
 
     protected function GetFormElements()
     {
-        $formElements = [];
+        $formElements = $this->GetCommonFormElements('Notice rule');
 
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Notice rule'
-        ];
-
-        $s = $this->CheckConfiguration();
-        if ($s != '') {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => $s
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-            ];
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            return $formElements;
         }
 
         $formElements[] = [
@@ -389,6 +394,15 @@ class NoticeRule extends IPSModule
     {
         $formActions = [];
 
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            $formActions[] = $this->GetCompleteUpdateFormAction();
+
+            $formActions[] = $this->GetInformationFormAction();
+            $formActions[] = $this->GetReferencesFormAction();
+
+            return $formActions;
+        }
+
         $formActions[] = [
             'type'  => 'RowLayout',
             'items' => [
@@ -484,8 +498,8 @@ class NoticeRule extends IPSModule
             ]
         ];
 
-        $formActions[] = $this->GetInformationForm();
-        $formActions[] = $this->GetReferencesForm();
+        $formActions[] = $this->GetInformationFormAction();
+        $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }

@@ -49,13 +49,16 @@ class NoticeEvent extends IPSModule
 
         $this->InstallVarProfiles(false);
 
+        $this->RegisterAttributeString('UpdateInfo', '');
         $this->RegisterAttributeInteger('repetition', 0);
+
         $this->RegisterTimer('LoopTimer', 0, 'Notice_CheckTimer(' . $this->InstanceID . ');');
+
+        $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
 
-    private function CheckConfiguration()
+    private function CheckModuleConfiguration()
     {
-        $s = '';
         $r = [];
 
         $ruleID = $this->ReadPropertyInteger('ruleID');
@@ -73,22 +76,12 @@ class NoticeEvent extends IPSModule
             }
         }
 
-        if ($r != []) {
-            $s = $this->Translate('The following points of the configuration are incorrect') . ':' . PHP_EOL;
-            foreach ($r as $p) {
-                $s .= '- ' . $p . PHP_EOL;
-            }
-        }
-
-        return $s;
+        return $r;
     }
 
     public function ApplyChanges()
     {
         parent::ApplyChanges();
-
-        $vpos = 0;
-        $this->MaintainVariable('TimerStarted', $this->Translate('Start of event'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
 
         $refs = $this->GetReferenceList();
         foreach ($refs as $ref) {
@@ -121,39 +114,54 @@ class NoticeEvent extends IPSModule
             }
         }
 
-        $module_disable = $this->ReadPropertyBoolean('module_disable');
-        if ($module_disable) {
+        if ($this->CheckPrerequisites() != false) {
             $this->MaintainTimer('LoopTimer', 0);
-            $this->SetStatus(IS_INACTIVE);
+            $this->SetStatus(self::$IS_INVALIDPREREQUISITES);
+            return;
+        }
+
+        if ($this->CheckUpdate() != false) {
+            $this->MaintainTimer('LoopTimer', 0);
+            $this->SetStatus(self::$IS_UPDATEUNCOMPLETED);
             return;
         }
 
         if ($this->CheckConfiguration() != false) {
+            $this->MaintainTimer('LoopTimer', 0);
             $this->SetStatus(self::$IS_INVALIDCONFIG);
             return;
         }
 
+        $vpos = 0;
+        $this->MaintainVariable('TimerStarted', $this->Translate('Start of event'), VARIABLETYPE_INTEGER, '~UnixTimestamp', $vpos++, true);
+
+        $module_disable = $this->ReadPropertyBoolean('module_disable');
+        if ($module_disable) {
+            $this->MaintainTimer('LoopTimer', 0);
+            $this->SetStatus(self::$IS_DEACTIVATED);
+            return;
+        }
+
         $this->SetStatus(IS_ACTIVE);
+
+        if (IPS_GetKernelRunlevel() == KR_READY) {
+        }
+    }
+
+    public function MessageSink($tstamp, $senderID, $message, $data)
+    {
+        parent::MessageSink($tstamp, $senderID, $message, $data);
+
+        if ($message == IPS_KERNELMESSAGE && $data[0] == KR_READY) {
+        }
     }
 
     protected function GetFormElements()
     {
-        $formElements = [];
+        $formElements = $this->GetCommonFormElements('Notice event');
 
-        $formElements[] = [
-            'type'    => 'Label',
-            'caption' => 'Notice event'
-        ];
-
-        $s = $this->CheckConfiguration();
-        if ($s != '') {
-            $formElements[] = [
-                'type'    => 'Label',
-                'caption' => $s
-            ];
-            $formElements[] = [
-                'type'    => 'Label',
-            ];
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            return $formElements;
         }
 
         $formElements[] = [
@@ -344,6 +352,15 @@ class NoticeEvent extends IPSModule
     {
         $formActions = [];
 
+        if ($this->GetStatus() == self::$IS_UPDATEUNCOMPLETED) {
+            $formActions[] = $this->GetCompleteUpdateFormAction();
+
+            $formActions[] = $this->GetInformationFormAction();
+            $formActions[] = $this->GetReferencesFormAction();
+
+            return $formActions;
+        }
+
         $formActions[] = [
             'type'    => 'RowLayout',
             'items'   => [
@@ -404,8 +421,8 @@ class NoticeEvent extends IPSModule
             ]
         ];
 
-        $formActions[] = $this->GetInformationForm();
-        $formActions[] = $this->GetReferencesForm();
+        $formActions[] = $this->GetInformationFormAction();
+        $formActions[] = $this->GetReferencesFormAction();
 
         return $formActions;
     }

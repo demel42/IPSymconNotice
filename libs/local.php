@@ -4,11 +4,30 @@ declare(strict_types=1);
 
 trait NoticeLocalLib
 {
-    public static $IS_INVALIDCONFIG = IS_EBASE + 1;
+    private function GetFormStatus()
+    {
+        $formStatus = $this->GetCommonFormStatus();
+
+        return $formStatus;
+    }
 
     public static $STATUS_INVALID = 0;
     public static $STATUS_VALID = 1;
     public static $STATUS_RETRYABLE = 2;
+
+    private function CheckStatus()
+    {
+        switch ($this->GetStatus()) {
+            case IS_ACTIVE:
+                $class = self::$STATUS_VALID;
+                break;
+            default:
+                $class = self::$STATUS_INVALID;
+                break;
+        }
+
+        return $class;
+    }
 
     public static $STATE_UNKNOWN = 0;
     public static $STATE_AT_HOME = 1;
@@ -40,49 +59,23 @@ trait NoticeLocalLib
     public static $LOGLEVEL_NOTIFY = 1;
     public static $LOGLEVEL_MESSAGE = 2;
 
-    private function GetFormStatus()
-    {
-        $formStatus = [];
-        $formStatus[] = ['code' => IS_CREATING, 'icon' => 'inactive', 'caption' => 'Instance getting created'];
-        $formStatus[] = ['code' => IS_ACTIVE, 'icon' => 'active', 'caption' => 'Instance is active'];
-        $formStatus[] = ['code' => IS_DELETING, 'icon' => 'inactive', 'caption' => 'Instance is deleted'];
-        $formStatus[] = ['code' => IS_INACTIVE, 'icon' => 'inactive', 'caption' => 'Instance is inactive'];
-        $formStatus[] = ['code' => IS_NOTCREATED, 'icon' => 'inactive', 'caption' => 'Instance is not created'];
-
-        $formStatus[] = ['code' => self::$IS_INVALIDCONFIG, 'icon' => 'error', 'caption' => 'Instance is inactive (invalid configuration)'];
-
-        return $formStatus;
-    }
-
-    private function CheckStatus()
-    {
-        switch ($this->GetStatus()) {
-            case IS_ACTIVE:
-                $class = self::$STATUS_VALID;
-                break;
-            default:
-                $class = self::$STATUS_INVALID;
-                break;
-        }
-
-        return $class;
-    }
-
     public function InstallVarProfiles(bool $reInstall = false)
     {
         if ($reInstall) {
             $this->SendDebug(__FUNCTION__, 'reInstall=' . $this->bool2str($reInstall), 0);
         }
 
-        $associations = [];
-        $associations[] = ['Wert' => self::$STATE_AT_HOME, 'Name' => $this->Translate('at home'), 'Farbe' => 0x64C466];
-        $associations[] = ['Wert' => self::$STATE_BE_AWAY, 'Name' => $this->Translate('be away'), 'Farbe' => 0xEB4D3D];
-        $associations[] = ['Wert' => self::$STATE_ON_VACATION, 'Name' => $this->Translate('on vacation'), 'Farbe' => 0x087FC9];
+        $associations = [
+            ['Wert' => self::$STATE_AT_HOME, 'Name' => $this->Translate('at home'), 'Farbe' => 0x64C466],
+            ['Wert' => self::$STATE_BE_AWAY, 'Name' => $this->Translate('be away'), 'Farbe' => 0xEB4D3D],
+            ['Wert' => self::$STATE_ON_VACATION, 'Name' => $this->Translate('on vacation'), 'Farbe' => 0x087FC9],
+        ];
         $this->CreateVarProfile('Notice.Presence', VARIABLETYPE_INTEGER, '', 0, 0, 0, 1, '', $associations, $reInstall);
 
-        $associations = [];
-        $associations[] = ['Wert' => false, 'Name' => $this->Translate('No'), 'Farbe' => -1];
-        $associations[] = ['Wert' => true, 'Name' => $this->Translate('Yes'), 'Farbe' => 0xEE0000];
+        $associations = [
+            ['Wert' => false, 'Name' => $this->Translate('No'), 'Farbe' => -1],
+            ['Wert' => true, 'Name' => $this->Translate('Yes'), 'Farbe' => 0xEE0000],
+        ];
         $this->CreateVarProfile('Notice.YesNo', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 0, '', $associations, $reInstall);
     }
 

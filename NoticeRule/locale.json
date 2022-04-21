@@ -1,19 +1,34 @@
 {
-    "translations": {
-        "de": {
+	"translations": {
+		"de": {
 			"Notice rule": "Mitteilungs-Regel",
 			"Notice base": "Mitteilungs-Basis",
 
-			"Disable instance": "Instanz deaktivieren",
+			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
 
+			"The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
 			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",
 			"Target \"{$target}\": field \"{$field}\" must be json-coded": "Ziel \"{$target}\": Feld \"{$field}\" muss json.kodiert sein",
 			"at minimum one valid recipients must be defined": "mindestens ein gültiger Empfänger muss definiert sein",
-			"The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
+
+			"The following system prerequisites are missing": "Folgende Systemvoraussetzungen fehlen",
+
+			"Still something to do to complete the update": "Es ist noch etwas zu tun, um das Update abzuschließen",
+			"old version": "alte Version",
+			"new version": "neue Version",
+			"unknwon": "unbekannt",
+			"The use of possible affected status variables can be checked in the expansion panel \"References\"":
+				"Die Verwendung möglicherweise betroffener Statusvariablen kann im Erweiterungspanel \"Referenzen\" überprüft werden",
+			"Press button 'Complete update' to carry out the required work": "Taste 'Update abschliessen' betätigen um die erforderlichen Arbeiten auszuführen",
+			"Complete update": "Update abschliessen",
+			"Unable to complete the update": "Das Update kann nicht abgeschlossen werden",
+			"please contact the author": "Bitte kontaktieren Sie den Autor",
+
+			"Disable instance": "Instanz deaktivieren",
 
 			"Webfront": "Webfront",
-            "E-Mail": "E-Mail",
-            "SMS": "SMS",
+			"E-Mail": "E-Mail",
+			"SMS": "SMS",
 			"Script": "Skript",
 			"Default values": "Standardwerte",
 			"Default value for \"subject\"": "Standardwert für den \"Betreff\"",
@@ -21,7 +36,7 @@
 			"Default value for \"message text\"": "Standardwert für die \"Nachricht\"",
 			"Default sounds": "Standardwert für Signaltöne",
 			"Default signals": "Standardwert für Signalisierungen",
-            "Other defaults": "sonstige Standardeinstellungen",
+			"Other defaults": "sonstige Standardeinstellungen",
 
 			"Log notice additionally": "Mitteilung zusätzlich protokollieren",
 
@@ -120,13 +135,19 @@
 			"Next run": "nächste Ausführung",
 			"Last run": "letzte Ausführung",
 			"Timer information": "Timer-Information",
+			"Refresh references panel": "Referenzen-Panel aktualisieren",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
 			"Instance is deleted": "Instanz wird gelöscht",
 			"Instance is inactive": "Instanz ist inaktiv",
 			"Instance is not created": "Instanz wurde nicht erzeugt",
-			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)"
+
+			"Instance is inactive (invalid preconditions)": "Instanz ist inaktiv (ungültige Voraussetzungen)",
+			"Instance is inactive (update not completed)": "Instanz ist inaktiv (Update nicht abgeschlossen)",
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)",
+			"Instance is inactive (deactivated)": "Instanz ist inaktiv (deaktiviert)",
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)"
 		}
 	}
 }

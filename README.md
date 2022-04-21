@@ -136,7 +136,7 @@ Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine ents
 `boolean Notice_TriggerRule(integer $InstanzID, string $Message, string $Subject, mixed $Severity, array $Params)`<br>
 Löst die Mitteilungsregel aus und gemäß der Definition die Mitteilungen.<br>
 _Severity_ kann als numerischer Wert oder als Abkürzung übergeben werden (siehe oben).<br>
-Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine entsprechende _Aktion_.
+Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gibt es eine entsprechende _Aktion_.
 
 `boolean Notice_Log(integer $InstanzID, string $Message, mixed $Severity, array $Params)`<br>
 Ruft die korrespondierende Funktion der _NoticeBase_, dient nur zur Vereinfachung
@@ -155,7 +155,7 @@ Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine ents
 Ruft die korrespondierende Funktion der _NoticeBase_, dient nur zur Vereinfachung.
 
 
-Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Params_ werden mit den entspreㄔhenden Voreinstellung in den Instanzen ergänzt entsprechend der Hierarchie.
+Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity_, _Params_) werden mit den entsprechenden Voreinstellung in den Instanzen ergänzt entsprechend der Hierarchie.
 
 ## 5. Konfiguration
 
@@ -205,7 +205,14 @@ Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity__Para
 z.B. für die Mitteilung an einen Admin-Mail-Account
 
 * Basiskonfiguration / Webfront<br>
-ein in dem Argument _Params_ der Funktion _Notice_TriggerRule_ übergebener bzw. aus den Standardeinstellungen gewonnener Eintrag _TargetID_ wird *WFC_PushNotification* übergeben.<br>
+Es gibt folgende spezielle Logik:
+- ein in dem Argument _Params_ der Funktion _Notice_TriggerRule_ übergebener bzw. aus den Standardeinstellungen gewonnener Eintrag _TargetID_ wird *WFC_PushNotification* übergeben.
+- ist _Message_ leer und _Subject_ angegeben, wird _Subject_ in _Message_ übertragen und _Subject_ wird geleert - Grund: *WFC_PushNotification* erwartet _Message_, _Subject_ ist optional
+- _Subject_ wird auf 32 Zeichen gekürzt (Vorgabe von *WFC_PushNotification*)
+
+* Basiskonfiguration / SMS<br>
+Es gibt folgende spezielle Logik:
+- ist _Message_ nicht angegeben, wird _Subject_ verwendet (es gibt bei SMS kein getrennten Betreff)
 
 * Basiskonfiguration / Skript<br>
 alle Argumente werden über *_IPS* weitergegeben
@@ -400,6 +407,10 @@ GUIDs
   - NoticeEvent: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
+
+- 1.3 @ 21.04.2022 09:27
+  - Implememtierung einer Update-Logik
+  - diverse interne Änderungen
 
 - 1.2.3 @ 16.04.2022 10:25
   - Übergabe zusätzlicher Variablen an das Ereignis-Script

@@ -1,15 +1,30 @@
 {
-    "translations": {
-        "de": {
+	"translations": {
+		"de": {
 			"Notice event": "Mitteilungs-Ereignis",
 			"Notice rule": "Mitteilungs-Regel",
 
-			"Disable instance": "Instanz deaktivieren",
+			"Instance has no active parent instance": "Instanz hat keine aktive übergeordnete Instanz",
 
+			"The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
 			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",
 			"Number of repetitions is configured, but neither a fixed value nor the variable":
 				"Anzahl der Wiederholungen ist konfiguriert, aber weder ein fester Wert noch die Variable",
-			"The following points of the configuration are incorrect": "Die folgenden Punkte der Konfiguration sind fehlerhaft",
+
+			"The following system prerequisites are missing": "Folgende Systemvoraussetzungen fehlen",
+
+			"Still something to do to complete the update": "Es ist noch etwas zu tun, um das Update abzuschließen",
+			"old version": "alte Version",
+			"new version": "neue Version",
+			"unknwon": "unbekannt",
+			"The use of possible affected status variables can be checked in the expansion panel \"References\"":
+				"Die Verwendung möglicherweise betroffener Statusvariablen kann im Erweiterungspanel \"Referenzen\" überprüft werden",
+			"Press button 'Complete update' to carry out the required work": "Taste 'Update abschliessen' betätigen um die erforderlichen Arbeiten auszuführen",
+			"Complete update": "Update abschliessen",
+			"Unable to complete the update": "Das Update kann nicht abgeschlossen werden",
+			"please contact the author": "Bitte kontaktieren Sie den Autor",
+
+			"Disable instance": "Instanz deaktivieren",
 
 			"Start of event": "Auslöse-Zeitpunkt",
 
@@ -98,13 +113,19 @@
 			"Next run": "nächste Ausführung",
 			"Last run": "letzte Ausführung",
 			"Timer information": "Timer-Information",
+			"Refresh references panel": "Referenzen-Panel aktualisieren",
 
 			"Instance getting created": "Instanz wird erstellt",
 			"Instance is active": "Instanz ist aktiv",
 			"Instance is deleted": "Instanz wird gelöscht",
 			"Instance is inactive": "Instanz ist inaktiv",
 			"Instance is not created": "Instanz wurde nicht erzeugt",
-			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)"
+
+			"Instance is inactive (invalid preconditions)": "Instanz ist inaktiv (ungültige Voraussetzungen)",
+			"Instance is inactive (update not completed)": "Instanz ist inaktiv (Update nicht abgeschlossen)",
+			"Instance is inactive (invalid configuration)": "Instanz ist inaktiv (ungültige Konfiguration)",
+			"Instance is inactive (deactivated)": "Instanz ist inaktiv (deaktiviert)",
+			"Instance is inactive (no Symcon-Connect)": "Instanz ist inaktiv (kein Symcon-Connect)"
 		}
 	}
 }
