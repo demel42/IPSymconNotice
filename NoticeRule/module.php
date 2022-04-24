@@ -114,22 +114,10 @@ class NoticeRule extends IPSModule
     {
         parent::ApplyChanges();
 
-        $refs = $this->GetReferenceList();
-        foreach ($refs as $ref) {
-            $this->UnregisterReference($ref);
-        }
-
+        $this->MaintainReferences();
         $oid = $this->GetNoticeBase();
         if ($oid >= 10000) {
             $this->RegisterReference($oid);
-        }
-
-        $propertyNames = [];
-        foreach ($propertyNames as $name) {
-            $oid = $this->ReadPropertyInteger($name);
-            if ($oid >= 10000) {
-                $this->RegisterReference($oid);
-            }
         }
 
         if ($this->CheckPrerequisites() != false) {

@@ -83,18 +83,8 @@ class NoticeEvent extends IPSModule
     {
         parent::ApplyChanges();
 
-        $refs = $this->GetReferenceList();
-        foreach ($refs as $ref) {
-            $this->UnregisterReference($ref);
-        }
         $propertyNames = ['ruleID', 'delay_varID', 'pause_varID'];
-        foreach ($propertyNames as $name) {
-            $oid = $this->ReadPropertyInteger($name);
-            if ($oid >= 10000) {
-                $this->RegisterReference($oid);
-            }
-        }
-
+        $this->MaintainReferences($propertyNames);
         $conditions = json_decode($this->ReadPropertyString('conditions'), true);
         if ($conditions != false) {
             foreach ($conditions as $condition) {

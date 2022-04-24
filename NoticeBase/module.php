@@ -151,17 +151,8 @@ class NoticeBase extends IPSModule
     {
         parent::ApplyChanges();
 
-        $refs = $this->GetReferenceList();
-        foreach ($refs as $ref) {
-            $this->UnregisterReference($ref);
-        }
         $propertyNames = ['mail_instID', 'sms_instID', 'scriptID'];
-        foreach ($propertyNames as $name) {
-            $oid = $this->ReadPropertyInteger($name);
-            if ($oid >= 10000) {
-                $this->RegisterReference($oid);
-            }
-        }
+        $this->MaintainReferences($propertyNames);
         $users = json_decode($this->ReadPropertyString('users'), true);
         if ($users != false) {
             foreach ($users as $user) {
