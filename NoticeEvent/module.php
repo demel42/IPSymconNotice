@@ -52,7 +52,7 @@ class NoticeEvent extends IPSModule
         $this->RegisterAttributeString('UpdateInfo', '');
         $this->RegisterAttributeInteger('repetition', 0);
 
-        $this->RegisterTimer('LoopTimer', 0, 'Notice_CheckTimer(' . $this->InstanceID . ');');
+        $this->RegisterTimer('LoopTimer', 0, $this->GetModulePrefix() . '_CheckTimer(' . $this->InstanceID . ');');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
@@ -367,12 +367,12 @@ class NoticeEvent extends IPSModule
                 [
                     'type'      => 'Button',
                     'caption'   => 'Trigger event',
-                    'onClick'   => 'Notice_TriggerEvent($id, true);'
+                    'onClick'   => $this->GetModulePrefix() . '_TriggerEvent($id, true);'
                 ],
                 [
                     'type'      => 'Button',
                     'caption'   => 'Stop event',
-                    'onClick'   => 'Notice_StopEvent($id);'
+                    'onClick'   => $this->GetModulePrefix() . '_StopEvent($id);'
                 ],
             ],
         ];
@@ -385,7 +385,7 @@ class NoticeEvent extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'Notice_InstallVarProfiles($id, true);'
+                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
                 ]
             ]
         ];
@@ -414,7 +414,7 @@ class NoticeEvent extends IPSModule
                         [
                             'type'    => 'Button',
                             'caption' => 'Show notice details',
-                            'onClick' => 'Notice_ShowNoticeDetails($id, $repetition, 0, $recovery);',
+                            'onClick' => $this->GetModulePrefix() . '_ShowNoticeDetails($id, $repetition, 0, $recovery);',
                         ],
                     ],
                 ],

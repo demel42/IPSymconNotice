@@ -409,7 +409,7 @@ class NoticeRule extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Check rule validity',
-                    'onClick' => 'Notice_CheckRuleValidity($id);',
+                    'onClick' => $this->GetModulePrefix() . '_CheckRuleValidity($id);',
                 ],
                 [
                     'type'    => 'PopupButton',
@@ -440,7 +440,7 @@ class NoticeRule extends IPSModule
                             [
                                 'type'    => 'Button',
                                 'caption' => 'Trigger',
-                                'onClick' => 'Notice_TriggerRule($id, $message, $subject, $severity, []);'
+                                'onClick' => $this->GetModulePrefix() . '_TriggerRule($id, $message, $subject, $severity, []);'
                             ],
                         ],
                         'closeCaption' => 'Cancel',
@@ -457,7 +457,7 @@ class NoticeRule extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Re-install variable-profiles',
-                    'onClick' => 'Notice_InstallVarProfiles($id, true);'
+                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
                 ],
             ]
         ];
