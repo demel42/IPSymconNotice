@@ -107,6 +107,16 @@
 			"Message": "Standardnachricht",
 			"Notify": "Benachrichtigung",
 
+			"__variableprofile__": "Notice.Presence",
+			"unknown": "unbekannt",
+			"at home": "zuhause",
+			"be away": "unterwegs",
+			"on vacation": "im Urlaub",
+
+			"__variableprofile__": "Notice.YesNo",
+			"Yes": "Ja",
+			"No": "Nein",
+
 			"Information": "Information",
 
 			"Category": "Kategorie",

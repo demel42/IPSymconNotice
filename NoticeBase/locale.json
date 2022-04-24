@@ -63,26 +63,12 @@
 
 			"Rebuild \"Notices\"": "\"Mitteilungen\" neu erzeugen",
 
-			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
-			"Expert area": "Experten-Bereich",
-			"Test area": "Test-Bereich",
-			"Sound": "Signalton",
-			"Test sound": "Signalton testen",
-
 			"all absent": "alle abwesend",
 			"last gone": "zuletzt gegangen",
 			"first come": "zuerst gekommen",
 
 			"Notices": "Mitteilungen",
 			"Data": "Daten",
-
-			"unknown": "unbekannt",
-			"at home": "zuhause",
-			"be away": "unterwegs",
-			"on vacation": "im Urlaub",
-
-			"Yes": "Ja",
-			"No": "Nein",
 
 			"Presence state of": "Präsenz-Status von",
 
@@ -120,6 +106,23 @@
 			"None": "Nichts",
 			"Message": "Standardnachricht",
 			"Notify": "Benachrichtigung",
+
+			"__variableprofile__": "Notice.Presence",
+			"unknown": "unbekannt",
+			"at home": "zuhause",
+			"be away": "unterwegs",
+			"on vacation": "im Urlaub",
+
+			"__variableprofile__": "Notice.YesNo",
+			"Yes": "Ja",
+			"No": "Nein",
+
+			"Expert area": "Experten-Bereich",
+			"Re-install variable-profiles": "Variablenprofile erneut einrichten",
+
+			"Test area": "Test-Bereich",
+			"Sound": "Signalton",
+			"Test sound": "Signalton testen",
 
 			"Category": "Kategorie",
 			"Instance": "Instanz",

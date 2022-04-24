@@ -408,6 +408,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.3.1 @ 24.04.2022 10:32
+  - Übersetzung vervollständigt
+
 - 1.3 @ 21.04.2022 09:27
   - Implememtierung einer Update-Logik
   - diverse interne Änderungen
