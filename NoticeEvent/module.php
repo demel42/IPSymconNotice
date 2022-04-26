@@ -128,7 +128,7 @@ class NoticeEvent extends IPSModule
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
             $this->MaintainTimer('LoopTimer', 0);
-            $this->SetStatus(self::$IS_DEACTIVATED);
+            $this->SetStatus(IS_INACTIVE);
             return;
         }
 
