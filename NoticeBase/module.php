@@ -13,6 +13,15 @@ class NoticeBase extends IPSModule
     private static $semaphoreID = __CLASS__ . 'Data';
     private static $semaphoreTM = 5 * 1000;
 
+    private $ModuleDir;
+
+    public function __construct(string $InstanceID)
+    {
+        parent::__construct($InstanceID);
+
+        $this->ModuleDir = __DIR__;
+    }
+
     public function Create()
     {
         parent::Create();

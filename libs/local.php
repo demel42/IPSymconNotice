@@ -34,31 +34,6 @@ trait NoticeLocalLib
     public static $STATE_BE_AWAY = 2;
     public static $STATE_ON_VACATION = 3;
 
-    public static $MODE_WEBFRONT = 0;
-    public static $MODE_MAIL = 1;
-    public static $MODE_SMS = 2;
-    public static $MODE_SCRIPT = 3;
-
-    public static $USAGE_UNKNOWN = 0;
-    public static $USAGE_ALWAYS = 1;
-    public static $USAGE_IF_PRESENT = 2;
-    public static $USAGE_IF_AWAY = 3;
-    public static $USAGE_FIRST_OF_PERSENT = 4;
-    public static $USAGE_LAST_GONE = 5;
-    public static $USAGE_FIRST_COME = 6;
-    public static $USAGE_IF_NO_ONE = 7;
-
-    public static $SEVERITY_UNKNOWN = 0;
-    public static $SEVERITY_INFO = 1;
-    public static $SEVERITY_NOTICE = 2;
-    public static $SEVERITY_WARN = 3;
-    public static $SEVERITY_ALERT = 4;
-    public static $SEVERITY_DEBUG = 9;
-
-    public static $LOGLEVEL_NONE = 0;
-    public static $LOGLEVEL_NOTIFY = 1;
-    public static $LOGLEVEL_MESSAGE = 2;
-
     public function InstallVarProfiles(bool $reInstall = false)
     {
         if ($reInstall) {
@@ -78,6 +53,11 @@ trait NoticeLocalLib
         ];
         $this->CreateVarProfile('Notice.YesNo', VARIABLETYPE_BOOLEAN, '', 0, 0, 0, 0, '', $associations, $reInstall);
     }
+
+    public static $MODE_WEBFRONT = 0;
+    public static $MODE_MAIL = 1;
+    public static $MODE_SMS = 2;
+    public static $MODE_SCRIPT = 3;
 
     private function ModeMapping()
     {
@@ -127,6 +107,13 @@ trait NoticeLocalLib
             'mode'         => isset($r[1]) ? $r[1] : '',
         ];
     }
+
+    public static $SEVERITY_UNKNOWN = 0;
+    public static $SEVERITY_INFO = 1;
+    public static $SEVERITY_NOTICE = 2;
+    public static $SEVERITY_WARN = 3;
+    public static $SEVERITY_ALERT = 4;
+    public static $SEVERITY_DEBUG = 9;
 
     private function SeverityMapping()
     {
@@ -197,6 +184,15 @@ trait NoticeLocalLib
         return $opts;
     }
 
+    public static $USAGE_UNKNOWN = 0;
+    public static $USAGE_ALWAYS = 1;
+    public static $USAGE_IF_PRESENT = 2;
+    public static $USAGE_IF_AWAY = 3;
+    public static $USAGE_FIRST_OF_PERSENT = 4;
+    public static $USAGE_LAST_GONE = 5;
+    public static $USAGE_FIRST_COME = 6;
+    public static $USAGE_IF_NO_ONE = 7;
+
     private function UsageMapping()
     {
         return [
@@ -236,6 +232,10 @@ trait NoticeLocalLib
         }
         return $opts;
     }
+
+    public static $LOGLEVEL_NONE = 0;
+    public static $LOGLEVEL_NOTIFY = 1;
+    public static $LOGLEVEL_MESSAGE = 2;
 
     private function LoglevelMapping()
     {

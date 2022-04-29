@@ -1,0 +1,72 @@
+{
+	"translations": {
+		"de": {
+			"Notice base": "Mitteilungs-Basis",
+
+			"__function__": "CheckConfiguration",
+			"User \"{$initial}\": field \"{$field}\" must be json-coded": "Benutzer \"{$initial}\": Feld \"{$field}\" muss json-kodiert sein",
+			"Field \"{$field}\" must be json-coded": "Feld \"{$field}\" muss json-kodiert sein",
+			"at minimum one valid persons must be defined": "mindestens eine gültige Personen muss definiert sein",
+			"Initial must be specified": "Kürzel muss angegeben sein",
+
+			"__elements__": "",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Users": "Benutzer",
+			"Initial": "Kürzel",
+			"Name": "Bezeichnung",
+			"Script params": "Skript-Parameter",
+			"Mail address": "Mail-Adresse",
+			"SMS telno": "SMS Telefonnummer",
+			"inactive": "inaktiv",
+			"immobile": "unbeweglich",
+
+			"Person": "Person",
+
+			"Basic configuration": "Basiskonfiguration",
+			"Webfront": "Webfront",
+			"E-Mail": "E-Mail",
+			"SMTP instance": "SMTP-Instanz",
+			"SMS": "SMS",
+			"SMS instance": "SMS-Instanz",
+			"Script": "Skript",
+			"Default sounds": "Standardwert für Signaltöne",
+			"Default signals": "Standardwert für Signalisierungen",
+			"Other defaults": "sonstige Standardeinstellungen",
+			"Sounds": "Signaltöne",
+			"Description": "Beschreibung",
+			"Value": "Wert",
+
+			"Logging": "Protokollierung",
+			"Script for alternate logging": "Skript für alternative Protokollierung",
+			"days": "Tage",
+			"maximun age of log entries": "Maximales Alter der Protokoll-Einträge",
+			"Visualization of \"Notices\"": "Darstellung der \"Mitteilungen\"",
+			"Show": "Anzeigen",
+			"hours": "Stunden",
+			"Expiration": "Gültigkeit",
+			"Textcolor": "Zeichenfarbe",
+
+			"Instance activity messages in IP-Symcon": "Meldungen zu Instanz-Aktivitäten in IP-Symcon",
+
+			"__actions__": "",
+			"Rebuild \"Notices\"": "\"Mitteilungen\" neu erzeugen",
+
+			"__variables__": "",
+			"all absent": "alle abwesend",
+			"last gone": "zuletzt gegangen",
+			"first come": "zuerst gekommen",
+
+			"Notices": "Mitteilungen",
+			"Data": "Daten",
+
+			"Presence state of": "Präsenz-Status von",
+
+			"__function__": "DeliverWebfront",
+			"Notify {$target} failed": "Mitteilung von {$target} fehlgeschlagen",
+			"Notify {$target} succeed": "Mitteilung von {$target} erfolgreich",
+
+			"__end__": ""
+		}
+	}
+}

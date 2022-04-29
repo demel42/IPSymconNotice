@@ -1,0 +1,60 @@
+{
+	"translations": {
+		"de": {
+			"__options__": "Severity",
+			"undef": "- nicht angegeben -",
+			"Information": "Information",
+			"Notice": "Hinweis",
+			"Warning": "Warnung",
+			"Alert": "Alarm",
+			"Debug": "Fehlersuche",
+
+			"__options__": "WebfrontSounds",
+			"alarm": "Alarm",
+			"bell": "Glocke",
+			"boom": "Bumm",
+			"buzzer": "Summer",
+			"connected": "verbunden",
+			"dark": "dunkel",
+			"digital": "digital",
+			"drums": "Schlagzeug",
+			"duck": "Ente",
+			"full": "voll",
+			"happy": "fröhlich",
+			"horn": "Horn",
+			"inception": "Anbeginn",
+			"kazoo": "Kazoo",
+			"roll": "Rolle",
+			"siren": "Sirene",
+			"space": "Weltraum",
+			"trickling": "tröpfeln",
+			"turn": "drehen",
+
+			"__options__": "Usage",
+			"always": "immer",
+			"if at home": "wenn zu Hause",
+			"if away": "wenn unterwegs",
+			"first present of the list": "erster Anwesender der Liste",
+			"last gone": "letzter gegangen",
+			"first come": "erster gekommen",
+			"if no one else": "wenn sonst keiner",
+
+			"__options__": "Loglevel",
+			"None": "Nichts",
+			"Message": "Standardnachricht",
+			"Notify": "Benachrichtigung",
+
+			"__variableprofile__": "Notice.Presence",
+			"unknown": "unbekannt",
+			"at home": "zuhause",
+			"be away": "unterwegs",
+			"on vacation": "im Urlaub",
+
+			"__variableprofile__": "Notice.YesNo",
+			"Yes": "Ja",
+			"No": "Nein",
+
+			"__end__": ""
+		}
+	}
+}

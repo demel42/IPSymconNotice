@@ -1,0 +1,71 @@
+{
+	"translations": {
+		"de": {
+			"Notice event": "Mitteilungs-Ereignis",
+			"Notice rule": "Mitteilungs-Regel",
+
+			"__function__": "CheckConfiguration",
+			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",
+			"Number of repetitions is configured, but neither a fixed value nor the variable":
+				"Anzahl der Wiederholungen ist konfiguriert, aber weder ein fester Wert noch die Variable",
+
+			"__elements__": "",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Conditions": "Bedingungen",
+			"Notice details": "Mitteilung-Details",
+			"Given \"severity\"": "vorgegebener \"Schweregrad\"",
+			"Increase severity each repetition": "Schweregrad bei jeder Wiederholung erhöhen",
+			"Given \"message text\"": "vorgegebener \"Nachricht\"",
+			"Given \"subject\"": "vorgegebener \"Betreff\"",
+			"Script for generating individual notice texts etc. For information on transfer and return value see documentation":
+				"Skript zur Erzeugung individueller Mitteilungs-Texte etc. Informationen zu Übergabe und Rückgabewert siehe Dokumentation",
+
+			"Initial delay": "Start-Verzögerung",
+			"Repetitions": "Wiederholungen",
+
+			"Time unit": "Zeiteinheit",
+			"Fix value": "fester Wert",
+			"or": "oder",
+			"Variable": "Variable",
+			"Maximum repetitions (-1=infinite)": "maximale Wiederholungen (-1=unendlich)",
+
+			"Recovery": "Wiederherstellung",
+			"Recovery notice": "Mitteilung bei Wiederherstellung",
+			"Alternate \"Subject\" for recovery": "alternativer \"Betreff\" bei Wiederherstellung",
+			"Alternate \"Message text\" for recovery": "alternative \"Nachricht\" bei Wiederherstellung",
+			"Alternate \"severity\" for recovery": "alternativer \"Schweregrad\" bei Wiederherstellung",
+
+			"Log additionally": "zusätzlich protokollieren",
+			"yes": "ja",
+			"no": "nein",
+
+			"Instance activity messages in IP-Symcon": "Meldungen zu Instanz-Aktivitäten in IP-Symcon",
+
+			"__options__": "Timeunit",
+			"Seconds": "Sekunden",
+			"Minutes": "Minuten",
+			"Hours": "Stunden",
+			"Days": "Tage",
+
+			"__variables__": "",
+			"Start of event": "Auslöse-Zeitpunkt",
+
+			"__actions__": "",
+			"Trigger event": "Ereignis auslösen",
+			"Stop event": "Ereignis stoppen",
+
+			"__action__": "ShowNoticeDetails",
+			"Show notice details": "Mitteilung-Details anzeigen",
+			"Current repetition": "aktuelle Wiederholung",
+			"Is the recovery": "ist die Wiederherstellung",
+			"__function__": "ShowNoticeDetails",
+			"Result of notice details": "Ergebnis der Mitteilung-Details",
+			"Severity": "Schweregrad",
+			"Message text": "Nachricht",
+			"Subject": "Betreff",
+
+			"__end__": ""
+		}
+	}
+}

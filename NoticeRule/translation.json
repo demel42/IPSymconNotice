@@ -1,0 +1,60 @@
+{
+	"translations": {
+		"de": {
+			"Notice rule": "Mitteilungs-Regel",
+			"Notice base": "Mitteilungs-Basis",
+
+			"__function__": "CheckConfiguration",
+			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",
+			"Target \"{$target}\": field \"{$field}\" must be json-coded": "Ziel \"{$target}\": Feld \"{$field}\" muss json.kodiert sein",
+			"at minimum one valid recipients must be defined": "mindestens ein gültiger Empfänger muss definiert sein",
+
+			"__elements__": "",
+			"Disable instance": "Instanz deaktivieren",
+
+			"Webfront": "Webfront",
+			"E-Mail": "E-Mail",
+			"SMS": "SMS",
+			"Script": "Skript",
+			"Default values": "Standardwerte",
+			"Default value for \"subject\"": "Standardwert für den \"Betreff\"",
+			"Default value for \"severity\"": "Standardwert für den \"Schweregrad\"",
+			"Default value for \"message text\"": "Standardwert für die \"Nachricht\"",
+			"Default sounds": "Standardwert für Signaltöne",
+			"Default signals": "Standardwert für Signalisierungen",
+			"Other defaults": "sonstige Standardeinstellungen",
+
+			"Log notice additionally": "Mitteilung zusätzlich protokollieren",
+
+			"Recipients": "Empfänger",
+			"Usage": "Verwendung",
+			"Target": "Ziel",
+			"Params": "Parameter",
+			"inactive": "inaktiv",
+
+			"__actions__": "",
+			"Check rule validity": "Regelgültigkeit prüfen",
+			"Trigger rule": "Regel auslösen",
+			"Trigger": "Auslösen",
+			"Cancel": "Abbrechen",
+			"Message text": "Nachricht",
+			"Subject": "Betreff",
+			"Severity": "Schweregrad",
+
+			"Sound": "Signalton",
+			"Test sound": "Signalton testen",
+
+			"__function__": "CheckRuleValidity",
+			"Result of the test": "Ergebnis der Überprüfung",
+			"At home": "zu Hause",
+			"Be away": "unterwegs",
+			"Last gone": "zuletzt gegangen",
+			"First come": "zuerst gekommen",
+			"Targets": "Ziele",
+
+			"Instance activity messages in IP-Symcon": "Meldungen zu Instanz-Aktivitäten in IP-Symcon",
+
+			"__end__": ""
+		}
+	}
+}

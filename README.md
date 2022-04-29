@@ -408,6 +408,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.3.3 @ 29.04.2022 15:24
+  - Überlagerung von Translate und Aufteilung von locale.json in 3 translation.json (Modul, libs und CommonStubs)
+
 - 1.3.2 @ 26.04.2022 12:22
   - Korrektur: self::$IS_DEACTIVATED wieder IS_INACTIVE
 

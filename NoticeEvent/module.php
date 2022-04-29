@@ -15,6 +15,15 @@ class NoticeEvent extends IPSModule
     public static $TIMEUNIT_HOURS = 2;
     public static $TIMEUNIT_DAYS = 3;
 
+    private $ModuleDir;
+
+    public function __construct(string $InstanceID)
+    {
+        parent::__construct($InstanceID);
+
+        $this->ModuleDir = __DIR__;
+    }
+
     public function Create()
     {
         parent::Create();
