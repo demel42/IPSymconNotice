@@ -59,7 +59,7 @@ class NoticeRule extends IPSModule
         $noticeBase = $this->ReadPropertyInteger('noticeBase');
         $ids = IPS_GetInstanceListByModuleID('{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}');
         foreach ($ids as $id) {
-            if ($noticeBase < 10000 || $noticeBase == $id) {
+            if ($this->IsValidID($noticeBase) == false || $noticeBase == $id) {
                 return $id;
             }
         }
@@ -70,7 +70,7 @@ class NoticeRule extends IPSModule
     {
         $targets = false;
         $noticeBase = $this->GetNoticeBase();
-        if ($noticeBase >= 10000) {
+        if (IPS_InstanceExists($noticeBase)) {
             $targets = Notice_GetTargetList($noticeBase);
         }
         $this->SendDebug(__FUNCTION__, 'targets=' . print_r($targets, true), 0);
@@ -81,7 +81,7 @@ class NoticeRule extends IPSModule
     {
         $presence = false;
         $noticeBase = $this->GetNoticeBase();
-        if ($noticeBase >= 10000) {
+        if (IPS_InstanceExists($noticeBase)) {
             $presence = Notice_GetPresence($noticeBase);
         }
         $this->SendDebug(__FUNCTION__, 'presence=' . print_r($presence, true), 0);
@@ -92,7 +92,7 @@ class NoticeRule extends IPSModule
     {
         $r = [];
 
-        if ($this->GetNoticeBase() < 10000) {
+        if (IPS_InstanceExists($this->GetNoticeBase()) == false) {
             $this->SendDebug(__FUNCTION__, '"noticeBase" ist empty and no global NoticeBase-instance', 0);
             $field = $this->Translate('Notice base');
             $r[] = $this->TranslateFormat('Field "{$field}" is not configured', ['{$field}' => $field]);
@@ -125,7 +125,7 @@ class NoticeRule extends IPSModule
 
         $this->MaintainReferences();
         $oid = $this->GetNoticeBase();
-        if ($oid >= 10000) {
+        if (IPS_InstanceExists($oid)) {
             $this->RegisterReference($oid);
         }
 
@@ -268,9 +268,9 @@ class NoticeRule extends IPSModule
         ];
 
         $noticeBase = $this->GetNoticeBase();
-        if ($noticeBase >= 10000) {
+        if (IPS_InstanceExists($noticeBase)) {
             $scriptID = (int) IPS_GetProperty($noticeBase, 'scriptID');
-            if ($scriptID >= 10000) {
+            if (IPS_ScriptExists($scriptID)) {
                 $items[] = [
                     'type'      => 'ExpansionPanel',
                     'caption'   => 'Script',
@@ -591,7 +591,7 @@ class NoticeRule extends IPSModule
                 $this->LogMessage($msg, KL_MESSAGE);
             }
             $noticeBase = $this->GetNoticeBase();
-            if ($noticeBase >= 10000) {
+            if (IPS_InstanceExists($noticeBase)) {
                 foreach ($targetV as $target) {
                     $r = $this->TargetDecode($target);
                     $mode = $this->ModeDecode($r['mode']);
@@ -791,7 +791,7 @@ class NoticeRule extends IPSModule
         }
 
         $noticeBase = $this->GetNoticeBase();
-        if ($noticeBase >= 10000) {
+        if (IPS_InstanceExists($noticeBase)) {
             return Notice_Log($noticeBase, $message, $severity, $params);
         }
         return false;

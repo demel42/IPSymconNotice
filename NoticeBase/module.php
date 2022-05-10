@@ -166,7 +166,7 @@ class NoticeBase extends IPSModule
         if ($users != false) {
             foreach ($users as $user) {
                 $oid = $this->GetArrayElem($user, 'webfront_instID', 0);
-                if ($oid >= 10000) {
+                if (IPS_InstanceExists($oid)) {
                     $this->RegisterReference($oid);
                 }
             }
@@ -193,8 +193,8 @@ class NoticeBase extends IPSModule
         $this->MaintainVariable('FirstCome', $this->Translate('first come'), VARIABLETYPE_STRING, '', $vpos++, true);
 
         $vpos = 90;
-        $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
-        $this->MaintainVariable('Notices', $this->Translate('Notices'), VARIABLETYPE_STRING, '~HTMLBox', $vpos++, $internal_html);
+        $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
+        $this->MaintainVariable('Notices', $this->Translate('Notices'), VARIABLETYPE_STRING, '~HTMLBox', $vpos++, IPS_ScriptExists($logger_scriptID) == false);
 
         $vpos = 100;
         $objList = [];
@@ -457,7 +457,8 @@ class NoticeBase extends IPSModule
                 'moduleID' => '{3565B1F2-8F7B-4311-A4B6-1BF1D868F39E}',
             ],
         ];
-        if ($this->ReadPropertyInteger('mail_instID') >= 10000) {
+        $mail_instID = $this->ReadPropertyInteger('mail_instID');
+        if (IPS_InstanceExists($mail_instID)) {
             $columns[] = [
                 'caption' => 'Mail address',
                 'name'    => 'mail_addr',
@@ -469,7 +470,8 @@ class NoticeBase extends IPSModule
                 ],
             ];
         }
-        if ($this->ReadPropertyInteger('sms_instID') >= 10000) {
+        $sms_instID = $this->ReadPropertyInteger('sms_instID');
+        if (IPS_InstanceExists($sms_instID)) {
             $columns[] = [
                 'caption' => 'SMS telno',
                 'name'    => 'sms_telno',
@@ -481,7 +483,8 @@ class NoticeBase extends IPSModule
                 ],
             ];
         }
-        if ($this->ReadPropertyInteger('scriptID') >= 10000) {
+        $scriptID = $this->ReadPropertyInteger('scriptID');
+        if (IPS_ScriptExists($scriptID)) {
             $columns[] = [
                 'caption' => 'Script params',
                 'name'    => 'script_params',
@@ -723,8 +726,8 @@ class NoticeBase extends IPSModule
             return $formActions;
         }
 
-        $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
-        if ($internal_html) {
+        $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
+        if (IPS_ScriptExists($logger_scriptID) == false) {
             $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Rebuild "Notices"',
@@ -1344,27 +1347,27 @@ class NoticeBase extends IPSModule
                     continue;
                 }
                 $webfront_instID = $this->GetArrayElem($user, 'webfront_instID', 0);
-                if ($webfront_instID >= 10000) {
+                if (IPS_InstanceExists($webfront_instID)) {
                     $targets[] = [
                         'user' => $user,
                         'mode' => self::$MODE_WEBFRONT,
                     ];
                 }
                 $mail_addr = $this->GetArrayElem($user, 'mail_addr', '');
-                if ($mail_instID >= 10000 && $mail_addr != '') {
+                if (IPS_InstanceExists($mail_instID) && $mail_addr != '') {
                     $targets[] = [
                         'user' => $user,
                         'mode' => self::$MODE_MAIL,
                     ];
                 }
                 $sms_telno = $this->GetArrayElem($user, 'sms_telno', '');
-                if ($sms_instID >= 10000 && $sms_telno != '') {
+                if (IPS_InstanceExists($sms_instID) && $sms_telno != '') {
                     $targets[] = [
                         'user' => $user,
                         'mode' => self::$MODE_SMS,
                     ];
                 }
-                if ($scriptID >= 10000) {
+                if (IPS_ScriptExists($scriptID)) {
                     $targets[] = [
                         'user' => $user,
                         'mode' => self::$MODE_SCRIPT,
@@ -1410,8 +1413,9 @@ class NoticeBase extends IPSModule
 
     public function RebuildHtml()
     {
-        if ($this->ReadPropertyInteger('logger_scriptID') >= 10000) {
-            $this->SendDebug(__FUNCTION__, 'external loggin enables', 0);
+        $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
+        if (IPS_ScriptExists($logger_scriptID)) {
+            $this->SendDebug(__FUNCTION__, 'external logging enabled', 0);
             return;
         }
         $html = $this->BuildHtmlBox(false);
@@ -1422,7 +1426,7 @@ class NoticeBase extends IPSModule
     {
         $this->SendDebug(__FUNCTION__, 'message=' . $message . ', severity=' . $severity . ', params=' . print_r($params, true), 0);
         $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
-        if ($logger_scriptID >= 10000) {
+        if (IPS_ScriptExists($logger_scriptID)) {
             $params['message'] = $message;
             $params['severity'] = $severity;
             @$r = IPS_RunScriptWaitEx($logger_scriptID, $params);
@@ -1485,7 +1489,6 @@ class NoticeBase extends IPSModule
 
         IPS_SemaphoreLeave(self::$semaphoreID);
 
-        $internal_html = $this->ReadPropertyInteger('logger_scriptID') < 10000;
         $html = $this->BuildHtmlBox($new_notices);
         $this->SetValue('Notices', $html);
 

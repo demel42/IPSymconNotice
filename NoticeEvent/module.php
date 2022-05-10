@@ -71,7 +71,7 @@ class NoticeEvent extends IPSModule
         $r = [];
 
         $ruleID = $this->ReadPropertyInteger('ruleID');
-        if ($ruleID < 10000) {
+        if (IPS_InstanceExists($ruleID) == false) {
             $field = $this->Translate('Notice rule');
             $r[] = $this->TranslateFormat('Field "{$field}" is not configured', ['{$field}' => $field]);
         }
@@ -80,7 +80,7 @@ class NoticeEvent extends IPSModule
         if ($max_repetitions != 0) {
             $pause_value = $this->ReadPropertyInteger('pause_value');
             $pause_varID = $this->ReadPropertyInteger('pause_varID');
-            if ($pause_value == 0 && $pause_varID < 10000) {
+            if ($pause_value == 0 && IPS_VariableExists($pause_varID) == false) {
                 $r[] = $this->Translate('Number of repetitions is configured, but neither a fixed value nor the variable');
             }
         }
@@ -100,12 +100,12 @@ class NoticeEvent extends IPSModule
                 $vars = $condition['rules']['variable'];
                 foreach ($vars as $var) {
                     $variableID = $var['variableID'];
-                    if ($variableID >= 10000) {
+                    if (IPS_VariableExists($variableID)) {
                         $this->RegisterReference($variableID);
                     }
                     if ($this->GetArrayElem($var, 'type', 0) == 1 /* compare with variable */) {
                         $oid = $var['value'];
-                        if ($oid >= 10000) {
+                        if (IPS_VariableExists($oid)) {
                             $this->RegisterReference($oid);
                         }
                     }
@@ -473,7 +473,7 @@ class NoticeEvent extends IPSModule
                 $started = time();
                 $repetition = 0;
                 $varID = $this->ReadPropertyInteger('delay_varID');
-                if ($varID >= 10000) {
+                if (IPS_VariableExists($varID)) {
                     $tval = GetValueInteger($varID);
                 } else {
                     $tval = $this->ReadPropertyInteger('delay_value');
@@ -494,7 +494,7 @@ class NoticeEvent extends IPSModule
                         $msg = $conditionsS . ', started with notice without repetition';
                     } else {
                         $varID = $this->ReadPropertyInteger('pause_varID');
-                        if ($varID >= 10000) {
+                        if (IPS_VariableExists($varID)) {
                             $tval = GetValueInteger($varID);
                         } else {
                             $tval = $this->ReadPropertyInteger('pause_value');
@@ -594,7 +594,7 @@ class NoticeEvent extends IPSModule
             $max_repetitions = $this->ReadPropertyInteger('max_repetitions');
             if ($max_repetitions == -1 || $repetition <= $max_repetitions) {
                 $varID = $this->ReadPropertyInteger('pause_varID');
-                if ($varID >= 10000) {
+                if (IPS_VariableExists($varID)) {
                     $tval = GetValueInteger($varID);
                 } else {
                     $tval = $this->ReadPropertyInteger('pause_value');
@@ -775,7 +775,7 @@ class NoticeEvent extends IPSModule
             }
         }
 
-        if ($ruleID < 10000) {
+        if (IPS_InstanceExists($ruleID) == false) {
             $this->SendDebug(__FUNCTION__, 'no notice rule', 0);
             return false;
         }
@@ -893,7 +893,7 @@ class NoticeEvent extends IPSModule
         }
 
         $noticeBase = $this->GetNoticeBase();
-        if ($noticeBase >= 10000) {
+        if (IPS_InstanceExists($noticeBase)) {
             return Notice_Log($noticeBase, $message, $severity, $params);
         }
         return false;
