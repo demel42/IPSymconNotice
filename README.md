@@ -408,6 +408,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.3.6 @ 18.05.2022 10:23
+  - in Meldungsliste auch mehrzeilige Einträge darstellen
+
 - 1.3.5 @ 17.05.2022 15:38
   - update submodule CommonStubs
     Fix: Absicherung gegen fehlende Objekte

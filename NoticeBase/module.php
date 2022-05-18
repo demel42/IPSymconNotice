@@ -1626,8 +1626,9 @@ class NoticeBase extends IPSModule
             $dt = date('d.m. H:i', $tstamp);
 
             $html .= '<tr>' . PHP_EOL;
-            $html .= '<td>' . $dt . '</td>' . PHP_EOL;
-            $html .= '<td' . ($color != '' ? ' style="color:' . $color . '"' : '') . '>' . $message . '</td>' . PHP_EOL;
+            $html .= '<td valign=top>' . $dt . '</td>' . PHP_EOL;
+            $s = str_replace([PHP_EOL], '<br>', $message);
+            $html .= '<td valign=top' . ($color != '' ? ' style="color:' . $color . '"' : '') . '>' . $s . '</td>' . PHP_EOL;
             $html .= '</tr>' . PHP_EOL;
         }
 
