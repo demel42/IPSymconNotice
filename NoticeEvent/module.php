@@ -61,7 +61,7 @@ class NoticeEvent extends IPSModule
         $this->RegisterAttributeString('UpdateInfo', '');
         $this->RegisterAttributeInteger('repetition', 0);
 
-        $this->RegisterTimer('LoopTimer', 0, $this->GetModulePrefix() . '_CheckTimer(' . $this->InstanceID . ');');
+        $this->RegisterTimer('LoopTimer', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "CheckTimer", "");');
 
         $this->RegisterMessage(0, IPS_KERNELMESSAGE);
     }
@@ -155,7 +155,7 @@ class NoticeEvent extends IPSModule
         }
     }
 
-    protected function GetFormElements()
+    private function GetFormElements()
     {
         $formElements = $this->GetCommonFormElements('Notice event');
 
@@ -347,7 +347,7 @@ class NoticeEvent extends IPSModule
         return $formElements;
     }
 
-    protected function GetFormActions()
+    private function GetFormActions()
     {
         $formActions = [];
 
@@ -381,12 +381,8 @@ class NoticeEvent extends IPSModule
             'caption'   => 'Expert area',
             'expanded ' => false,
             'items'     => [
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Re-install variable-profiles',
-                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
-                ]
-            ]
+                $this->GetInstallVarProfilesFormItem(),
+            ],
         ];
 
         $formActions[] = [
@@ -413,7 +409,7 @@ class NoticeEvent extends IPSModule
                         [
                             'type'    => 'Button',
                             'caption' => 'Show notice details',
-                            'onClick' => $this->GetModulePrefix() . '_ShowNoticeDetails($id, $repetition, 0, $recovery);',
+                            'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "ShowNoticeDetails", json_encode(["repetition" => $repetition, "recovery" => $recovery]));',
                         ],
                     ],
                 ],
@@ -422,6 +418,8 @@ class NoticeEvent extends IPSModule
 
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();
+
+        $formActions[] = $this->GetModuleActivityFormAction();
 
         return $formActions;
     }
@@ -438,6 +436,12 @@ class NoticeEvent extends IPSModule
         }
 
         switch ($ident) {
+            case 'CheckTimer':
+                $this->CheckTimer();
+                break;
+            case 'ShowNoticeDetails':
+                $this->ShowNoticeDetails($value);
+                break;
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
@@ -507,10 +511,11 @@ class NoticeEvent extends IPSModule
                 }
                 $this->SetValue('TimerStarted', $started);
                 $this->WriteAttributeInteger('repetition', $repetition);
+                $msg .= ' (' . $chainS . ')';
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg .= ' (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
+                $this->AddModuleActivity($msg);
                 if ($sec > 0) {
                     $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
                     $this->MaintainTimer('LoopTimer', $sec * 1000);
@@ -528,17 +533,19 @@ class NoticeEvent extends IPSModule
                 }
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
+                $msg = $conditionsS . ', stopped running timer (' . $chainS . ')';
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', stopped running timer (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
+                $this->AddModuleActivity($msg);
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->MaintainTimer('LoopTimer', 0);
             } else {
+                $msg = $conditionsS . ', no activity (' . $chainS . ')';
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                    $msg = $conditionsS . ', continuing (' . $chainS . ')';
                     $this->LogMessage($msg, KL_MESSAGE);
                 }
+                $this->AddModuleActivity($msg);
             }
         }
 
@@ -558,10 +565,11 @@ class NoticeEvent extends IPSModule
         if ($started) {
             $this->SetValue('TimerStarted', 0);
             $this->WriteAttributeInteger('repetition', 0);
+            $msg = 'timer stopped manual (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $msg = 'timer stopped manual (' . $chainS . ')';
                 $this->LogMessage($msg, KL_NOTIFY);
             }
+            $this->AddModuleActivity($msg);
             $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
             $this->MaintainTimer('LoopTimer', 0);
         }
@@ -569,7 +577,7 @@ class NoticeEvent extends IPSModule
         $this->PopCallChain(__FUNCTION__);
     }
 
-    public function CheckTimer()
+    private function CheckTimer()
     {
         $this->PushCallChain(__FUNCTION__);
 
@@ -603,19 +611,21 @@ class NoticeEvent extends IPSModule
                 $sec = $this->CalcByTimeunit($unit, $tval);
                 $tvS = $tval . $this->Timeunit2Suffix($unit);
                 $this->WriteAttributeInteger('repetition', $repetition);
+                $msg = $conditionsS . ', notice #' . $repetition . ' and pausing ' . $tvS . ' (' . $chainS . ')';
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', notice #' . $repetition . ' and pausing ' . $tvS . ' (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
+                $this->AddModuleActivity($msg);
                 $this->SendDebug(__FUNCTION__, 'timer=' . $sec . ' sec (' . $tvS . ')', 0);
                 $this->MaintainTimer('LoopTimer', $sec * 1000);
             } else {
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
+                $msg = $conditionsS . ', notice #' . $repetition . ' and stopped timer (max repetitions) (' . $chainS . ')';
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', notice #' . $repetition . ' and stopped timer (max repetitions) (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
+                $this->AddModuleActivity($msg);
                 $this->SendDebug(__FUNCTION__, 'timer stopped (max repetitions=' . $max_repetitions . ')', 0);
                 $this->MaintainTimer('LoopTimer', 0);
             }
@@ -627,10 +637,11 @@ class NoticeEvent extends IPSModule
             if ($started) {
                 $this->SetValue('TimerStarted', 0);
                 $this->WriteAttributeInteger('repetition', 0);
+                $msg = $conditionsS . ', stopped timer (' . $chainS . ')';
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                    $msg = $conditionsS . ', stopped timer (' . $chainS . ')';
                     $this->LogMessage($msg, KL_NOTIFY);
                 }
+                $this->AddModuleActivity($msg);
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
                 $this->MaintainTimer('LoopTimer', 0);
             }
@@ -809,11 +820,15 @@ class NoticeEvent extends IPSModule
         return $r;
     }
 
-    public function ShowNoticeDetails(int $repetition, int $started, bool $recovery)
+    private function ShowNoticeDetails($params)
     {
+        $jparams = json_decode($params, true);
+        $repetition = isset($jparams['repetition']) ? $jparams['repetition'] : 0;
+        $started = isset($jparams['started']) ? $jparams['started'] : 0;
         if ($started == 0) {
             $started = $this->GetValue('TimerStarted');
         }
+        $recovery = isset($jparams['recovery']) ? $jparams['recovery'] : false;
 
         $ruleID = $this->ReadPropertyInteger('ruleID');
         $severity = $this->ReadPropertyInteger('severity');
@@ -882,7 +897,7 @@ class NoticeEvent extends IPSModule
         if ($message != '') {
             $s .= $message . PHP_EOL;
         }
-        echo $s;
+        $this->PopupMessage($s);
     }
 
     public function Log(string $message, string $severity, array $params)

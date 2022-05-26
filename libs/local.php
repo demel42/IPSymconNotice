@@ -34,7 +34,7 @@ trait NoticeLocalLib
     public static $STATE_BE_AWAY = 2;
     public static $STATE_ON_VACATION = 3;
 
-    public function InstallVarProfiles(bool $reInstall = false)
+    private function InstallVarProfiles(bool $reInstall = false)
     {
         if ($reInstall) {
             $this->SendDebug(__FUNCTION__, 'reInstall=' . $this->bool2str($reInstall), 0);

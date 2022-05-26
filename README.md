@@ -408,6 +408,11 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.4 @ 25.05.2022 16:55
+  - die Modul-Aktivität steht zur vereinfachten Prüfung in einem zusätzlichen Panel zur Verfügung
+  - interne Funktionen sind nun entweder private oder nur noch via IPS_RequestAction() erreichbar
+  - einige Funktionen (GetFormElements, GetFormActions) waren fehlerhafterweise "protected" und nicht "private"
+
 - 1.3.6 @ 18.05.2022 10:23
   - in Meldungsliste auch mehrzeilige Einträge darstellen
 

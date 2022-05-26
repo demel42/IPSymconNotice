@@ -266,7 +266,7 @@ class NoticeBase extends IPSModule
         }
     }
 
-    protected function GetFormElements()
+    private function GetFormElements()
     {
         $formElements = $this->GetCommonFormElements('Notice base');
 
@@ -337,7 +337,7 @@ class NoticeBase extends IPSModule
                 ],
                 [
                     'type'      => 'ExpansionPanel',
-                    'caption'   => 'E-Mail',
+                    'caption'   => 'Mail',
                     'expanded'  => false,
                     'items'     => [
                         [
@@ -713,7 +713,7 @@ class NoticeBase extends IPSModule
         return $formElements;
     }
 
-    protected function GetFormActions()
+    private function GetFormActions()
     {
         $formActions = [];
 
@@ -731,7 +731,7 @@ class NoticeBase extends IPSModule
             $formActions[] = [
                 'type'    => 'Button',
                 'caption' => 'Rebuild "Notices"',
-                'onClick' => $this->GetModulePrefix() . '_RebuildHtml($id);'
+                'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "RebuildHtml", "");',
             ];
         }
 
@@ -740,11 +740,7 @@ class NoticeBase extends IPSModule
             'caption'   => 'Expert area',
             'expanded'  => false,
             'items'     => [
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Re-install variable-profiles',
-                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
-                ],
+                $this->GetInstallVarProfilesFormItem(),
             ]
         ];
 
@@ -787,6 +783,8 @@ class NoticeBase extends IPSModule
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();
 
+        $formActions[] = $this->GetModuleActivityFormAction();
+
         return $formActions;
     }
 
@@ -817,6 +815,9 @@ class NoticeBase extends IPSModule
         }
 
         switch ($ident) {
+            case 'RebuildHtml':
+                $this->RebuildHtml();
+                break;
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
@@ -1001,18 +1002,20 @@ class NoticeBase extends IPSModule
 
         $chainS = $this->PrintCallChain(false);
         if ($r) {
+            $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" succeed (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" succeed (' . $chainS . ')';
                 $this->LogMessage($s, KL_MESSAGE);
             }
+            $this->AddModuleActivity($s);
 
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'wf')]);
             $this->Log($s, 'debug', []);
         } else {
+            $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" failed (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'push message @' . $user_id . '(' . IPS_GetName($webfront_instID) . ') "' . $message . '" failed (' . $chainS . ')';
                 $this->LogMessage($s, KL_NOTIFY);
             }
+            $this->AddModuleActivity($s);
 
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'wf')]);
             $this->Log($s, 'warn', []);
@@ -1082,18 +1085,20 @@ class NoticeBase extends IPSModule
 
         $chainS = $this->PrintCallChain(false);
         if ($r) {
+            $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" succeed (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" succeed (' . $chainS . ')';
                 $this->LogMessage($s, KL_MESSAGE);
             }
+            $this->AddModuleActivity($s);
 
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'mail')]);
             $this->Log($s, 'debug', []);
         } else {
+            $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" failed (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'send mail @' . $user_id . '(' . $mail_addr . ') "' . $message . '" failed (' . $chainS . ')';
                 $this->LogMessage($s, KL_NOTIFY);
             }
+            $this->AddModuleActivity($s);
 
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'mail')]);
             $this->Log($s, 'warn', []);
@@ -1178,18 +1183,20 @@ class NoticeBase extends IPSModule
 
         $chainS = $this->PrintCallChain(false);
         if ($r) {
+            $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" succeed (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" succeed (' . $chainS . ')';
                 $this->LogMessage($s, KL_MESSAGE);
             }
+            $this->AddModuleActivity($s);
 
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'sms')]);
             $this->Log($s, 'debug', []);
         } else {
+            $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" failed (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'send sms @' . $user_id . '(' . $sms_telno . ') "' . $message . '" failed (' . $chainS . ')';
                 $this->LogMessage($s, KL_NOTIFY);
             }
+            $this->AddModuleActivity($s);
 
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'sms')]);
             $this->Log($s, 'warn', []);
@@ -1280,18 +1287,20 @@ class NoticeBase extends IPSModule
 
         $chainS = $this->PrintCallChain(false);
         if ($r) {
+            $s = 'scripting @' . $user_id . ' "' . $message . '" succeed (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $s = 'scripting @' . $user_id . ' "' . $message . '" succeed (' . $chainS . ')';
                 $this->LogMessage($s, KL_MESSAGE);
             }
+            $this->AddModuleActivity($s);
 
             $s = $this->TranslateFormat('Notify {$target} succeed', ['{$target}' => $this->TargetEncode($user_id, 'script')]);
             $this->Log($s, 'debug', []);
         } else {
+            $s = 'scripting @' . $user_id . ' "' . $message . '" failed (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $s = 'scripting @' . $user_id . ' "' . $message . '" failed (' . $chainS . ')';
                 $this->LogMessage($s, KL_NOTIFY);
             }
+            $this->AddModuleActivity($s);
 
             $s = $this->TranslateFormat('Notify {$target} failed', ['{$target}' => $this->TargetEncode($user_id, 'failed')]);
             $this->Log($s, 'warn', []);
@@ -1411,7 +1420,7 @@ class NoticeBase extends IPSModule
         return ($a_id < $b_id) ? -1 : 1;
     }
 
-    public function RebuildHtml()
+    private function RebuildHtml()
     {
         $logger_scriptID = $this->ReadPropertyInteger('logger_scriptID');
         if (IPS_ScriptExists($logger_scriptID)) {

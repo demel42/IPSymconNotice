@@ -166,7 +166,7 @@ class NoticeRule extends IPSModule
         }
     }
 
-    protected function GetFormElements()
+    private function GetFormElements()
     {
         $formElements = $this->GetCommonFormElements('Notice rule');
 
@@ -387,7 +387,7 @@ class NoticeRule extends IPSModule
         return $formElements;
     }
 
-    protected function GetFormActions()
+    private function GetFormActions()
     {
         $formActions = [];
 
@@ -406,7 +406,7 @@ class NoticeRule extends IPSModule
                 [
                     'type'    => 'Button',
                     'caption' => 'Check rule validity',
-                    'onClick' => $this->GetModulePrefix() . '_CheckRuleValidity($id);',
+                    'onClick' => 'IPS_RequestAction(' . $this->InstanceID . ', "CheckRuleValidity", "");',
                 ],
                 [
                     'type'    => 'PopupButton',
@@ -451,11 +451,7 @@ class NoticeRule extends IPSModule
             'caption'   => 'Expert area',
             'expanded'  => false,
             'items'     => [
-                [
-                    'type'    => 'Button',
-                    'caption' => 'Re-install variable-profiles',
-                    'onClick' => $this->GetModulePrefix() . '_InstallVarProfiles($id, true);'
-                ],
+                $this->GetInstallVarProfilesFormItem(),
             ]
         ];
 
@@ -498,6 +494,8 @@ class NoticeRule extends IPSModule
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();
 
+        $formActions[] = $this->GetModuleActivityFormAction();
+
         return $formActions;
     }
 
@@ -513,13 +511,16 @@ class NoticeRule extends IPSModule
         }
 
         switch ($ident) {
+            case 'CheckRuleValidity':
+                $this->CheckRuleValidity();
+                break;
             default:
                 $this->SendDebug(__FUNCTION__, 'invalid ident ' . $ident, 0);
                 break;
         }
     }
 
-    public function CheckRuleValidity()
+    private function CheckRuleValidity()
     {
         $presence = $this->GetPresence();
         $presence_last_gone = $this->GetArrayElem($presence, 'last_gone', '');
@@ -537,8 +538,7 @@ class NoticeRule extends IPSModule
         $s .= $this->Translate('First come') . ': ' . $presence_first_come . PHP_EOL;
         $s .= PHP_EOL;
         $s .= $this->Translate('Targets') . ': ' . implode(', ', $targets) . PHP_EOL;
-
-        echo $s;
+        $this->PopupMessage($s);
     }
 
     public function TriggerRule(string $message, string $subject, string $severity, array $params)
@@ -586,10 +586,11 @@ class NoticeRule extends IPSModule
 
         $targetV = $this->EvaluateRule();
         if ($targetV != false) {
+            $msg = 'targets=' . implode(',', $targetV) . ' (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
-                $msg = 'targets=' . implode(',', $targetV) . ' (' . $chainS . ')';
                 $this->LogMessage($msg, KL_MESSAGE);
             }
+            $this->AddModuleActivity($msg);
             $noticeBase = $this->GetNoticeBase();
             if (IPS_InstanceExists($noticeBase)) {
                 foreach ($targetV as $target) {
@@ -685,10 +686,11 @@ class NoticeRule extends IPSModule
                 }
             }
         } else {
+            $msg = 'no matching targets (' . $chainS . ')';
             if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_NOTIFY) {
-                $msg = 'no matching targets (' . $chainS . ')';
                 $this->LogMessage($msg, KL_NOTIFY);
             }
+            $this->AddModuleActivity($msg);
         }
 
         $this->PopCallChain(__FUNCTION__);
