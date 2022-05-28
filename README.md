@@ -408,6 +408,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.4.1 @ 28.05.2022 11:37
+  - update submodule CommonStubs
+    Fix: Ausgabe des nächsten Timer-Zeitpunkts
+
 - 1.4 @ 25.05.2022 16:55
   - die Modul-Aktivität steht zur vereinfachten Prüfung in einem zusätzlichen Panel zur Verfügung
   - interne Funktionen sind nun entweder private oder nur noch via IPS_RequestAction() erreichbar
