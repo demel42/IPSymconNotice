@@ -4,9 +4,9 @@
 	"author": "Ch. Damsky",
 	"url": "https://github.com/demel42/IPSymconNotice",
 	"compatibility": {
-		"version": "6.0"
+		"version": "6.2"
 	},
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"build": 0,
-	"date": 1653730666
+	"date": 1655886606
 }
