@@ -408,8 +408,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.5 @ 05.07.2022 09:53
+- 1.5 @ 05.07.2022 10:00
   - Verbesserung: IPS-Status wird nur noch gesetzt, wenn er sich ändert
+  - Übersetzung ergänzt
 
 - 1.4.2 @ 22.06.2022 10:30
   - Fix: Angabe der Kompatibilität auf 6.2 korrigiert
