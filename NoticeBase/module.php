@@ -861,9 +861,13 @@ class NoticeBase extends IPSModule
         $n_present = 0;
         $n_absent = 0;
 
+        $uid = $user_id;
         $users = json_decode($this->ReadPropertyString('users'), true);
         if ($users != false) {
             foreach ($users as $user) {
+                if ($user_id == strtoupper($user['id'])) {
+                    $uid = $user['id'];
+                }
                 if ($user['inactive'] || $user['immobile']) {
                     continue;
                 }
@@ -882,12 +886,12 @@ class NoticeBase extends IPSModule
         $last_gone = '';
         $first_come = '';
         if ($n_present == 0 && $old_state == self::$STATE_AT_HOME && $state != self::$STATE_AT_HOME) {
-            $last_gone = $user_id;
+            $last_gone = $uid;
         }
         if ($n_present == 1 && $old_state != self::$STATE_AT_HOME && $state == self::$STATE_AT_HOME) {
-            $first_come = $user_id;
+            $first_come = $uid;
         }
-        $this->SendDebug(__FUNCTION__, 'user=' . $user_id . ' (' . $dir . '), #total=' . $n_user . ', #present=' . $n_present . ', #absent=' . $n_absent, 0);
+        $this->SendDebug(__FUNCTION__, 'user=' . $uid . ' (' . $dir . '), #total=' . $n_user . ', #present=' . $n_present . ', #absent=' . $n_absent, 0);
 
         if ($old_state != $state) {
             $this->SetValue('LastGone', $last_gone);

@@ -408,6 +408,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.5.1 @ 19.08.2022 10:57
+  - Ausgabe der Benutzer war z.T. in Großschreibung
+  - update submodule CommonStubs
+
 - 1.5 @ 05.07.2022 10:00
   - Verbesserung: IPS-Status wird nur noch gesetzt, wenn er sich ändert
   - Übersetzung ergänzt
