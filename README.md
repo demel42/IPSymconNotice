@@ -408,6 +408,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.5.2 @ 27.08.2022 16:50
+  - Fix: bessere Prüfung auf vorhandenen Event-Bedingung
+
 - 1.5.1 @ 19.08.2022 10:57
   - Ausgabe der Benutzer war z.T. in Großschreibung
   - update submodule CommonStubs

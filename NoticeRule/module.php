@@ -493,7 +493,6 @@ class NoticeRule extends IPSModule
 
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();
-
         $formActions[] = $this->GetModuleActivityFormAction();
 
         return $formActions;

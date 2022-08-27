@@ -418,7 +418,6 @@ class NoticeEvent extends IPSModule
 
         $formActions[] = $this->GetInformationFormAction();
         $formActions[] = $this->GetReferencesFormAction();
-
         $formActions[] = $this->GetModuleActivityFormAction();
 
         return $formActions;
@@ -458,7 +457,7 @@ class NoticeEvent extends IPSModule
         $this->PushCallChain(__FUNCTION__);
 
         $conditions = $this->ReadPropertyString('conditions');
-        if ($conditions != '' && $conditions != []) {
+        if (json_decode($conditions, true)) {
             $passed = IPS_IsConditionPassing($conditions);
             $conditionsS = 'conditions ' . ($passed ? 'passed' : 'blocked');
         } else {
@@ -582,7 +581,7 @@ class NoticeEvent extends IPSModule
         $this->PushCallChain(__FUNCTION__);
 
         $conditions = $this->ReadPropertyString('conditions');
-        if ($conditions != '' && $conditions != []) {
+        if (json_decode($conditions, true)) {
             $passed = IPS_IsConditionPassing($conditions);
             $conditionsS = 'conditions ' . ($passed ? 'passed' : 'blocked');
         } else {
