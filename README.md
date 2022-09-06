@@ -408,6 +408,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.6 @ 31.08.2022 09:13
+  - Verbesserung: Referenzen setzen für den Inhalt des Scriptes in "NoticeEvent"
+  - update submodule CommonStubs
+
 - 1.5.2 @ 27.08.2022 16:50
   - Fix: bessere Prüfung auf vorhandenen Event-Bedingung
 

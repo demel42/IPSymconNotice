@@ -94,6 +94,13 @@ class NoticeEvent extends IPSModule
 
         $propertyNames = ['ruleID', 'delay_varID', 'pause_varID'];
         $this->MaintainReferences($propertyNames);
+
+        $propertyNames = ['script'];
+        foreach ($propertyNames as $name) {
+            $text = $this->ReadPropertyString($name);
+            $this->MaintainReferences4Script($text);
+        }
+
         $conditions = json_decode($this->ReadPropertyString('conditions'), true);
         if ($conditions != false) {
             foreach ($conditions as $condition) {
