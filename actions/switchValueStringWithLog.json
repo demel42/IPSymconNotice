@@ -1,0 +1,91 @@
+{
+  "id": "{49CA7E01-4862-FF73-D8EC-A3C3444113EC}",
+  "caption": "Switch to Value with log",
+  "form": [
+    "$noticeBases = IPS_GetInstanceListByModuleID('{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}');",
+    "return [",
+    "   [",
+    "       'type' => 'ValidationTextBox',",
+    "       'name' => 'VALUE',",
+    "       'caption' => 'Value',",
+    "   ],",
+    "   [",
+    "       'type' => 'SelectInstance',",
+    "       'validModules' => ['{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}'],",
+    "       'name' => 'NOTICE_BASE',",
+    "       'value' => isset($noticeBases[0]) ? $noticeBases[0] : 0,",
+    "       'caption' => 'Notice base',",
+    "   ],",
+    "   [",
+    "       'type' => 'ValidationTextBox',",
+    "       'name' => 'SUCCEED_LOG',",
+    "       'width' => '80%',",
+    "       'value' => '{TARGET_NAME} ({PARENT_NAME}) set to {VALUE}',",
+    "       'caption' => 'Log in case of success',",
+    "   ],",
+    "   [",
+    "       'type' => 'ValidationTextBox',",
+    "       'name' => 'FAILURE_LOG',",
+    "       'width' => '80%',",
+    "       'value' => 'Failure: unable to set {TARGET_NAME} ({PARENT_NAME}) to {VALUE}',",
+    "       'caption' => 'Log in case of failure',",
+    "   ]",
+    "];"
+  ],
+  "action": [
+    "$r = RequestAction($_IPS['TARGET'], $_IPS['VALUE']);",
+    "$pat = [];",
+    "$sub = [];",
+    "$pat[] = '/{VALUE}/';",
+    "$value = @GetValueFormatted($_IPS['TARGET']);",
+    "if ($value == '') {",
+    "    $value = $_IPS['VALUE'];",
+    "}",
+    "$sub[] = $value;",
+    "$pat[] = '/{NAME}/';",
+    "$sub[] = IPS_GetName($_IPS['TARGET']);",
+    "$pat[] = '/{PARENT}/';",
+    "$sub[] = IPS_GetName(IPS_GetParent($_IPS['TARGET']));",
+    "$pat[] = '/{LOCATION}/';",
+    "$sub[] = IPS_GetLocation($_IPS['TARGET']);",
+    "$locS = explode('\\', IPS_GetLocation($_IPS['TARGET']));",
+    "for ($n = 0, $i = count($locS) - 1; $i >= 0; $n++, $i--) {",
+    "    $pat[] = '/{LOCATION' . $n . '}/';",
+    "    $sub[] = $locS[$i];",
+    "}",
+    "$msg = $_IPS[$r ? 'SUCCEED_LOG' : 'FAILURE_LOG'];",
+    "$msg = preg_replace($pat, $sub, $msg);",
+	"if (IPS_InstanceExists($_IPS['NOTICE_BASE'])) {",
+    "    Notice_Log($_IPS['NOTICE_BASE'], $msg, $r ? 'info' : 'warn', []);",
+    "} else {",
+	"    IPS_LogMessage($_IPS['SELF'], $msg);",
+    "}"
+  ],
+  "restrictions": {
+    "objectType": [
+      2
+    ],
+    "variableType": [
+      3
+    ],
+    "profileIsEnum": false,
+    "requestAction": true
+  },
+  "priority": 10,
+  "locale": {
+    "de": {
+      "Switch to Value with log": "Schalte auf Wert mit Protokoll",
+      "Value": "Wert",
+      "Switch to \"{VALUE, profile}\"": "Schalte auf \"{VALUE, profile}\"",
+      "Switch the target variable to the defined value with log": "Schalte die Zielvariable auf den definierten Wert mit Protokoll",
+      "Notice base": "Mitteilungs-Basis",
+      "Log in case of success": "Log im Erfolgsfall",
+      "Log in case of failure": "Log im Fehlerfall",
+      "{TARGET_NAME} ({PARENT_NAME}) set to {VALUE}": "{TARGET_NAME} ({PARENT_NAME}) wurde auf {VALUE} gesetzt",
+      "Failure: unable to set {TARGET_NAME} ({PARENT_NAME}) to {VALUE}": "Failure: {TARGET_NAME} ({PARENT_NAME}) kann nicht auf {VALUE} gesetzt werden"
+    }
+  },
+  "format": "Switch to \"{VALUE, profile}\"",
+  "category": "switch",
+  "description": "Switch the target variable to the defined value with log"
+}
