@@ -408,7 +408,7 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.7 @ 17.10.2022 14:30
+- 1.7 @ 17.10.2022 15:24
   - Neu: einige Standard-Aktionen zum Setzen von Variablen dupliziert und mit Logging versehen
 
 - 1.6.2 @ 11.10.2022 08:28
