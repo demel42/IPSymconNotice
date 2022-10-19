@@ -156,10 +156,31 @@ Ruft die korrespondierende Funktion der _NoticeBase_, dient nur zur Vereinfachun
 
 
 Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity_, _Params_) werden mit den entsprechenden Voreinstellung in den Instanzen ergänzt entsprechend der Hierarchie.
+Diese Funktionen sind auch als Aktionen zur verfügbar.
+
+Zusätzlich gibt es einige STandard-Funktionen, die um die Möglichkeit des Logging erweitert wurden.<br>
+
+- _Schalte auf Wert mit Protokoll_<br>
+Ein Duplikat der Standard-Aktionen _Schalte auf Wert_ für alle Datentypen von Variablen mit und ohne Assoziationen
+
+- _Schalte auf Wert einer anderen Variablen mit Protokoll_<br>
+Ein Duplikat der Standard-Aktion _Schalte auf Wert einer anderen Variablen_
+
+Alle diese Aktionen haben folgende Zusatzfunktion
+- man kann die _Mitteilungs-Basis_ angeben, zu der das Log geschickt werden soll; ist dしese nicht angegeben, wird ein _IPS_LogMessage()_ aufgerufen
+- man kann den Text für eine gelungenen bzw fehlgeschlagenen Aktion definieren, hierbei stehen Variablen zur Verfügung
+  - _NAME_
+    Name der Ziel-Variablen
+  - _LOCATION_
+    Location der Ziel-Variablen
+  - _LOCATION0_, _LOCATION1_, _LOCATION2_ ...
+    die in Einzelteile zerlegte Location der Ziel-Variablen, dabei ist _LOCATION0_ die Variable, _LOCATION1_ der Parent usw.
+  - _VALUE_
+    der zu setzenden Wert, nach Möglichkeit formatiert gemäß der Vorgabe der Ziel-Variablen
 
 ## 5. Konfiguration
 
-### Eigenschaften 
+### Eigenschaften
 
 #### Mitteilungs-Basis (_NoticeBase_)
 
@@ -245,7 +266,7 @@ alle Argumente werden über *_IPS* weitergegeben
   * die in dem Argument _Params_ der Funktion _Notice_Log_ übergebenen bzw. aus den Standardeinstellungen gewonnener Einträge
 
   * zusätzlich
- 
+
     | Ident              | Typ     | Bedeutung |
     | :----------------- | :------ | :-------- |
     | message            | string  | Nachrichten-Text |
@@ -350,17 +371,17 @@ Beispiele:
   komplexer
   ```
   $r = [];
-  if (GetValueBoolean(88888)) { 
+  if (GetValueBoolean(88888)) {
       $r['message'] = 'Wasserstand unter der Heizung erkannt';
-  } else if (GetValueBoolean(77777)) { 
+  } else if (GetValueBoolean(77777)) {
       $r['message'] = 'Feuchtigkeit unter der Heizung erkannt';
-  } else { 
+  } else {
       if ($_IPS['recovery'])
           $r['message'] = 'Boden unter der Heizung ist wieder trocken';
       else
           $r['message'] = 'Heizung-Wassersensor OK';
       $r['severity'] = 'info';
-  } 
+  }
   echo json_encode($r);
   ```
 
@@ -408,7 +429,7 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.7 @ 17.10.2022 15:24
+- 1.7 @ 19.10.2022 09:48
   - Neu: einige Standard-Aktionen zum Setzen von Variablen dupliziert und mit Logging versehen
 
 - 1.6.2 @ 11.10.2022 08:28
