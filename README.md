@@ -429,6 +429,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.7.1 @ 11.03.2023 14:47
+  - Fix: Initialisierungsfehler in der Instanz-Konfiguration, wenn es nicht genau eine NoticeBase gibt
+
 - 1.7 @ 19.10.2022 09:48
   - Neu: einige Standard-Aktionen zum Setzen von Variablen dupliziert und mit Logging versehen
 

@@ -188,18 +188,20 @@ class NoticeRule extends IPSModule
         ];
 
         $targets = $this->GetTargetList();
-        $modeMapping = $this->ModeMapping();
         $target_opts = [];
-        foreach ($targets as $target) {
-            if (isset($modeMapping[$target['mode']]) == false) {
-                continue;
+        if (is_array($targets)) {
+            $modeMapping = $this->ModeMapping();
+            foreach ($targets as $target) {
+                if (isset($modeMapping[$target['mode']]) == false) {
+                    continue;
+                }
+                $c = $modeMapping[$target['mode']]['caption'];
+                $v = $modeMapping[$target['mode']]['tag'];
+                $target_opts[] = [
+                    'caption' => $target['user']['name'] . '/' . $this->Translate($c),
+                    'value'   => $this->TargetEncode($target['user']['id'], $v),
+                ];
             }
-            $c = $modeMapping[$target['mode']]['caption'];
-            $v = $modeMapping[$target['mode']]['tag'];
-            $target_opts[] = [
-                'caption' => $target['user']['name'] . '/' . $this->Translate($c),
-                'value'   => $this->TargetEncode($target['user']['id'], $v),
-            ];
         }
 
         $items = [];
