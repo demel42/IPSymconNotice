@@ -155,10 +155,11 @@ Der Aufruf kann in einem Script erfolgen, für Ablaufpläne etc gib es eine ents
 Ruft die korrespondierende Funktion der _NoticeBase_, dient nur zur Vereinfachung.
 
 
-Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity_, _Params_) werden mit den entsprechenden Voreinstellung in den Instanzen ergänzt entsprechend der Hierarchie.
-Diese Funktionen sind auch als Aktionen zur verfügbar.
+Die den Funktionen übergebenen Parameter (_Message_, _Subject_, _Severity_, _Params_) werden mit den entsprechenden
+Voreinstellung in den Instanzen ergänzt entsprechend der Hierarchie.
+Diese Funktionen sind auch als Aktionen verfügbar.
 
-Zusätzlich gibt es einige STandard-Funktionen, die um die Möglichkeit des Logging erweitert wurden.<br>
+Zusätzlich gibt es einige Standard-Funktionen, die um die Möglichkeit des Logging erweitert wurden.<br>
 
 - _Schalte auf Wert mit Protokoll_<br>
 Ein Duplikat der Standard-Aktionen _Schalte auf Wert_ für alle Datentypen von Variablen mit und ohne Assoziationen
@@ -431,6 +432,7 @@ GUIDs
 
 - 1.7.1 @ 11.03.2023 14:47
   - Fix: Initialisierungsfehler in der Instanz-Konfiguration, wenn es nicht genau eine NoticeBase gibt
+  - Fix: Typo im README korrigiert
 
 - 1.7 @ 19.10.2022 09:48
   - Neu: einige Standard-Aktionen zum Setzen von Variablen dupliziert und mit Logging versehen
