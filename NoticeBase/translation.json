@@ -64,8 +64,8 @@
 			"Presence state of": "Präsenz-Status von",
 
 			"__function__": "DeliverWebfront",
-			"Notify {$target} failed": "Mitteilung von {$target} fehlgeschlagen",
-			"Notify {$target} succeed": "Mitteilung von {$target} erfolgreich",
+			"Notify {$target} failed": "Mitteilung an {$target} fehlgeschlagen",
+			"Notify {$target} succeed": "Mitteilung an {$target} erfolgreich",
 
 			"__end__": ""
 		}

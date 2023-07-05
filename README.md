@@ -430,6 +430,13 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.8 @ 04.07.2023 14:44
+  - Fix: Anpassung der Spaltenbreite der Tabellen
+  - Fix: Schreibfehler korrigiert
+  - Vorbereitung auf IPS 7 / PHP 8.2
+  - update submodule CommonStubs
+    - Absicherung bei Zugriff auf Objekte und Inhalte
+
 - 1.7.1 @ 11.03.2023 14:47
   - Fix: Initialisierungsfehler in der Instanz-Konfiguration, wenn es nicht genau eine NoticeBase gibt
   - Fix: Typo im README korrigiert

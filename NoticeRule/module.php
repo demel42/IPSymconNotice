@@ -93,7 +93,7 @@ class NoticeRule extends IPSModule
         $r = [];
 
         if (IPS_InstanceExists($this->GetNoticeBase()) == false) {
-            $this->SendDebug(__FUNCTION__, '"noticeBase" ist empty and no global NoticeBase-instance', 0);
+            $this->SendDebug(__FUNCTION__, '"noticeBase" is empty and no global NoticeBase-instance', 0);
             $field = $this->Translate('Notice base');
             $r[] = $this->TranslateFormat('Field "{$field}" is not configured', ['{$field}' => $field]);
         }

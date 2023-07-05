@@ -218,11 +218,13 @@ class NoticeEvent extends IPSModule
                 [
                     'type'      => 'ValidationTextBox',
                     'name'      => 'subject',
+                    'width'     => '500px',
                     'caption'   => 'Given "subject"',
                 ],
                 [
                     'type'      => 'ValidationTextBox',
                     'multiline' => true,
+                    'width'     => '1000px',
                     'name'      => 'message',
                     'caption'   => 'Given "message text"',
                 ],
@@ -323,15 +325,15 @@ class NoticeEvent extends IPSModule
                         [
                             'type'    => 'ValidationTextBox',
                             'name'    => 'recovery_subject',
-                            'caption' => 'Alternate "Subject" for recovery',
                             'width'   => '500px',
+                            'caption' => 'Alternate "Subject" for recovery',
                         ],
                         [
                             'type'      => 'ValidationTextBox',
                             'multiline' => true,
+                            'width'     => '1000px',
                             'name'      => 'recovery_message',
                             'caption'   => 'Alternate "Message text" for recovery',
-                            'width'     => '500px',
                         ],
                         [
                             'type'      => 'Select',
