@@ -15,13 +15,16 @@ class NoticeEvent extends IPSModule
     public static $TIMEUNIT_HOURS = 2;
     public static $TIMEUNIT_DAYS = 3;
 
-    private $ModuleDir;
-
     public function __construct(string $InstanceID)
     {
         parent::__construct($InstanceID);
 
-        $this->ModuleDir = __DIR__;
+        $this->CommonContruct(__DIR__);
+    }
+
+    public function __destruct()
+    {
+        $this->CommonDestruct();
     }
 
     public function Create()
@@ -56,10 +59,12 @@ class NoticeEvent extends IPSModule
 
         $this->RegisterPropertyInteger('activity_loglevel', self::$LOGLEVEL_NOTIFY);
 
-        $this->InstallVarProfiles(false);
-
-        $this->RegisterAttributeString('UpdateInfo', '');
         $this->RegisterAttributeInteger('repetition', 0);
+
+        $this->RegisterAttributeString('UpdateInfo', json_encode([]));
+        $this->RegisterAttributeString('ModuleStats', json_encode([]));
+
+        $this->InstallVarProfiles(false);
 
         $this->RegisterTimer('LoopTimer', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "CheckTimer", "");');
 

@@ -430,6 +430,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.9 @ 20.09.2023 17:37
+  - Neu: Ermittlung von Speicherbedarf und Laufzeit (aktuell und für 31 Tage) und Anzeige im Panel "Information"
+  - update submodule CommonStubs
+
 - 1.8 @ 04.07.2023 14:44
   - Fix: Anpassung der Spaltenbreite der Tabellen
   - Fix: Schreibfehler korrigiert
