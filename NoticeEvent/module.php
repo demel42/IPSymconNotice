@@ -552,7 +552,6 @@ class NoticeEvent extends IPSModule
                 }
                 $this->AddModuleActivity($msg);
                 $this->SendDebug(__FUNCTION__, 'timer stopped (conditions)', 0);
-                $this->MaintainTimer('LoopTimer', 0);
             } else {
                 $msg = $conditionsS . ', no activity (' . $chainS . ')';
                 if ($this->ReadPropertyInteger('activity_loglevel') >= self::$LOGLEVEL_MESSAGE) {
@@ -560,6 +559,7 @@ class NoticeEvent extends IPSModule
                 }
                 $this->AddModuleActivity($msg);
             }
+            $this->MaintainTimer('LoopTimer', 0);
         }
 
         $this->PopCallChain(__FUNCTION__);
@@ -584,8 +584,8 @@ class NoticeEvent extends IPSModule
             }
             $this->AddModuleActivity($msg);
             $this->SendDebug(__FUNCTION__, 'timer stopped (manual)', 0);
-            $this->MaintainTimer('LoopTimer', 0);
         }
+        $this->MaintainTimer('LoopTimer', 0);
 
         $this->PopCallChain(__FUNCTION__);
     }
