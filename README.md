@@ -430,6 +430,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.11 @ 29.01.2024 11:16
+  - Änderung: Medien-Objekte haben zur eindeutigen Identifizierung jetzt ebenfalls ein Ident
+  - update submodule CommonStubs
+
 - 1.10 @ 31.12.2023 16:15
   - Fix: unter Umständen wurde das Meldeereignis nicht deaktiviert, obwohl die Auslösebedingung nicht (mehr) erfüllt war
 

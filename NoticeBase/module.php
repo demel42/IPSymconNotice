@@ -160,6 +160,38 @@ class NoticeBase extends IPSModule
         return $r;
     }
 
+    private function CheckModuleUpdate(array $oldInfo, array $newInfo)
+    {
+        $r = [];
+
+        if ($this->version2num($oldInfo) < $this->version2num('1.11')) {
+            $r[] = $this->Translate('Set ident of media objects');
+        }
+
+        return $r;
+    }
+
+    private function CompleteModuleUpdate(array $oldInfo, array $newInfo)
+    {
+        $r = '';
+
+        if ($this->version2num($oldInfo) < $this->version2num('1.11')) {
+            $m = [
+                'Data' => '.dat',
+            ];
+
+            foreach ($m as $ident => $extension) {
+                $filename = 'media' . DIRECTORY_SEPARATOR . $this->InstanceID . '-' . $ident . $extension;
+                @$mediaID = IPS_GetMediaIDByFile($filename);
+                if ($mediaID != false) {
+                    IPS_SetIdent($mediaID, $ident);
+                }
+            }
+        }
+
+        return $r;
+    }
+
     public function ApplyChanges()
     {
         parent::ApplyChanges();
@@ -248,7 +280,8 @@ class NoticeBase extends IPSModule
             }
         }
 
-        $vpos = 100;
+        $vpos = 1000;
+        $this->MaintainMedia('Data', $this->Translate('Data'), MEDIATYPE_DOCUMENT, '.dat', false, $vpos++, true);
 
         $module_disable = $this->ReadPropertyBoolean('module_disable');
         if ($module_disable) {
@@ -1472,7 +1505,7 @@ class NoticeBase extends IPSModule
         $ref_ts = $now - ($max_age * 24 * 60 * 60);
 
         $new_notices = [];
-        $s = $this->GetMediaData('Data');
+        $s = $this->GetMediaContent('Data');
         $old_data = json_decode((string) $s, true);
         $old_notices = isset($old_data['notices']) ? $old_data['notices'] : [];
         $counter = isset($old_data['counter']) ? $old_data['counter'] : 1;
@@ -1501,7 +1534,7 @@ class NoticeBase extends IPSModule
         $new_data['counter'] = $counter;
         $new_data['notices'] = $new_notices;
         $s = json_encode($new_data);
-        $this->SetMediaData('Data', $s, MEDIATYPE_DOCUMENT, '.dat', false);
+        $this->SetMediaContent('Data', $s);
 
         IPS_SemaphoreLeave(self::$semaphoreID);
 
@@ -1534,7 +1567,7 @@ class NoticeBase extends IPSModule
         $severity_debug_color = $this->ReadPropertyInteger('severity_debug_color');
 
         if ($notices == false) {
-            $s = $this->GetMediaData('Data');
+            $s = $this->GetMediaContent('Data');
             $data = json_decode((string) $s, true);
             $notices = isset($data['notices']) ? $data['notices'] : [];
         }
