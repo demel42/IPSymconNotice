@@ -91,7 +91,7 @@ erste Instanz sucht.
 
 ### Mitteilungs-Ereignis (_NoticeEvent_)
 Hiermit können Mitteilungs-Regeln verzögert bzw. wiederholt aufgerufen werden.<br>
-Neben der Timerfunktion können auch Bedingungen angegeben werden, die gültig sein müssen, damit das Ereignis anläuft bzw. weiterläuft (die Bedingungen werden 
+Neben der Timerfunktion können auch Bedingungen angegeben werden, die gültig sein müssen, damit das Ereignis anläuft bzw. weiterläuft (die Bedingungen werden
 bei jeder Meldung, egal ob nach Start-Verzögerung oder Wiederholung neu geprüft).
 
 Aufgerufen wird das Mitteilungs-Ereignis i.d.R. durch IPS-Ereignisse, i.d.R. vermutlich _Ausgelöst_ oder _Zyklisch_, aber auch natürlich durch allen anderen Möglichkeiten (Ablaufplan, Skript).<br>
@@ -429,6 +429,10 @@ GUIDs
   - NoticeEvent: `{BF681BDA-E2C7-3175-6671-6D6E570BCDAA}`
 
 ## 7. Versions-Historie
+
+- 1.12 @ 29.02.2024 10:44
+  - Fix: leere Liste der Mitteilunegn verursachte Fehler bei der Erzeugung der HTML-Box "Mitteilungen"
+  - update submodule CommonStubs
 
 - 1.11 @ 29.01.2024 11:16
   - Änderung: Medien-Objekte haben zur eindeutigen Identifizierung jetzt ebenfalls ein Ident

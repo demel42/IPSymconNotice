@@ -1468,6 +1468,7 @@ class NoticeBase extends IPSModule
             return;
         }
         $html = $this->BuildHtmlBox(false);
+        $this->SendDebug(__FUNCTION__, 'html=' . $html, 0);
         $this->SetValue('Notices', $html);
     }
 
@@ -1571,6 +1572,7 @@ class NoticeBase extends IPSModule
             $data = json_decode((string) $s, true);
             $notices = isset($data['notices']) ? $data['notices'] : [];
         }
+        $this->SendDebug(__FUNCTION__, 'notices=' . print_r($notices, true), 0);
 
         $now = time();
         $b = false;
@@ -1587,7 +1589,7 @@ class NoticeBase extends IPSModule
         $html .= '#spalte_message { }' . PHP_EOL;
         $html .= '</style>' . PHP_EOL;
 
-        for ($i = count($notices) - 1; $i; $i--) {
+        for ($i = count($notices) - 1; $i >= 0; $i--) {
             $notice = $notices[$i];
             $tstamp = $notice['tstamp'];
             $message = $notice['message'];
