@@ -4,6 +4,9 @@
 			"Notice event": "Mitteilungs-Ereignis",
 			"Notice rule": "Mitteilungs-Regel",
 
+			"__function__": "CheckUpdate",
+			"Change ident of variable 'TimerStarted' to 'EventStarted'": "Änderung des Ident der Variablen 'TimerStarted' in 'EventStarted'",
+
 			"__function__": "CheckConfiguration",
 			"Field \"{$field}\" is not configured": "Feld \"{$field}\" ist nicht konfiguriert",
 			"Number of repetitions is configured, but neither a fixed value nor the variable":

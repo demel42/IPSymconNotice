@@ -430,6 +430,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.13 @ 01.11.2024 12:16
+  - Fix: fehlende Wiederherstellung-Meldung bei Event ohne definierte Wiederholung
+  - update submodule CommonStubs
+
 - 1.12 @ 29.02.2024 10:44
   - Fix: leere Liste der Mitteilunegn verursachte Fehler bei der Erzeugung der HTML-Box "Mitteilungen"
   - update submodule CommonStubs
