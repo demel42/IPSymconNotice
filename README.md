@@ -430,6 +430,9 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.14 @ 03.01.2025 14:17
+ - update submodule CommonStubs
+
 - 1.13 @ 01.11.2024 12:16
   - Fix: fehlende Wiederherstellung-Meldung bei Event ohne definierte Wiederholung
   - update submodule CommonStubs
