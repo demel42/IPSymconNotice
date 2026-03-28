@@ -566,8 +566,8 @@ class NoticeEvent extends IPSModule
         } else {
             if ($started) {
                 $recovery_notify = $this->ReadPropertyBoolean('recovery_notify');
-                if ($recovery_notify) {
-                    $repetition = $this->ReadAttributeInteger('repetition');
+                $repetition = $this->ReadAttributeInteger('repetition');
+                if ($recovery_notify && $repetition > 0) {
                     $this->Notify($repetition, $started, true);
                 }
                 $this->SetValue('EventStarted', 0);

@@ -430,8 +430,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
-- 1.14 @ 03.01.2025 14:17
- - update submodule CommonStubs
+- 1.14 @ 28.03.2026 09:48
+  - Fix: Meldung der Wiederherstellung nur, wenn eine Erstmeldung erfolgt ist (relevant z.B. wenn während einer möglichen initialen Wartezeit das auslösende Problem behoben wurde)
+  - Fix: Anpassung für IPS 9
+  - update submodule CommonStubs
 
 - 1.13 @ 01.11.2024 12:16
   - Fix: fehlende Wiederherstellung-Meldung bei Event ohne definierte Wiederholung
