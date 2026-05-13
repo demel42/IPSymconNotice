@@ -61,7 +61,7 @@ class NoticeRule extends IPSModule
     private function GetNoticeBase()
     {
         $noticeBase = $this->ReadPropertyInteger('noticeBase');
-        $ids = IPS_GetInstanceListByModuleID('{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}');
+        $ids = (array) IPS_GetInstanceListByModuleID('{4CF21C1E-B0F8-5535-8B5D-01ADDDB5DFD7}');
         foreach ($ids as $id) {
             if ($this->IsValidID($noticeBase) == false || $noticeBase == $id) {
                 return $id;

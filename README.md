@@ -430,6 +430,10 @@ GUIDs
 
 ## 7. Versions-Historie
 
+- 1.15 @ 09.05.2026 11:36
+  - Fix: Änderung von deprecated php code
+  - update submodule CommonStubs
+
 - 1.14 @ 28.03.2026 09:48
   - Fix: Meldung der Wiederherstellung nur, wenn eine Erstmeldung erfolgt ist (relevant z.B. wenn während einer möglichen initialen Wartezeit das auslösende Problem behoben wurde)
   - Fix: Anpassung für IPS 9
